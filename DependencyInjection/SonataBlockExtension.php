@@ -44,7 +44,6 @@ class SonataBlockExtension extends Extension
         $loader->load('core.xml');
         $loader->load('exception.xml');
 
-        $this->configureContext($container, $config);
         $this->configureLoaderChain($container, $config);
         $this->configureCache($container, $config);
         $this->configureForm($container, $config);
@@ -63,15 +62,6 @@ class SonataBlockExtension extends Extension
 
         $container->getDefinition('sonata.block.twig.global')
             ->replaceArgument(1, $config['templates']);
-    }
-
-    /**
-     * @param ContainerBuilder $container
-     * @param array            $config
-     */
-    public function configureContext(ContainerBuilder $container, array $config)
-    {
-        $container->setAlias('sonata.block.context_manager', $config['context_manager']);
     }
 
     /**
