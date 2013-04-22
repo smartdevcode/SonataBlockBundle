@@ -48,8 +48,6 @@ class Configuration implements ConfigurationInterface
                 ->prototype('scalar')->end()
             ->end()
 
-            ->scalarNode('context_manager')->defaultValue('sonata.block.context_manager.default')->end()
-
             ->arrayNode('templates')
                 ->addDefaultsIfNotSet()
                 ->children()

@@ -39,15 +39,20 @@ class TraceableBlockRenderer implements BlockRendererInterface
     }
 
     /**
-     * {@inheritdoc}
+     * Renders a block and analyze metrics before and after the rendering
+     *
+     * @param BlockInterface $block    Block instance
+     * @param Response       $response Response object
+     *
+     * @return Response
      */
-    public function render(BlockContextInterface $blockContext, Response $response = null)
+    public function render(BlockInterface $block, Response $response = null)
     {
-        $this->startTracing($blockContext->getBlock());
+        $this->startTracing($block);
 
-        $response = $this->blockRenderer->render($blockContext, $response);
+        $response = $this->blockRenderer->render($block, $response);
 
-        $this->endTracing($blockContext->getBlock());
+        $this->endTracing($block);
 
         return $response;
     }
@@ -60,8 +65,8 @@ class TraceableBlockRenderer implements BlockRendererInterface
     protected function startTracing(BlockInterface $block)
     {
         $this->traces[$block->getId()] = array(
-            'name'          => $block->getName(),
-            'type'          => $block->getType(),
+            'name'         => $block->getName(),
+            'type'         => $block->getType(),
             'time_start'    => microtime(true),
             'memory_start'  => memory_get_usage(true),
             'time_end'      => false,
