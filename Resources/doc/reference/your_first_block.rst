@@ -1,4 +1,4 @@
-Your first block
+You first block
 ===============
 
 This quick tutorial explains how to create a RSS reader block.
