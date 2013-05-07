@@ -45,20 +45,15 @@ class TraceableBlockRenderer implements BlockRendererInterface
     }
 
     /**
-     * Renders a block and analyze metrics before and after the rendering
-     *
-     * @param BlockInterface $block    Block instance
-     * @param Response       $response Response object
-     *
-     * @return Response
+     * {@inheritdoc}
      */
-    public function render(BlockInterface $block, Response $response = null)
+    public function render(BlockContextInterface $blockContext, Response $response = null)
     {
-        $e = $this->startTracing($block);
+        $e = $this->startTracing($blockContext->getBlock());
 
-        $response = $this->blockRenderer->render($block, $response);
+        $response = $this->blockRenderer->render($blockContext, $response);
 
-        $this->endTracing($block, $e);
+        $this->endTracing(($blockContext->getBlock(), $e);
 
         return $response;
     }
@@ -82,6 +77,7 @@ class TraceableBlockRenderer implements BlockRendererInterface
         );
 
         $name = sprintf('%s (id: %s, type: %s)', $block->getName(), $block->getId(), $block->getType());
+
         return $this->stopwatch->start($name);
     }
 
