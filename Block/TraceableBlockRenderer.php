@@ -14,6 +14,8 @@ namespace Sonata\BlockBundle\Block;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Sonata\BlockBundle\Block\BlockRendererInterface;
+use Symfony\Component\Stopwatch\Stopwatch;
+use Symfony\Component\Stopwatch\StopwatchEvent;
 
 /**
  * Renders a block using a block service and traces the block rendering
@@ -30,24 +32,33 @@ class TraceableBlockRenderer implements BlockRendererInterface
 
     protected $blockRenderer;
 
+    protected $stopwatch;
+
     /**
      * @param BlockRendererInterface $blockRender The block renderer to trace
+     * @param Stopwatch              $stopwatch   A Stopwatch instance
      */
-    public function __construct(BlockRendererInterface $blockRender)
+    public function __construct(BlockRendererInterface $blockRender, Stopwatch $stopwatch)
     {
         $this->blockRenderer = $blockRender;
+        $this->stopwatch = $stopwatch;
     }
 
     /**
-     * {@inheritdoc}
+     * Renders a block and analyze metrics before and after the rendering
+     *
+     * @param BlockInterface $block    Block instance
+     * @param Response       $response Response object
+     *
+     * @return Response
      */
-    public function render(BlockContextInterface $blockContext, Response $response = null)
+    public function render(BlockInterface $block, Response $response = null)
     {
-        $this->startTracing($blockContext->getBlock());
+        $e = $this->startTracing($block);
 
-        $response = $this->blockRenderer->render($blockContext, $response);
+        $response = $this->blockRenderer->render($block, $response);
 
-        $this->endTracing($blockContext->getBlock());
+        $this->endTracing($block, $e);
 
         return $response;
     }
@@ -56,29 +67,36 @@ class TraceableBlockRenderer implements BlockRendererInterface
      * Start tracing the block rendering
      *
      * @param BlockInterface $block
+     *
+     * @return StopWatchEvent
      */
     protected function startTracing(BlockInterface $block)
     {
         $this->traces[$block->getId()] = array(
             'name'          => $block->getName(),
             'type'          => $block->getType(),
-            'time_start'    => microtime(true),
+            'duration'      => false,
             'memory_start'  => memory_get_usage(true),
-            'time_end'      => false,
             'memory_end'    => false,
             'memory_peak'   => false,
         );
+
+        $name = sprintf('%s (id: %s, type: %s)', $block->getName(), $block->getId(), $block->getType());
+        return $this->stopwatch->start($name);
     }
 
     /**
      * End tracing the block rendering
      *
      * @param BlockInterface $block
+     * @param StopWatchEvent $e
      */
-    protected function endTracing(BlockInterface $block)
+    protected function endTracing(BlockInterface $block, StopwatchEvent $e)
     {
+        $e->stop();
+
         $this->traces[$block->getId()] = array_merge($this->traces[$block->getId()], array(
-            'time_end'      => microtime(true),
+            'duration'      => $e->getDuration(),
             'memory_end'    => memory_get_usage(true),
             'memory_peak'   => memory_get_peak_usage(true),
         ));

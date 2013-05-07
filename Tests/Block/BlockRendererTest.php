@@ -11,7 +11,6 @@
 
 namespace Sonata\BlockBundle\Tests\Block;
 
-use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\BlockRenderer;
 
 /**
@@ -67,10 +66,9 @@ class BlockRendererTest extends \PHPUnit_Framework_TestCase
 
         // mock a block object
         $block = $this->getMock('Sonata\BlockBundle\Model\BlockInterface');
-        $blockContext = new BlockContext($block);
 
         // WHEN
-        $result = $this->renderer->render($blockContext);
+        $result = $this->renderer->render($block);
 
         // THEN
         $this->assertEquals($response, $result, 'Should return the response from the block service');
@@ -100,14 +98,13 @@ class BlockRendererTest extends \PHPUnit_Framework_TestCase
             }));
 
         // mock the logger to ensure a crit message is logged
-        $this->logger->expects($this->once())->method('critical');
+        $this->logger->expects($this->once())->method('crit');
 
         // mock a block object
         $block = $this->getMock('Sonata\BlockBundle\Model\BlockInterface');
-        $blockContext = new BlockContext($block);
 
         // WHEN
-        $this->renderer->render($blockContext);
+        $this->renderer->render($block);
 
         // THEN
         // exception thrown
@@ -141,14 +138,13 @@ class BlockRendererTest extends \PHPUnit_Framework_TestCase
             ->will($this->returnValue($response));
 
         // mock the logger to ensure a crit message is logged
-        $this->logger->expects($this->once())->method('critical');
+        $this->logger->expects($this->once())->method('crit');
 
         // mock a block object
         $block = $this->getMock('Sonata\BlockBundle\Model\BlockInterface');
-        $blockContext = new BlockContext($block);
 
         // WHEN
-        $result = $this->renderer->render($blockContext);
+        $result = $this->renderer->render($block);
 
         // THEN
         $this->assertEquals($response, $result, 'Should return the response provider by the exception manager');

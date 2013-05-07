@@ -11,11 +11,9 @@
 
 namespace Sonata\BlockBundle\Tests\Block\Service;
 
-use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Model\Block;
 
 use Sonata\BlockBundle\Block\Service\RssBlockService;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class RssBlockServiceTest extends BaseTestBlockService
 {
@@ -33,17 +31,12 @@ class RssBlockServiceTest extends BaseTestBlockService
             'content' => 'my text'
         ));
 
-        $optionResolver = new OptionsResolver();
-        $service->setDefaultSettings($optionResolver);
-
-        $blockContext = new BlockContext($block, $optionResolver->resolve());
-
         $formMapper = $this->getMock('Sonata\\AdminBundle\\Form\\FormMapper', array(), array(), '', false);
         $formMapper->expects($this->exactly(2))->method('add');
 
         $service->buildCreateForm($formMapper, $block);
         $service->buildEditForm($formMapper, $block);
 
-        $service->execute($blockContext);
+        $service->execute($block);
     }
 }

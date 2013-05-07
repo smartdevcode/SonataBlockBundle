@@ -16,7 +16,6 @@ use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\AdminBundle\Validator\ErrorElement;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 interface BlockServiceInterface
 {
@@ -37,12 +36,12 @@ interface BlockServiceInterface
     public function buildCreateForm(FormMapper $form, BlockInterface $block);
 
     /**
-     * @param BlockContextInterface $blockContext
-     * @param Response              $response
+     * @param BlockInterface $block
+     * @param null|Response  $response
      *
      * @return Response
      */
-    public function execute(BlockContextInterface $blockContext, Response $response = null);
+    public function execute(BlockInterface $block, Response $response = null);
 
     /**
      * @param ErrorElement   $errorElement
@@ -58,11 +57,11 @@ interface BlockServiceInterface
     public function getName();
 
     /**
-     * Define the default options for the block
+     * Returns the default settings link to the service
      *
-     * @param OptionsResolverInterface $resolver
+     * @return array
      */
-    public function setDefaultSettings(OptionsResolverInterface $resolver);
+    public function getDefaultSettings();
 
     /**
      * @param BlockInterface $block

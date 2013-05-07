@@ -13,7 +13,7 @@ namespace Sonata\BlockBundle\Tests\Block;
 
 use Sonata\BlockBundle\Block\TraceableBlockRenderer;
 use Symfony\Component\HttpFoundation\Response;
-use Sonata\BlockBundle\Block\BlockContext;
+use Symfony\Component\Stopwatch\Stopwatch;
 
 class TraceableBlockRendererTest extends \PHPUnit_Framework_TestCase
 {
@@ -22,15 +22,13 @@ class TraceableBlockRendererTest extends \PHPUnit_Framework_TestCase
         $renderer = $this->getMock('Sonata\BlockBundle\Block\BlockRendererInterface');
         $renderer->expects($this->once())->method('render')->will($this->returnValue(new Response()));
 
-        $traceable = new TraceableBlockRenderer($renderer, array());
+        $traceable = new TraceableBlockRenderer($renderer, new Stopwatch());
 
         $block = $this->getMock('Sonata\BlockBundle\Model\BlockInterface');
         $block->expects($this->any())->method('getId')->will($this->returnValue(42));
         $block->expects($this->any())->method('getType')->will($this->returnValue('mytype'));
 
-        $blockContext = new BlockContext($block);
-
-        $traceable->render($blockContext);
+        $traceable->render($block);
 
         $traces = $traceable->getTraces();
 
