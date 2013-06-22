@@ -16,8 +16,6 @@ use Sonata\BlockBundle\Model\BlockInterface;
 
 interface BlockContextManagerInterface
 {
-    const CACHE_KEY = 'context';
-
     /**
      * Add settings for a block service
      *
