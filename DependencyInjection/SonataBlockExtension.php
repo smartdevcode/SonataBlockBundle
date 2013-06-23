@@ -261,9 +261,4 @@ class SonataBlockExtension extends Extension
             "Sonata\\BlockBundle\\Twig\\GlobalVariables",
         ));
     }
-
-    public function getNamespace()
-    {
-        return 'http://sonata-project.com/schema/dic/block';
-    }
 }
