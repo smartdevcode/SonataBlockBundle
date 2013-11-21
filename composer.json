@@ -19,8 +19,7 @@
     "require": {
         "symfony/http-foundation": "~2.2",
         "symfony/form": "~2.2",
-        "doctrine/common": "~2.3",
-        "knplabs/knp-menu-bundle": "~1.1"
+        "doctrine/common": "~2.3"
     },
     "require-dev": {
         "sonata-project/cache-bundle": "~2.1",
