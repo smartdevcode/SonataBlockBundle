@@ -10,7 +10,6 @@ Reference Guide
 
    reference/installation
    reference/twig_helpers
-   reference/provided_blocks
    reference/your_first_block
    reference/profiler
    reference/exceptions
