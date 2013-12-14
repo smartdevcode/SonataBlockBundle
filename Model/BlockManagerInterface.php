@@ -10,8 +10,55 @@
 
 namespace Sonata\BlockBundle\Model;
 
-use Sonata\CoreBundle\Entity\ManagerInterface;
-
-interface BlockManagerInterface extends ManagerInterface
+interface BlockManagerInterface
 {
+    /**
+     * Creates an empty block instance
+     *
+     * @return BlockInterface
+     */
+    public function create();
+
+    /**
+     * Deletes a block
+     *
+     * @param BlockInterface $block
+     *
+     * @return void
+     */
+    public function delete(BlockInterface $block);
+
+    /**
+     * Finds one block by the given criteria
+     *
+     * @param array $criteria
+     *
+     * @return BlockInterface
+     */
+    public function findOneBy(array $criteria);
+
+    /**
+     * Finds one block by the given criteria
+     *
+     * @param array $criteria
+     *
+     * @return BlockInterface
+     */
+    public function findBy(array $criteria);
+
+    /**
+     * Returns the block's fully qualified class name
+     *
+     * @return string
+     */
+    public function getClass();
+
+    /**
+     * Save a block
+     *
+     * @param BlockInterface $block
+     *
+     * @return void
+     */
+    public function save(BlockInterface $block);
 }
