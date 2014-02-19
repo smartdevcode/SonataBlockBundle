@@ -11,14 +11,13 @@
 
 namespace Sonata\BlockBundle\Block;
 
-use Doctrine\Common\Util\ClassUtils;
-use Psr\Log\LoggerInterface;
 use Sonata\BlockBundle\Exception\BlockOptionsException;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\Exception\InvalidOptionsException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\Security\Acl\Exception\Exception;
 
 class BlockContextManager implements BlockContextManagerInterface
@@ -34,23 +33,15 @@ class BlockContextManager implements BlockContextManagerInterface
     protected $cacheBlocks;
 
     /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
      * @param BlockLoaderInterface         $blockLoader
      * @param BlockServiceManagerInterface $blockService
-     * @param LoggerInterface|null         $logger
      * @param array                        $cacheBlocks
      */
-    public function __construct(BlockLoaderInterface $blockLoader, BlockServiceManagerInterface $blockService,
-        LoggerInterface $logger = null, array $cacheBlocks = array()
-    ) {
-        $this->blockLoader  = $blockLoader;
+    public function __construct(BlockLoaderInterface $blockLoader, BlockServiceManagerInterface $blockService, array $cacheBlocks = array())
+    {
+        $this->blockLoader = $blockLoader;
         $this->blockService = $blockService;
-        $this->cacheBlocks  = $cacheBlocks;
-        $this->logger       = $logger;
+        $this->cacheBlocks = $cacheBlocks;
     }
 
     /**
@@ -106,18 +97,11 @@ class BlockContextManager implements BlockContextManagerInterface
         $service = $this->blockService->get($block);
         $service->setDefaultSettings($optionsResolver, $block);
 
-        $originalSettings = $settings;
         try {
+            $originalSettings = $settings;
             $settings = $optionsResolver->resolve(array_merge($block->getSettings(), $settings));
         } catch (ExceptionInterface $e) {
-            if ($this->logger) {
-                $this->logger->error(sprintf(
-                    '[cms::blockContext] block.id=%d - error while resolving options - %s',
-                    $block->getId(),
-                    $e->getMessage()
-                ));
-            }
-
+            // @TODO: add a logger here
             $optionsResolver = new OptionsResolver();
 
             $this->setDefaultSettings($optionsResolver, $block);
@@ -125,11 +109,11 @@ class BlockContextManager implements BlockContextManagerInterface
             $service = $this->blockService->get($block);
             $service->setDefaultSettings($optionsResolver, $block);
 
+            $originalSettings = $settings;
             $settings = $optionsResolver->resolve($settings);
         }
 
         $blockContext = new BlockContext($block, $settings);
-
         $this->setDefaultExtraCacheKeys($blockContext, $originalSettings);
 
         return $blockContext;
