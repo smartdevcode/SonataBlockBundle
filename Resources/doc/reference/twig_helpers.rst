@@ -34,3 +34,13 @@ Render a block by calling an event
     }) }}
 
 review the events section for more information: :doc:`events`
+
+Render related javascripts and stylesheets for the current page. The helpers call need to be at the end of the page
+
+.. code-block:: jinja
+
+    {{ sonata_block_include_stylesheets('screen', app.request.basePath) }}
+    {{ sonata_block_include_javascripts('screen', app.request.basePath) }}
+
+The ``app.request.basePath`` must be provided if your application is stored in a sub-folder.
+
