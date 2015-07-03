@@ -11,26 +11,15 @@
 
 namespace Sonata\BlockBundle\Block;
 
-use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
+/**
+ * Interface BlockServiceInterface.
+ */
 interface BlockServiceInterface
 {
-    /**
-     * @param FormMapper     $form
-     * @param BlockInterface $block
-     */
-    public function buildEditForm(FormMapper $form, BlockInterface $block);
-
-    /**
-     * @param FormMapper     $form
-     * @param BlockInterface $block
-     */
-    public function buildCreateForm(FormMapper $form, BlockInterface $block);
-
     /**
      * @param BlockContextInterface $blockContext
      * @param Response              $response
@@ -38,12 +27,6 @@ interface BlockServiceInterface
      * @return Response
      */
     public function execute(BlockContextInterface $blockContext, Response $response = null);
-
-    /**
-     * @param ErrorElement   $errorElement
-     * @param BlockInterface $block
-     */
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block);
 
     /**
      * @return string
@@ -54,6 +37,10 @@ interface BlockServiceInterface
      * Define the default options for the block.
      *
      * @param OptionsResolverInterface $resolver
+     *
+     * @deprecated since version 2.3, to be renamed in 3.0.
+     *             Use the method configureSettings instead.
+     *             This method will be added to the BlockServiceInterface with SonataBlockBundle 3.0.
      */
     public function setDefaultSettings(OptionsResolverInterface $resolver);
 

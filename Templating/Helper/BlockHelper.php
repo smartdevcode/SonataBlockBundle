@@ -247,7 +247,7 @@ class BlockHelper extends Helper
                 'template_code' => $name,
                 'event_name'    => $eventName,
                 'blocks'        => $this->getEventBlocks($event),
-                'listeners'     => $this->getEventListeners($event),
+                'listeners'     => $this->getEventListeners($eventName),
             );
         }
 
@@ -271,15 +271,15 @@ class BlockHelper extends Helper
     }
 
     /**
-     * @param BlockEvent $event
+     * @param string $eventName
      *
      * @return array
      */
-    protected function getEventListeners(BlockEvent $event)
+    protected function getEventListeners($eventName)
     {
         $results = array();
 
-        foreach ($this->eventDispatcher->getListeners($event->getName()) as $listener) {
+        foreach ($this->eventDispatcher->getListeners($eventName) as $listener) {
             if (is_object($listener[0])) {
                 $results[] = get_class($listener[0]);
             } elseif (is_string($listener[0])) {
