@@ -18,9 +18,6 @@ use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-/**
- * Class BlockContextManager.
- */
 class BlockContextManager implements BlockContextManagerInterface
 {
     protected $blockLoader;
@@ -39,14 +36,6 @@ class BlockContextManager implements BlockContextManagerInterface
     protected $logger;
 
     /**
-     * Used for deprecation check on {@link resolve} method.
-     * To be removed in 3.0 with BC system.
-     *
-     * @var array
-     */
-    private $reflectionCache;
-
-    /**
      * @param BlockLoaderInterface         $blockLoader
      * @param BlockServiceManagerInterface $blockService
      * @param array                        $cacheBlocks
@@ -55,11 +44,10 @@ class BlockContextManager implements BlockContextManagerInterface
     public function __construct(BlockLoaderInterface $blockLoader, BlockServiceManagerInterface $blockService,
         array $cacheBlocks = array(), LoggerInterface $logger = null
     ) {
-        $this->blockLoader     = $blockLoader;
-        $this->blockService    = $blockService;
-        $this->cacheBlocks     = $cacheBlocks;
-        $this->logger          = $logger;
-        $this->reflectionCache = array();
+        $this->blockLoader  = $blockLoader;
+        $this->blockService = $blockService;
+        $this->cacheBlocks  = $cacheBlocks;
+        $this->logger       = $logger;
     }
 
     /**
@@ -108,9 +96,16 @@ class BlockContextManager implements BlockContextManagerInterface
             return false;
         }
 
+        $optionsResolver = new OptionsResolver();
+
+        $this->setDefaultSettings($optionsResolver, $block);
+
+        $service = $this->blockService->get($block);
+        $service->setDefaultSettings($optionsResolver, $block);
+
         $originalSettings = $settings;
         try {
-            $settings = $this->resolve($block, array_merge($block->getSettings(), $settings));
+            $settings = $optionsResolver->resolve(array_merge($block->getSettings(), $settings));
         } catch (ExceptionInterface $e) {
             if ($this->logger) {
                 $this->logger->error(sprintf(
@@ -120,7 +115,14 @@ class BlockContextManager implements BlockContextManagerInterface
                 ));
             }
 
-            $settings = $this->resolve($block, $settings);
+            $optionsResolver = new OptionsResolver();
+
+            $this->setDefaultSettings($optionsResolver, $block);
+
+            $service = $this->blockService->get($block);
+            $service->setDefaultSettings($optionsResolver, $block);
+
+            $settings = $optionsResolver->resolve($settings);
         }
 
         $blockContext = new BlockContext($block, $settings);
@@ -133,19 +135,8 @@ class BlockContextManager implements BlockContextManagerInterface
     /**
      * @param OptionsResolverInterface $optionsResolver
      * @param BlockInterface           $block
-     *
-     * @deprecated since version 2.3, to be renamed in 3.0.
-     *             Use the method configureSettings instead.
      */
     protected function setDefaultSettings(OptionsResolverInterface $optionsResolver, BlockInterface $block)
-    {
-        if (get_called_class() !== __CLASS__) {
-            trigger_error('The '.__METHOD__.' is deprecated since version 2.3, to be renamed in 3.0. Use '.__CLASS__.'::configureSettings instead.', E_USER_DEPRECATED);
-        }
-        $this->configureSettings($optionsResolver, $block);
-    }
-
-    protected function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block)
     {
         // defaults for all blocks
         $optionsResolver->setDefaults(array(
@@ -156,24 +147,13 @@ class BlockContextManager implements BlockContextManagerInterface
             'ttl'              => (int) $block->getTtl(),
         ));
 
-        // TODO: Remove it when bumping requirements to SF 2.6+
-        if (method_exists($optionsResolver, 'setDefined')) {
-            $optionsResolver
-                ->addAllowedTypes('use_cache', 'bool')
-                ->addAllowedTypes('extra_cache_keys', 'array')
-                ->addAllowedTypes('attr', 'array')
-                ->addAllowedTypes('ttl', 'int')
-                ->addAllowedTypes('template', array('string', 'bool'))
-            ;
-        } else {
-            $optionsResolver->addAllowedTypes(array(
-                'use_cache'         => array('bool'),
-                'extra_cache_keys'  => array('array'),
-                'attr'              => array('array'),
-                'ttl'               => array('int'),
-                'template'          => array('string', 'bool'),
-            ));
-        }
+        $optionsResolver->addAllowedTypes(array(
+            'use_cache'         => array('bool'),
+            'extra_cache_keys'  => array('array'),
+            'attr'              => array('array'),
+            'ttl'               => array('int'),
+            'template'          => array('string', 'bool'),
+        ));
 
         // add type and class settings for block
         $class = ClassUtils::getClass($block);
@@ -221,41 +201,5 @@ class BlockContextManager implements BlockContextManagerInterface
             $extraCacheKeys[self::CACHE_KEY] = $settings;
             $blockContext->setSetting('extra_cache_keys', $extraCacheKeys);
         }
-    }
-
-    private function resolve(BlockInterface $block, $settings)
-    {
-        $optionsResolver = new OptionsResolver();
-
-        $this->setDefaultSettings($optionsResolver, $block);
-
-        $service = $this->blockService->get($block);
-        $service->setDefaultSettings($optionsResolver, $block);
-
-        // Caching method reflection
-        $serviceClass = get_class($service);
-        if (!isset($this->reflectionCache[$serviceClass])) {
-            $reflector = new \ReflectionMethod($service, 'setDefaultSettings');
-            $isOldOverwritten = $reflector->getDeclaringClass()->getName() !== 'Sonata\BlockBundle\Block\AbstractBlockService';
-
-            // Prevention for service classes implementing directly the interface and not extends the new base class
-            if (!method_exists($service, 'configureSettings')) {
-                $isNewOverwritten = false;
-            } else {
-                $reflector = new \ReflectionMethod($service, 'configureSettings');
-                $isNewOverwritten = $reflector->getDeclaringClass()->getName() !== 'Sonata\BlockBundle\Block\AbstractBlockService';
-            }
-
-            $this->reflectionCache[$serviceClass] = array(
-                'isOldOverwritten' => $isOldOverwritten,
-                'isNewOverwritten' => $isNewOverwritten,
-            );
-        }
-
-        if ($this->reflectionCache[$serviceClass]['isOldOverwritten'] && !$this->reflectionCache[$serviceClass]['isNewOverwritten']) {
-            trigger_error('The Sonata\BlockBundle\Block\BlockServiceInterface::setDefaultSettings() method is deprecated since version 2.3 and will be removed in 3.0. Use configureSettings() instead. This method will be added to the BlockServiceInterface with SonataBlockBundle 3.0.', E_USER_DEPRECATED);
-        }
-
-        return $optionsResolver->resolve($settings);
     }
 }
