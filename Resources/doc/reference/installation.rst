@@ -5,24 +5,11 @@
 Installation
 ============
 
-The easiest way to install ``SonataBlockBundle`` is to require it with Composer:
+To begin, add the dependent bundles to the vendor/bundles directory. Add the following lines to the deps file:
 
 .. code-block:: bash
 
     php composer.phar require sonata-project/block-bundle
-
-Alternatively, you could add a dependency into your `composer.json` file:
-
-.. code-block:: json
-
-    {
-        ...
-
-        "require": {
-            ...
-            "sonata-project/block-bundle": "~2.2"
-        }
-    }
 
 Now, add the bundle to the kernel:
 
@@ -43,9 +30,9 @@ Now, add the bundle to the kernel:
         );
     }
 
-Some features provided by this bundle require the ``SonataAdminBundle``.
+Some features provided by this Bundle require the ``SonataAdminBundle``.
 Please add an explicit required dependency to your project's `composer.json` to
-the ``SonataAdminBundle`` with the version listed in the suggestions of this Bundle.
+the ``SonataAdminBundle`` with the version listed in the suggestion of this Bundle.
 
 Configuration
 -------------

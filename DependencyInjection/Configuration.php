@@ -36,7 +36,7 @@ class Configuration implements ConfigurationInterface
     }
 
     /**
-     * {@inheritDoc}
+     * {@inheritdoc}
      */
     public function getConfigTreeBuilder()
     {
@@ -91,14 +91,14 @@ class Configuration implements ConfigurationInterface
                     ->addDefaultsIfNotSet()
                     ->children()
                         ->scalarNode('handler')->defaultValue('sonata.block.cache.handler.default')->end()
-                        ->booleanNode('listener')->defaultTrue()->end()
+                        ->booleanNode('listener')->defaultValue(true)->end()
                     ->end()
                 ->end()
                 ->arrayNode('templates')
                     ->addDefaultsIfNotSet()
                     ->children()
-                        ->scalarNode('block_base')->defaultNull()->end()
-                        ->scalarNode('block_container')->defaultNull()->end()
+                        ->scalarNode('block_base')->defaultValue(null)->end()
+                        ->scalarNode('block_container')->defaultValue(null)->end()
                     ->end()
                 ->end()
 
@@ -143,8 +143,8 @@ class Configuration implements ConfigurationInterface
                             ->end()
                             ->arrayNode('exception')
                                 ->children()
-                                    ->scalarNode('filter')->defaultNull()->end()
-                                    ->scalarNode('renderer')->defaultNull()->end()
+                                    ->scalarNode('filter')->defaultValue(null)->end()
+                                    ->scalarNode('renderer')->defaultValue(null)->end()
                                 ->end()
                             ->end()
                         ->end()
