@@ -22,7 +22,7 @@ class Block extends BaseBlock
     protected $id;
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function setId($id)
     {
@@ -30,7 +30,7 @@ class Block extends BaseBlock
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function getId()
     {

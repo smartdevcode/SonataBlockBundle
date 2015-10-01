@@ -40,9 +40,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'container_types' => array(
                     0 => 'sonata.block.service.container',
                     1 => 'sonata.page.block.container',
-                    2 => 'sonata.dashboard.block.container',
-                    3 => 'cmf.block.container',
-                    4 => 'cmf.block.slideshow',
+                    2 => 'cmf.block.container',
+                    3 => 'cmf.block.slideshow',
                 ),
             ),
             'context_manager' => 'sonata.block.context_manager.default',
@@ -58,9 +57,8 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
                 'types' => array(
                     0 => 'sonata.block.service.container',
                     1 => 'sonata.page.block.container',
-                    2 => 'sonata.dashboard.block.container',
-                    3 => 'cmf.block.container',
-                    4 => 'cmf.block.slideshow',
+                    2 => 'cmf.block.container',
+                    3 => 'cmf.block.slideshow',
                 ),
                 'templates' => $defaultTemplates,
             ),
