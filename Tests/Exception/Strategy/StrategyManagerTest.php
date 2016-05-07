@@ -11,8 +11,6 @@
 
 namespace Sonata\BlockBundle\Tests\Exception\Strategy;
 
-use Sonata\BlockBundle\Exception\Filter\FilterInterface;
-use Sonata\BlockBundle\Exception\Renderer\RendererInterface;
 use Sonata\BlockBundle\Exception\Strategy\StrategyManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -29,7 +27,7 @@ class StrategyManagerTest extends \PHPUnit_Framework_TestCase
     protected $manager;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|ContainerInterface
+     * @var ContainerInterface
      */
     protected $container;
 
@@ -54,22 +52,22 @@ class StrategyManagerTest extends \PHPUnit_Framework_TestCase
     protected $blockRenderers = array();
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|RendererInterface
+     * @var \Sonata\BlockBundle\Exception\Renderer\RendererInterface
      */
     protected $renderer1;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|RendererInterface
+     * @var \Sonata\BlockBundle\Exception\Renderer\RendererInterface
      */
     protected $renderer2;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|FilterInterface
+     * @var \Sonata\BlockBundle\Exception\Filter\FilterInterface
      */
     protected $filter1;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|FilterInterface
+     * @var \Sonata\BlockBundle\Exception\Filter\FilterInterface
      */
     protected $filter2;
 
