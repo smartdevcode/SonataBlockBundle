@@ -1,11 +1,33 @@
 <?php
 
+/*
+ * This file is part of the Sonata Project package.
+ *
+ * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sonata\BlockBundle\Twig\Extension;
+
+use Sonata\BlockBundle\Templating\Helper\BlockHelper;
 
 class BlockExtensionTest extends \PHPUnit_Framework_TestCase
 {
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|BlockHelper
+     */
     protected $blockHelper;
+
+    /**
+     * @var BlockExtension
+     */
     protected $blockExtension;
+
+    /**
+     * @var \Twig_Environment
+     */
     protected $env;
 
     public function setUp()

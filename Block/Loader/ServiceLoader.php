@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Sonata project.
+ * This file is part of the Sonata Project package.
  *
  * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
  *
@@ -27,6 +27,18 @@ class ServiceLoader implements BlockLoaderInterface
     public function __construct(array $types)
     {
         $this->types = $types;
+    }
+
+    /**
+     * Check if a given block type exists.
+     *
+     * @param string $type Block type to check for
+     *
+     * @return bool
+     */
+    public function exists($type)
+    {
+        return in_array($type, $this->types, true);
     }
 
     /**

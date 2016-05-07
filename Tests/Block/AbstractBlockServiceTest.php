@@ -1,5 +1,14 @@
 <?php
 
+/*
+ * This file is part of the Sonata Project package.
+ *
+ * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 namespace Sonata\BlockBundle\Tests\Block;
 
 use Sonata\BlockBundle\Block\BlockContextInterface;
@@ -18,19 +27,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 abstract class AbstractBlockServiceTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var ContainerInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|ContainerInterface
      */
-    private $container;
+    protected $container;
 
     /**
-     * @var BlockServiceManagerInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|BlockServiceManagerInterface
      */
-    private $blockServiceManager;
+    protected $blockServiceManager;
 
     /**
      * @var BlockContextManagerInterface
      */
-    private $blockContextManager;
+    protected $blockContextManager;
 
     /**
      * @var FakeTemplating

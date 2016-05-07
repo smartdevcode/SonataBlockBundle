@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Sonata project.
+ * This file is part of the Sonata Project package.
  *
  * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
  *
@@ -26,6 +26,24 @@ class BlockLoaderChain implements BlockLoaderInterface
     public function __construct(array $loaders)
     {
         $this->loaders = $loaders;
+    }
+
+    /**
+     * Check if a given block type exists.
+     *
+     * @param string $type Block type to check for
+     *
+     * @return bool
+     */
+    public function exists($type)
+    {
+        foreach ($this->loaders as $loader) {
+            if ($loader->exists($type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Sonata project.
+ * This file is part of the Sonata Project package.
  *
  * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
  *
@@ -101,6 +101,18 @@ class BlockContextManager implements BlockContextManagerInterface
         } else {
             $this->settingsByClass[$class] = array_merge($settings, $classSettings);
         }
+    }
+
+    /**
+     * Check if a given block type exists.
+     *
+     * @param string $type Block type to check for
+     *
+     * @return bool
+     */
+    public function exists($type)
+    {
+        return $this->blockLoader->exists($type);
     }
 
     /**
@@ -248,10 +260,16 @@ class BlockContextManager implements BlockContextManagerInterface
     {
         $optionsResolver = new \Sonata\BlockBundle\Util\OptionsResolver();
 
-        $this->setDefaultSettings($optionsResolver, $block);
+        $this->configureSettings($optionsResolver, $block);
 
         $service = $this->blockService->get($block);
-        $service->setDefaultSettings($optionsResolver, $block);
+
+        /* use new interface method whenever possible */
+        if (method_exists($service, 'configureSettings')) {
+            $service->configureSettings($optionsResolver, $block);
+        } else {
+            $service->setDefaultSettings($optionsResolver, $block);
+        }
 
         // Caching method reflection
         $serviceClass = get_class($service);

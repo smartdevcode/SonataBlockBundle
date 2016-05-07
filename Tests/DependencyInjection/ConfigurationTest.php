@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Sonata package.
+ * This file is part of the Sonata Project package.
  *
  * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
  *
@@ -66,9 +66,10 @@ class ConfigurationTest extends \PHPUnit_Framework_TestCase
             ),
             'blocks' => array(
                 'my.block.type' => array(
-                    'contexts' => array('cms'),
-                    'cache'    => 'sonata.cache.noop',
-                    'settings' => array(),
+                    'contexts'  => array('cms'),
+                    'cache'     => 'sonata.cache.noop',
+                    'settings'  => array(),
+                    'templates' => array(),
                 ),
             ),
             'menus'           => array(),

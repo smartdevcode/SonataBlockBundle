@@ -1,9 +1,9 @@
 <?php
 
 /*
- * This file is part of sonata-project.
+ * This file is part of the Sonata Project package.
  *
- * (c) 2010 Thomas Rabaix
+ * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -36,6 +36,9 @@ class BlockExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
+            new \Twig_SimpleFunction('sonata_block_exists',
+                array($this->blockHelper, 'exists')
+            ),
             new \Twig_SimpleFunction('sonata_block_render',
                 array($this->blockHelper, 'render'),
                 array('is_safe' => array('html'))

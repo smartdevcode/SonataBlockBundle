@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of the Sonata package.
+ * This file is part of the Sonata Project package.
  *
  * (c) Thomas Rabaix <thomas.rabaix@sonata-project.org>
  *
@@ -11,8 +11,11 @@
 
 namespace Sonata\BlockBundle\Tests\Block;
 
+use Psr\Log\LoggerInterface;
 use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\BlockRenderer;
+use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
+use Sonata\BlockBundle\Exception\Strategy\StrategyManager;
 
 /**
  * Unit test of BlockRenderer class.
@@ -20,17 +23,17 @@ use Sonata\BlockBundle\Block\BlockRenderer;
 class BlockRendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \Sonata\BlockBundle\Block\BlockServiceManagerInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|BlockServiceManagerInterface
      */
     protected $blockServiceManager;
 
     /**
-     * @var \Symfony\Component\HttpKernel\Log\LoggerInterface
+     * @var \PHPUnit_Framework_MockObject_MockObject|LoggerInterface
      */
     protected $logger;
 
     /**
-     * @var \Sonata\BlockBundle\Exception\Strategy\StrategyManager
+     * @var \PHPUnit_Framework_MockObject_MockObject|StrategyManager
      */
     protected $exceptionStrategyManager;
 
