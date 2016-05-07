@@ -12,11 +12,11 @@
 namespace Sonata\BlockBundle\Block;
 
 use Sonata\AdminBundle\Form\FormMapper;
-use Sonata\AdminBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Sonata\CoreBundle\Model\Metadata;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * BaseBlockService.
@@ -24,10 +24,16 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
  *
  * @author     Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-abstract class BaseBlockService implements BlockServiceInterface
+abstract class BaseBlockService extends AbstractBlockService implements BlockAdminServiceInterface
 {
+    /**
+     * @var string
+     */
     protected $name;
 
+    /**
+     * @var EngineInterface
+     */
     protected $templating;
 
     /**
@@ -108,42 +114,42 @@ abstract class BaseBlockService implements BlockServiceInterface
     }
 
     /**
-     * {@inheritdoc}
+     * @param BlockInterface $block
      */
     public function prePersist(BlockInterface $block)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * @param BlockInterface $block
      */
     public function postPersist(BlockInterface $block)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * @param BlockInterface $block
      */
     public function preUpdate(BlockInterface $block)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * @param BlockInterface $block
      */
     public function postUpdate(BlockInterface $block)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * @param BlockInterface $block
      */
     public function preRemove(BlockInterface $block)
     {
     }
 
     /**
-     * {@inheritdoc}
+     * @param BlockInterface $block
      */
     public function postRemove(BlockInterface $block)
     {
@@ -175,13 +181,6 @@ abstract class BaseBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaultSettings(OptionsResolverInterface $resolver)
-    {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
         return $this->renderResponse($blockContext->getTemplate(), array(
@@ -191,8 +190,7 @@ abstract class BaseBlockService implements BlockServiceInterface
     }
 
     /**
-     * @param FormMapper     $form
-     * @param BlockInterface $block
+     * {@inheritdoc}
      */
     public function buildEditForm(FormMapper $form, BlockInterface $block)
     {
@@ -204,5 +202,13 @@ abstract class BaseBlockService implements BlockServiceInterface
      */
     public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getBlockMetadata($code = null)
+    {
+        return new Metadata($this->getName(), (!is_null($code) ? $code : $this->getName()), false, 'SonataBlockBundle', array('class' => 'fa fa-file'));
     }
 }

@@ -20,6 +20,7 @@ use Sonata\BlockBundle\Cache\HttpCacheHandlerInterface;
 use Sonata\BlockBundle\Event\BlockEvent;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Util\RecursiveBlockIterator;
+use Sonata\Cache\CacheAdapterInterface;
 use Sonata\Cache\CacheManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -28,18 +29,39 @@ use Symfony\Component\Templating\Helper\Helper;
 
 class BlockHelper extends Helper
 {
+    /**
+     * @var BlockServiceManagerInterface
+     */
     private $blockServiceManager;
 
+    /**
+     * @var CacheManagerInterface
+     */
     private $cacheManager;
 
+    /**
+     * @var array
+     */
     private $cacheBlocks;
 
+    /**
+     * @var BlockRendererInterface
+     */
     private $blockRenderer;
 
+    /**
+     * @var BlockContextManagerInterface
+     */
     private $blockContextManager;
 
+    /**
+     * @var HttpCacheHandlerInterface
+     */
     private $cacheHandler;
 
+    /**
+     * @var EventDispatcherInterface
+     */
     private $eventDispatcher;
 
     /**
@@ -50,8 +72,14 @@ class BlockHelper extends Helper
      */
     private $assets;
 
+    /**
+     * @var array
+     */
     private $traces;
 
+    /**
+     * @var Stopwatch
+     */
     private $stopwatch;
 
     /**
@@ -247,7 +275,7 @@ class BlockHelper extends Helper
                 'template_code' => $name,
                 'event_name'    => $eventName,
                 'blocks'        => $this->getEventBlocks($event),
-                'listeners'     => $this->getEventListeners($event),
+                'listeners'     => $this->getEventListeners($eventName),
             );
         }
 
@@ -271,15 +299,15 @@ class BlockHelper extends Helper
     }
 
     /**
-     * @param BlockEvent $event
+     * @param string $eventName
      *
      * @return array
      */
-    protected function getEventListeners(BlockEvent $event)
+    protected function getEventListeners($eventName)
     {
         $results = array();
 
-        foreach ($this->eventDispatcher->getListeners($event->getName()) as $listener) {
+        foreach ($this->eventDispatcher->getListeners($eventName) as $listener) {
             if (is_object($listener[0])) {
                 $results[] = get_class($listener[0]);
             } elseif (is_string($listener[0])) {
@@ -400,7 +428,7 @@ class BlockHelper extends Helper
      * @param BlockInterface $block
      * @param array          $stats
      *
-     * @return \Sonata\Cache\CacheAdapterInterface;
+     * @return CacheAdapterInterface
      */
     protected function getCacheService(BlockInterface $block, array &$stats = null)
     {
