@@ -25,4 +25,4 @@ Cookbooks
    :maxdepth: 1
    :numbered:
 
-   cookbook/rapid_prototyping
+   cookbooks/rapid_prototyping

@@ -15,30 +15,21 @@ use Sonata\BlockBundle\Templating\Helper\BlockHelper;
 
 class BlockExtension extends \Twig_Extension
 {
-    /**
-     * @var BlockHelper
-     */
     protected $blockHelper;
 
-    /**
-     * BlockExtension constructor.
-     *
-     * @param BlockHelper $blockHelper
-     */
     public function __construct(BlockHelper $blockHelper)
     {
         $this->blockHelper = $blockHelper;
     }
 
     /**
-     * {@inheritdoc}
+     * Returns a list of functions to add to the existing list.
+     *
+     * @return array An array of functions
      */
     public function getFunctions()
     {
         return array(
-            new \Twig_SimpleFunction('sonata_block_exists',
-                array($this->blockHelper, 'exists')
-            ),
             new \Twig_SimpleFunction('sonata_block_render',
                 array($this->blockHelper, 'render'),
                 array('is_safe' => array('html'))
@@ -58,9 +49,6 @@ class BlockExtension extends \Twig_Extension
         );
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getName()
     {
         return 'sonata_block';

@@ -5,67 +5,57 @@
 Installation
 ============
 
-The easiest way to install ``SonataBlockBundle`` is to require it with Composer:
+To begin, add the dependent bundles to the vendor/bundles directory. Add the following lines to the deps file:
 
 .. code-block:: bash
 
-    $ php composer.phar require sonata-project/block-bundle
+    php composer.phar require sonata-project/block-bundle
 
-Alternatively, you could add a dependency into your `composer.json` file directly.
-
-Now, enable the bundle in the kernel:
+Now, add the bundle to the kernel:
 
 .. code-block:: php
 
     <?php
+
     // app/AppKernel.php
 
-    public function registerBundles()
+    public function registerbundles()
     {
         return array(
             // Dependency (check that you don't already have this line)
             new Knp\Bundle\MenuBundle\KnpMenuBundle(),
-
             // Vendor specifics bundles
             new Sonata\CoreBundle\SonataCoreBundle(),
             new Sonata\BlockBundle\SonataBlockBundle(),
         );
     }
 
-Some features provided by this bundle require the ``SonataAdminBundle``.
+Some features provided by this Bundle require the ``SonataAdminBundle``.
 Please add an explicit required dependency to your project's `composer.json` to
-the ``SonataAdminBundle`` with the version listed in the suggestions of this Bundle.
+the ``SonataAdminBundle`` with the version listed in the suggestion of this Bundle.
 
 Configuration
 -------------
 
 To use the ``BlockBundle``, add the following lines to your application configuration file:
 
-.. configuration-block::
+.. code-block:: yaml
 
-    .. code-block:: yaml
+    # app/config/config.yml
 
-        # app/config/config.yml
+    sonata_block:
+        default_contexts: [sonata_page_bundle]
+        blocks:
+            sonata.admin.block.admin_list:
+                contexts:   [admin]
 
-        sonata_block:
-            default_contexts: [sonata_page_bundle]
-            blocks:
-                sonata.admin.block.admin_list:
-                    contexts:   [admin]
+            #sonata.admin_doctrine_orm.block.audit:
+            #    contexts:   [admin]
 
-                #sonata.admin_doctrine_orm.block.audit:
-                #    contexts:   [admin]
+            sonata.block.service.text:
+            sonata.block.service.rss:
 
-                sonata.block.service.text:
-                sonata.block.service.rss:
-
-                # Some specific block from the SonataMediaBundle
-                #sonata.media.block.media:
-                #sonata.media.block.gallery:
-                #sonata.media.block.feature_media:
-
-                # Some block with different templates
-                #acme.demo.block.demo:
-                #    templates:
-                #       - { name: 'Simple', template: 'AcmeDemoBundle:Block:demo_simple.html.twig' }
-                #       - { name: 'Big',    template: 'AcmeDemoBundle:Block:demo_big.html.twig' }
+            # Some specific block from the SonataMediaBundle
+            #sonata.media.block.media:
+            #sonata.media.block.gallery:
+            #sonata.media.block.feature_media:

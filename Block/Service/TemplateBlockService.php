@@ -15,9 +15,8 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Model\Metadata;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * @author     Thomas Rabaix <thomas.rabaix@sonata-project.org>
@@ -50,20 +49,18 @@ class TemplateBlockService extends BaseBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function getName()
     {
-        $resolver->setDefaults(array(
-            'template' => 'SonataBlockBundle:Block:block_template.html.twig',
-        ));
+        return 'Template';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getBlockMetadata($code = null)
+    public function setDefaultSettings(OptionsResolverInterface $resolver)
     {
-        return new Metadata($this->getName(), (!is_null($code) ? $code : $this->getName()), false, 'SonataBlockBundle', array(
-            'class' => 'fa fa-code',
+        $resolver->setDefaults(array(
+            'template' => 'SonataBlockBundle:Block:block_template.html.twig',
         ));
     }
 }

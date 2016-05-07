@@ -12,8 +12,8 @@
 namespace Sonata\BlockBundle\Exception\Renderer;
 
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\FlattenException;
 use Symfony\Component\Templating\EngineInterface;
 
 /**

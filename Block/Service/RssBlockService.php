@@ -12,13 +12,12 @@
 namespace Sonata\BlockBundle\Block\Service;
 
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Validator\ErrorElement;
 use Sonata\BlockBundle\Block\BaseBlockService;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Model\Metadata;
-use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * @author     Thomas Rabaix <thomas.rabaix@sonata-project.org>
@@ -28,7 +27,15 @@ class RssBlockService extends BaseBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function getName()
+    {
+        return 'Rss Reader';
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefaultSettings(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'url'      => false,
@@ -63,7 +70,7 @@ class RssBlockService extends BaseBlockService
             ->with('settings[title]')
                 ->assertNotNull(array())
                 ->assertNotBlank()
-                ->assertLength(array('max' => 50))
+                ->assertMaxLength(array('limit' => 50))
             ->end();
     }
 
@@ -103,15 +110,5 @@ class RssBlockService extends BaseBlockService
             'block'     => $blockContext->getBlock(),
             'settings'  => $settings,
         ), $response);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockMetadata($code = null)
-    {
-        return new Metadata($this->getName(), (!is_null($code) ? $code : $this->getName()), false, 'SonataBlockBundle', array(
-            'class' => 'fa fa-rss-square',
-        ));
     }
 }

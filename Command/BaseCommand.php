@@ -11,13 +11,12 @@
 
 namespace Sonata\BlockBundle\Command;
 
-use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 
 abstract class BaseCommand extends ContainerAwareCommand
 {
     /**
-     * @return BlockServiceManagerInterface
+     * @return \Sonata\BlockBundle\Block\BlockServiceManagerInterface
      */
     public function getBlockServiceManager()
     {

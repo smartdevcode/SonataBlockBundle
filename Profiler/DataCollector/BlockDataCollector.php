@@ -66,7 +66,11 @@ class BlockDataCollector implements DataCollectorInterface, \Serializable
     }
 
     /**
-     * {@inheritdoc}
+     * Collects the traces from the block renderer.
+     *
+     * @param Request    $request   Http Request
+     * @param Response   $response  Http Response
+     * @param \Exception $exception Exception thrown
      */
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
@@ -145,7 +149,9 @@ class BlockDataCollector implements DataCollectorInterface, \Serializable
     }
 
     /**
-     * {@inheritdoc}
+     * serialize the data.
+     *
+     * @return string
      */
     public function serialize()
     {
@@ -160,7 +166,9 @@ class BlockDataCollector implements DataCollectorInterface, \Serializable
     }
 
     /**
-     * {@inheritdoc}
+     * Unserialize the data.
+     *
+     * @param string $data
      */
     public function unserialize($data)
     {

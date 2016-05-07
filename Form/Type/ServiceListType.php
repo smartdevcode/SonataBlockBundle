@@ -14,7 +14,6 @@ namespace Sonata\BlockBundle\Form\Type;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\OptionsResolver\Options;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ServiceListType extends AbstractType
@@ -26,15 +25,7 @@ class ServiceListType extends AbstractType
      */
     public function __construct(BlockServiceManagerInterface $manager)
     {
-        $this->manager = $manager;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getBlockPrefix()
-    {
-        return 'sonata_block_service_choice';
+        $this->manager  = $manager;
     }
 
     /**
@@ -42,7 +33,7 @@ class ServiceListType extends AbstractType
      */
     public function getName()
     {
-        return $this->getBlockPrefix();
+        return 'sonata_block_service_choice';
     }
 
     /**
@@ -58,14 +49,6 @@ class ServiceListType extends AbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $this->configureOptions($resolver);
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
         $manager = $this->manager;
 
         $resolver->setRequired(array(
@@ -73,9 +56,9 @@ class ServiceListType extends AbstractType
         ));
 
         $resolver->setDefaults(array(
-            'multiple'           => false,
-            'expanded'           => false,
-            'choices'            => function (Options $options, $previousValue) use ($manager) {
+            'multiple'          => false,
+            'expanded'          => false,
+            'choices'           => function (Options $options, $previousValue) use ($manager) {
                 $types = array();
                 foreach ($manager->getServicesByContext($options['context'], $options['include_containers']) as $code => $service) {
                     $types[$code] = sprintf('%s - %s', $service->getName(), $code);

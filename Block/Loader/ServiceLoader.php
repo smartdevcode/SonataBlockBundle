@@ -16,29 +16,14 @@ use Sonata\BlockBundle\Model\Block;
 
 class ServiceLoader implements BlockLoaderInterface
 {
-    /**
-     * @var string[]
-     */
     protected $types;
 
     /**
-     * @param string[] $types
+     * @param array $types
      */
     public function __construct(array $types)
     {
         $this->types = $types;
-    }
-
-    /**
-     * Check if a given block type exists.
-     *
-     * @param string $type Block type to check for
-     *
-     * @return bool
-     */
-    public function exists($type)
-    {
-        return in_array($type, $this->types, true);
     }
 
     /**

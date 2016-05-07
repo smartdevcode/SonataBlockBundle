@@ -15,35 +15,14 @@ use Sonata\BlockBundle\Exception\BlockNotFoundException;
 
 class BlockLoaderChain implements BlockLoaderInterface
 {
-    /**
-     * @var BlockLoaderInterface[]
-     */
     protected $loaders;
 
     /**
-     * @param BlockLoaderInterface[] $loaders
+     * @param array $loaders
      */
     public function __construct(array $loaders)
     {
         $this->loaders = $loaders;
-    }
-
-    /**
-     * Check if a given block type exists.
-     *
-     * @param string $type Block type to check for
-     *
-     * @return bool
-     */
-    public function exists($type)
-    {
-        foreach ($this->loaders as $loader) {
-            if ($loader->exists($type)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

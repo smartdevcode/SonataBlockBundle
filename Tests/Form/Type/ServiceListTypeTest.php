@@ -37,11 +37,7 @@ class ServiceListTypeTest extends \PHPUnit_Framework_TestCase
 
         $resolver = new OptionsResolver();
 
-        if (!method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')) {
-            $type->setDefaultOptions($resolver);
-        } else {
-            $type->configureOptions($resolver);
-        }
+        $type->setDefaultOptions($resolver);
 
         $resolver->resolve();
     }
@@ -64,11 +60,7 @@ class ServiceListTypeTest extends \PHPUnit_Framework_TestCase
 
         $resolver = new OptionsResolver();
 
-        if (!method_exists('Symfony\Component\Form\AbstractType', 'getBlockPrefix')) {
-            $type->setDefaultOptions($resolver);
-        } else {
-            $type->configureOptions($resolver);
-        }
+        $type->setDefaultOptions($resolver);
 
         $options = $resolver->resolve(array(
             'context'            => 'cms',

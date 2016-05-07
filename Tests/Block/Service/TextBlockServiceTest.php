@@ -14,7 +14,7 @@ namespace Sonata\BlockBundle\Tests\Block\Service;
 use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\TextBlockService;
 use Sonata\BlockBundle\Model\Block;
-use Sonata\BlockBundle\Util\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class TextBlockServiceTest extends BaseTestBlockService
 {
