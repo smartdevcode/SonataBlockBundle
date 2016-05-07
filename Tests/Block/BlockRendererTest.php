@@ -11,11 +11,8 @@
 
 namespace Sonata\BlockBundle\Tests\Block;
 
-use Psr\Log\LoggerInterface;
 use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\BlockRenderer;
-use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
-use Sonata\BlockBundle\Exception\Strategy\StrategyManager;
 
 /**
  * Unit test of BlockRenderer class.
@@ -23,17 +20,17 @@ use Sonata\BlockBundle\Exception\Strategy\StrategyManager;
 class BlockRendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|BlockServiceManagerInterface
+     * @var \Sonata\BlockBundle\Block\BlockServiceManagerInterface
      */
     protected $blockServiceManager;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|LoggerInterface
+     * @var \Symfony\Component\HttpKernel\Log\LoggerInterface
      */
     protected $logger;
 
     /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|StrategyManager
+     * @var \Sonata\BlockBundle\Exception\Strategy\StrategyManager
      */
     protected $exceptionStrategyManager;
 

@@ -104,18 +104,6 @@ class BlockContextManager implements BlockContextManagerInterface
     }
 
     /**
-     * Check if a given block type exists.
-     *
-     * @param string $type Block type to check for
-     *
-     * @return bool
-     */
-    public function exists($type)
-    {
-        return $this->blockLoader->exists($type);
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function get($meta, array $settings = array())
@@ -260,16 +248,10 @@ class BlockContextManager implements BlockContextManagerInterface
     {
         $optionsResolver = new \Sonata\BlockBundle\Util\OptionsResolver();
 
-        $this->configureSettings($optionsResolver, $block);
+        $this->setDefaultSettings($optionsResolver, $block);
 
         $service = $this->blockService->get($block);
-
-        /* use new interface method whenever possible */
-        if (method_exists($service, 'configureSettings')) {
-            $service->configureSettings($optionsResolver, $block);
-        } else {
-            $service->setDefaultSettings($optionsResolver, $block);
-        }
+        $service->setDefaultSettings($optionsResolver, $block);
 
         // Caching method reflection
         $serviceClass = get_class($service);

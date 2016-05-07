@@ -2,23 +2,10 @@
 
 namespace Sonata\BlockBundle\Twig\Extension;
 
-use Sonata\BlockBundle\Templating\Helper\BlockHelper;
-
 class BlockExtensionTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|BlockHelper
-     */
     protected $blockHelper;
-
-    /**
-     * @var BlockExtension
-     */
     protected $blockExtension;
-
-    /**
-     * @var \Twig_Environment
-     */
     protected $env;
 
     public function setUp()
