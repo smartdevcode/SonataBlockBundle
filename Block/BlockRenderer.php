@@ -93,11 +93,7 @@ class BlockRenderer implements BlockRendererInterface
             $response = $this->addMetaInformation($response, $blockContext, $service);
         } catch (\Exception $exception) {
             if ($this->logger) {
-                $this->logger->error(sprintf(
-                    '[cms::renderBlock] block.id=%d - error while rendering block - %s',
-                    $block->getId(),
-                    $exception->getMessage()
-                ), compact('exception'));
+                $this->logger->critical(sprintf('[cms::renderBlock] block.id=%d - error while rendering block - %s', $block->getId(), $exception->getMessage()));
             }
 
             // reseting the state object
