@@ -15,7 +15,7 @@ use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\TextBlockService;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\AbstractBlockServiceTestCase;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sonata\BlockBundle\Util\OptionsResolver;
 
 class TextBlockServiceTest extends AbstractBlockServiceTestCase
 {
@@ -30,7 +30,7 @@ class TextBlockServiceTest extends AbstractBlockServiceTestCase
         ));
 
         $optionResolver = new OptionsResolver();
-        $service->configureSettings($optionResolver);
+        $service->setDefaultSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve($block->getSettings()));
 
