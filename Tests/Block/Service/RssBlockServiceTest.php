@@ -15,7 +15,7 @@ use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\RssBlockService;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\AbstractBlockServiceTestCase;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sonata\BlockBundle\Util\OptionsResolver;
 
 class RssBlockServiceTest extends AbstractBlockServiceTestCase
 {
@@ -33,7 +33,7 @@ class RssBlockServiceTest extends AbstractBlockServiceTestCase
         ));
 
         $optionResolver = new OptionsResolver();
-        $service->configureSettings($optionResolver);
+        $service->setDefaultSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve());
 
