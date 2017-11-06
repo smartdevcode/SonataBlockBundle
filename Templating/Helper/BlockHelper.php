@@ -172,7 +172,6 @@ class BlockHelper extends Helper
     {
         $eventName = sprintf('sonata.block.event.%s', $name);
 
-        /** @var BlockEvent $event */
         $event = $this->eventDispatcher->dispatch($eventName, new BlockEvent($options));
 
         $content = '';
