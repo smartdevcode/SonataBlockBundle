@@ -16,6 +16,7 @@ use Psr\Log\LoggerInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class BlockContextManager implements BlockContextManagerInterface
 {
@@ -50,6 +51,14 @@ class BlockContextManager implements BlockContextManagerInterface
     protected $logger;
 
     /**
+     * Used for deprecation check on {@link resolve} method.
+     * To be removed in 4.0 with BC system.
+     *
+     * @var array
+     */
+    private $reflectionCache;
+
+    /**
      * @param BlockLoaderInterface         $blockLoader
      * @param BlockServiceManagerInterface $blockService
      * @param array                        $cacheBlocks
@@ -62,6 +71,7 @@ class BlockContextManager implements BlockContextManagerInterface
         $this->blockService = $blockService;
         $this->cacheBlocks = $cacheBlocks;
         $this->logger = $logger;
+        $this->reflectionCache = [];
     }
 
     /**
@@ -145,6 +155,27 @@ class BlockContextManager implements BlockContextManagerInterface
         return $blockContext;
     }
 
+    /**
+     * NEXT_MAJOR: remove this method.
+     *
+     * @param OptionsResolverInterface $optionsResolver
+     * @param BlockInterface           $block
+     *
+     * @deprecated since version 2.3, to be renamed in 4.0.
+     *             Use the method configureSettings instead
+     */
+    protected function setDefaultSettings(OptionsResolverInterface $optionsResolver, BlockInterface $block)
+    {
+        if (__CLASS__ !== get_called_class()) {
+            @trigger_error(
+                'The '.__METHOD__.' is deprecated since version 2.3, to be renamed in 4.0.'
+                .' Use '.__CLASS__.'::configureSettings instead.',
+                E_USER_DEPRECATED
+            );
+        }
+        $this->configureSettings($optionsResolver, $block);
+    }
+
     protected function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block)
     {
         // defaults for all blocks
@@ -161,7 +192,8 @@ class BlockContextManager implements BlockContextManagerInterface
             ->addAllowedTypes('extra_cache_keys', 'array')
             ->addAllowedTypes('attr', 'array')
             ->addAllowedTypes('ttl', 'int')
-            ->addAllowedTypes('template', ['string', 'bool']);
+            ->addAllowedTypes('template', ['string', 'bool'])
+        ;
 
         // add type and class settings for block
         $class = ClassUtils::getClass($block);
@@ -219,13 +251,18 @@ class BlockContextManager implements BlockContextManagerInterface
      */
     private function resolve(BlockInterface $block, $settings)
     {
-        $optionsResolver = new OptionsResolver();
+        $optionsResolver = new \Sonata\BlockBundle\Util\OptionsResolver();
 
         $this->configureSettings($optionsResolver, $block);
 
         $service = $this->blockService->get($block);
 
-        $service->configureSettings($optionsResolver);
+        /* use new interface method whenever possible */
+        if (method_exists($service, 'configureSettings')) {
+            $service->configureSettings($optionsResolver);
+        } else {
+            $service->setDefaultSettings($optionsResolver);
+        }
 
         // Caching method reflection
         $serviceClass = get_class($service);

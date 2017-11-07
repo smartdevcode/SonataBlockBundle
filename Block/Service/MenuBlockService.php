@@ -83,7 +83,7 @@ class MenuBlockService extends AbstractAdminBlockService
             'context' => $blockContext,
         ];
 
-        if ('private' === $blockContext->getSettings('cache_policy')) {
+        if ('private' === $blockContext->getSetting('cache_policy')) {
             return $this->renderPrivateResponse($blockContext->getTemplate(), $responseSettings, $response);
         }
 
@@ -139,7 +139,7 @@ class MenuBlockService extends AbstractAdminBlockService
      */
     public function getBlockMetadata($code = null)
     {
-        return new Metadata($this->getName(), (!is_null($code) ? $code : $this->getName()), false, 'SonataBlockBundle', [
+        return new Metadata($this->getName(), (null !== $code ? $code : $this->getName()), false, 'SonataBlockBundle', [
             'class' => 'fa fa-bars',
         ]);
     }
@@ -159,7 +159,15 @@ class MenuBlockService extends AbstractAdminBlockService
             $choices = $this->menuRegistry->getAliasNames();
         }
 
-        $choices = array_flip($choices);
+        // NEXT_MAJOR: remove SF 2.7+ BC
+        if (method_exists('Symfony\Component\Form\AbstractType', 'configureOptions')) {
+            $choices = array_flip($choices);
+
+            // choice_as_value options is not needed in SF 3.0+
+            if (method_exists('Symfony\Component\Form\FormTypeInterface', 'setDefaultOptions')) {
+                $choiceOptions['choices_as_values'] = true;
+            }
+        }
 
         $choiceOptions['choices'] = $choices;
 

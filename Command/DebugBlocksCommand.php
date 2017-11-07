@@ -42,7 +42,7 @@ class DebugBlocksCommand extends BaseCommand
 
         foreach ($services as $code => $service) {
             $resolver = new OptionsResolver();
-            $service->configureSettings($resolver);
+            $service->setDefaultSettings($resolver);
 
             $settings = $resolver->resolve();
 
