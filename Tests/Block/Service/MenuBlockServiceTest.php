@@ -57,6 +57,8 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
             'choice_translation_domain' => 'SonataBlockBundle',
         ];
 
+        $choices = ['Test Menu' => 'acme:demobundle:menu'];
+
         // choice_as_value options is not needed in SF 3.0+
         if (method_exists(FormTypeInterface::class, 'setDefaultOptions')) {
             $choiceOptions['choices_as_values'] = true;

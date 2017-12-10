@@ -17,7 +17,6 @@ use Sonata\BlockBundle\Block\BlockContextManager;
 use Sonata\BlockBundle\Block\BlockContextManagerInterface;
 use Sonata\BlockBundle\Block\BlockServiceInterface;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /*
  * NEXT_MAJOR: remove check when dropping support for PHPUnit 4
@@ -33,11 +32,6 @@ if (!class_exists(TestCase::class)) {
  */
 abstract class AbstractBlockServiceTestCase extends TestCase
 {
-    /**
-     * @var \PHPUnit_Framework_MockObject_MockObject|ContainerInterface
-     */
-    protected $container;
-
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|BlockServiceManagerInterface
      */
@@ -55,7 +49,6 @@ abstract class AbstractBlockServiceTestCase extends TestCase
 
     protected function setUp()
     {
-        $this->container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $this->templating = new FakeTemplating();
 
         $blockLoader = $this->createMock('Sonata\BlockBundle\Block\BlockLoaderInterface');
