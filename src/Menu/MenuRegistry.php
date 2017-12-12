@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -45,11 +43,11 @@ final class MenuRegistry implements MenuRegistryInterface
     /**
      * {@inheritdoc}
      */
-    public function add($menu): void
+    public function add($menu)
     {
         if ($menu instanceof MenuBuilderInterface) {
             @trigger_error(
-                'Adding a '.MenuBuilderInterface::class.' is deprecated since 3.x and will be removed in 4.0.',
+                'Adding a '.MenuBuilderInterface::class.' is deprecated since 3.9 and will be removed in 4.0.',
                 E_USER_DEPRECATED
             );
 

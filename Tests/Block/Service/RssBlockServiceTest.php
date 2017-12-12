@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -17,14 +15,14 @@ use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\RssBlockService;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\AbstractBlockServiceTestCase;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sonata\BlockBundle\Util\OptionsResolver;
 
 class RssBlockServiceTest extends AbstractBlockServiceTestCase
 {
     /*
      * only test if the API is not broken
      */
-    public function testService(): void
+    public function testService()
     {
         $service = new RssBlockService('sonata.page.block.rss', $this->templating);
 
@@ -35,7 +33,7 @@ class RssBlockServiceTest extends AbstractBlockServiceTestCase
         ]);
 
         $optionResolver = new OptionsResolver();
-        $service->configureSettings($optionResolver);
+        $service->setDefaultSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve());
 

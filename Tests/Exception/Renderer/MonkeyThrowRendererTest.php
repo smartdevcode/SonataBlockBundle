@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -26,7 +24,7 @@ class MonkeyThrowRendererTest extends TestCase
     /**
      * test the render() method with a standard Exception.
      */
-    public function testRenderWithStandardException(): void
+    public function testRenderWithStandardException()
     {
         $this->expectException(\Exception::class);
 
@@ -45,7 +43,7 @@ class MonkeyThrowRendererTest extends TestCase
     /**
      * test the render() method with another exception to ensure it correctly throws the provided exception.
      */
-    public function testRenderWithRuntimeException(): void
+    public function testRenderWithRuntimeException()
     {
         $this->expectException(\RuntimeException::class);
 
