@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -79,7 +77,7 @@ class BlockContextManager implements BlockContextManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function addSettingsByType($type, array $settings, $replace = false): void
+    public function addSettingsByType($type, array $settings, $replace = false)
     {
         $typeSettings = isset($this->settingsByType[$type]) ? $this->settingsByType[$type] : [];
         if ($replace) {
@@ -92,7 +90,7 @@ class BlockContextManager implements BlockContextManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function addSettingsByClass($class, array $settings, $replace = false): void
+    public function addSettingsByClass($class, array $settings, $replace = false)
     {
         $classSettings = isset($this->settingsByClass[$class]) ? $this->settingsByClass[$class] : [];
         if ($replace) {
@@ -166,7 +164,7 @@ class BlockContextManager implements BlockContextManagerInterface
      * @deprecated since version 2.3, to be renamed in 4.0.
      *             Use the method configureSettings instead
      */
-    protected function setDefaultSettings(OptionsResolverInterface $optionsResolver, BlockInterface $block): void
+    protected function setDefaultSettings(OptionsResolverInterface $optionsResolver, BlockInterface $block)
     {
         if (__CLASS__ !== get_called_class()) {
             @trigger_error(
@@ -178,7 +176,7 @@ class BlockContextManager implements BlockContextManagerInterface
         $this->configureSettings($optionsResolver, $block);
     }
 
-    protected function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block): void
+    protected function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block)
     {
         // defaults for all blocks
         $optionsResolver->setDefaults([
@@ -211,7 +209,7 @@ class BlockContextManager implements BlockContextManagerInterface
      * @param BlockContextInterface $blockContext
      * @param array                 $settings
      */
-    protected function setDefaultExtraCacheKeys(BlockContextInterface $blockContext, array $settings): void
+    protected function setDefaultExtraCacheKeys(BlockContextInterface $blockContext, array $settings)
     {
         if (!$blockContext->getSetting('use_cache') || $blockContext->getSetting('ttl') <= 0) {
             return;

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -35,7 +33,7 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
      */
     private $menuRegistry;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 
@@ -43,7 +41,7 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
         $this->menuRegistry = $this->createMock('Sonata\BlockBundle\Menu\MenuRegistryInterface');
     }
 
-    public function testBuildEditForm(): void
+    public function testBuildEditForm()
     {
         $this->menuRegistry->expects($this->once())->method('getAliasNames')
             ->will($this->returnValue([
@@ -116,7 +114,7 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
         $blockService->buildEditForm($formMapper, $block);
     }
 
-    public function testDefaultSettings(): void
+    public function testDefaultSettings()
     {
         $blockService = new MenuBlockService('sonata.page.block.menu', $this->templating, $this->menuProvider, $this->menuRegistry);
         $blockContext = $this->getBlockContext($blockService);

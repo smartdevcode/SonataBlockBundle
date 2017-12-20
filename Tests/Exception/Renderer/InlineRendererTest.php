@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -26,7 +24,7 @@ class InlineRendererTest extends TestCase
     /**
      * test the render() method.
      */
-    public function testRender(): void
+    public function testRender()
     {
         // GIVEN
         $template = 'test-template';

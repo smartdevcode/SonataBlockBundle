@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -21,7 +19,7 @@ use Sonata\BlockBundle\Util\OptionsResolver;
 
 class TextBlockServiceTest extends AbstractBlockServiceTestCase
 {
-    public function testService(): void
+    public function testService()
     {
         $service = new TextBlockService('sonata.page.block.text', $this->templating);
 

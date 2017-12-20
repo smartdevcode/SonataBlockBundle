@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -79,7 +77,7 @@ class StrategyManagerTest extends TestCase
     /**
      * setup a basic scenario to avoid long test setup.
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->renderer1 = $this->createMock('\Sonata\BlockBundle\Exception\Renderer\RendererInterface');
         $this->renderer2 = $this->createMock('\Sonata\BlockBundle\Exception\Renderer\RendererInterface');
@@ -119,7 +117,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getBlockRenderer() with existing block renderer.
      */
-    public function testGetBlockRendererWithExisting(): void
+    public function testGetBlockRendererWithExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.type1');
@@ -135,7 +133,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getBlockRenderer() with non existing block renderer.
      */
-    public function testGetBlockRendererWithNonExisting(): void
+    public function testGetBlockRendererWithNonExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.other_type');
@@ -151,7 +149,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getBlockFilter() with an existing block filter.
      */
-    public function testGetBlockFilterWithExisting(): void
+    public function testGetBlockFilterWithExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.type1');
@@ -167,7 +165,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getting the default block renderer.
      */
-    public function testGetBlockFilterWithNonExisting(): void
+    public function testGetBlockFilterWithNonExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.other_type');
@@ -183,7 +181,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test handleException() with a keep none filter.
      */
-    public function testHandleExceptionWithKeepNoneFilter(): void
+    public function testHandleExceptionWithKeepNoneFilter()
     {
         // GIVEN
         $this->filter1->expects($this->once())->method('handle')->will($this->returnValue(false));
@@ -203,7 +201,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test handleException() with a keep all filter.
      */
-    public function testHandleExceptionWithKeepAllFilter(): void
+    public function testHandleExceptionWithKeepAllFilter()
     {
         // GIVEN
         $this->filter1->expects($this->once())->method('handle')->will($this->returnValue(true));

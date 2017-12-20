@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -45,7 +43,7 @@ final class MenuRegistry implements MenuRegistryInterface
     /**
      * {@inheritdoc}
      */
-    public function add($menu): void
+    public function add($menu)
     {
         if ($menu instanceof MenuBuilderInterface) {
             @trigger_error(
