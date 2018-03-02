@@ -20,7 +20,7 @@
         }
     ],
     "require": {
-        "php": "^5.6 || ^7.0",
+        "php": "^7.1",
         "doctrine/common": "^2.3",
         "sonata-project/cache": "^1.0 || ^2.0",
         "sonata-project/core-bundle": "^3.4",
@@ -44,7 +44,7 @@
     "require-dev": {
         "jms/di-extra-bundle": "^1.7",
         "knplabs/knp-menu-bundle": "^2.0",
-        "sonata-project/admin-bundle": "^3.22",
+        "sonata-project/admin-bundle": "^3.22 || ^4.0@dev",
         "symfony/debug": "^2.8 || ^3.2 || ^4.0",
         "symfony/phpunit-bridge": "^4.0",
         "symfony/stopwatch": "^2.8 || ^3.2 || ^4.0"
@@ -59,16 +59,13 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "3.x-dev"
+            "dev-master": "4.x-dev"
         }
     },
     "autoload": {
         "psr-4": {
             "Sonata\\BlockBundle\\": "src/"
-        },
-        "files": [
-            "src/Resources/stubs/symfony2.php"
-        ]
+        }
     },
     "autoload-dev": {
         "psr-4": {

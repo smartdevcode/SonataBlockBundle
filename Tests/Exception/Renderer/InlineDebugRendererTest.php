@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Sonata Project package.
  *
@@ -24,7 +26,7 @@ class InlineDebugRendererTest extends TestCase
     /**
      * test the renderer without debug mode.
      */
-    public function testRenderWithoutDebug()
+    public function testRenderWithoutDebug(): void
     {
         // GIVEN
         $template = 'test-template';
@@ -46,7 +48,7 @@ class InlineDebugRendererTest extends TestCase
     /**
      * test the render() method with debug enabled.
      */
-    public function testRenderWithDebugEnabled()
+    public function testRenderWithDebugEnabled(): void
     {
         // GIVEN
         $template = 'test-template';
@@ -66,12 +68,24 @@ class InlineDebugRendererTest extends TestCase
                 $this->equalTo($template),
                 $this->logicalAnd(
                     $this->arrayHasKey('exception'),
-                    $this->arrayHasKey('status_code'),
-                    $this->arrayHasKey('status_text'),
-                    $this->arrayHasKeyValue('logger', false),
-                    $this->arrayHasKeyValue('currentContent', false),
-                    $this->arrayHasKeyValue('block', $block),
-                    $this->arrayHasKeyValue('forceStyle', true)
+                    $this->callback(function ($subject) use ($block) {
+                        $expected = [
+                            'status_code' => 500,
+                            'status_text' => 'Internal Server Error',
+                            'logger' => false,
+                            'currentContent' => false,
+                            'block' => $block,
+                            'forceStyle' => true,
+                        ];
+
+                        foreach ($expected as $key => $value) {
+                            if (!array_key_exists($key, $subject) || $subject[$key] !== $value) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    })
                 )
             )
             ->will($this->returnValue('html'));
@@ -85,20 +99,5 @@ class InlineDebugRendererTest extends TestCase
         // THEN
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response, 'Should return a Response');
         $this->assertEquals('html', $response->getContent(), 'Should contain the templating html result');
-    }
-
-    /**
-     * Returns a PHPUnit Constraint that ensures that an array has a key with given value.
-     *
-     * @param mixed $key   Key to be found in array
-     * @param mixed $value Value to be found in array
-     *
-     * @return \PHPUnit_Framework_Constraint_Callback
-     */
-    public function arrayHasKeyValue($key, $value)
-    {
-        return new \PHPUnit_Framework_Constraint_Callback(function ($test) use ($key, $value) {
-            return is_array($test) && array_key_exists($key, $test) && $test[$key] === $value;
-        });
     }
 }
