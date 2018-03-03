@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -87,7 +85,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaultSettings(OptionsResolverInterface $resolver): void
+    public function setDefaultSettings(OptionsResolverInterface $resolver)
     {
         $this->configureSettings($resolver);
     }
@@ -97,7 +95,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
      *
      * @param OptionsResolver $resolver
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
     }
 
@@ -115,7 +113,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function load(BlockInterface $block): void
+    public function load(BlockInterface $block)
     {
     }
 

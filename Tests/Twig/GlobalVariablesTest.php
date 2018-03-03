@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -18,7 +16,7 @@ use Sonata\BlockBundle\Twig\GlobalVariables;
 
 class GlobalVariablesTest extends TestCase
 {
-    public function testGlobalVariables(): void
+    public function testGlobalVariables()
     {
         $variables = new GlobalVariables([]);
 

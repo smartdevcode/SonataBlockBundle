@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -17,6 +15,7 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Form\Type\ContainerTemplateType;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Sonata\CoreBundle\Form\Type\CollectionType;
 use Sonata\CoreBundle\Form\Type\ImmutableArrayType;
 use Sonata\CoreBundle\Model\Metadata;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -34,7 +33,7 @@ class ContainerBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
         $formMapper->add('enabled');
 
@@ -58,7 +57,7 @@ class ContainerBlockService extends AbstractAdminBlockService
             'translation_domain' => 'SonataBlockBundle',
         ]);
 
-        $formMapper->add('children', 'sonata_type_collection', [], [
+        $formMapper->add('children', CollectionType::class, [], [
             'admin_code' => 'sonata.page.admin.block',
             'edit' => 'inline',
             'inline' => 'table',
@@ -81,7 +80,7 @@ class ContainerBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'code' => '',
@@ -117,8 +116,8 @@ class ContainerBlockService extends AbstractAdminBlockService
 
         $segments = explode($key, $layout);
         $decorator = [
-            'pre' => $segments[0] ?? '',
-            'post' => $segments[1] ?? '',
+            'pre' => isset($segments[0]) ? $segments[0] : '',
+            'post' => isset($segments[1]) ? $segments[1] : '',
         ];
 
         return $decorator;

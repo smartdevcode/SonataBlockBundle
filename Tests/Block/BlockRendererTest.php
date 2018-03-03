@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -48,7 +46,7 @@ class BlockRendererTest extends TestCase
     /**
      * Setup test object.
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
         $this->exceptionStrategyManager = $this->createMock('Sonata\BlockBundle\Exception\Strategy\StrategyManagerInterface');
@@ -60,7 +58,7 @@ class BlockRendererTest extends TestCase
     /**
      * Test rendering a block without errors.
      */
-    public function testRenderWithoutErrors(): void
+    public function testRenderWithoutErrors()
     {
         // GIVEN
 
@@ -85,7 +83,7 @@ class BlockRendererTest extends TestCase
     /**
      * Test rendering a block that returns a wrong response.
      */
-    public function testRenderWithWrongResponse(): void
+    public function testRenderWithWrongResponse()
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('A block service must return a Response object');
@@ -102,7 +100,7 @@ class BlockRendererTest extends TestCase
         // mock the exception strategy manager to rethrow the exception
         $this->exceptionStrategyManager->expects($this->once())
             ->method('handleException')
-            ->will($this->returnCallback(function ($e): void {
+            ->will($this->returnCallback(function ($e) {
                 throw $e;
             }));
 
@@ -123,7 +121,7 @@ class BlockRendererTest extends TestCase
     /**
      * Test rendering a block that throws an exception.
      */
-    public function testRenderBlockWithException(): void
+    public function testRenderBlockWithException()
     {
         // GIVEN
 
@@ -134,7 +132,7 @@ class BlockRendererTest extends TestCase
         $exception = $this->createMock('\Exception');
         $service->expects($this->once())
             ->method('execute')
-            ->will($this->returnCallback(function () use ($exception): void {
+            ->will($this->returnCallback(function () use ($exception) {
                 throw $exception;
             }));
 

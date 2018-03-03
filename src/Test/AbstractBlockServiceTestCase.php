@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -19,6 +17,7 @@ use Sonata\BlockBundle\Block\BlockContextManager;
 use Sonata\BlockBundle\Block\BlockContextManagerInterface;
 use Sonata\BlockBundle\Block\BlockServiceInterface;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Abstract test class for block service tests.
@@ -27,6 +26,11 @@ use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
  */
 abstract class AbstractBlockServiceTestCase extends TestCase
 {
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|ContainerInterface
+     */
+    protected $container;
+
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|BlockServiceManagerInterface
      */
@@ -42,8 +46,9 @@ abstract class AbstractBlockServiceTestCase extends TestCase
      */
     protected $templating;
 
-    protected function setUp(): void
+    protected function setUp()
     {
+        $this->container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $this->templating = new FakeTemplating();
 
         $blockLoader = $this->createMock('Sonata\BlockBundle\Block\BlockLoaderInterface');
@@ -77,7 +82,7 @@ abstract class AbstractBlockServiceTestCase extends TestCase
      * @param array                 $expected     Expected settings
      * @param BlockContextInterface $blockContext BlockContext object
      */
-    protected function assertSettings(array $expected, BlockContextInterface $blockContext): void
+    protected function assertSettings(array $expected, BlockContextInterface $blockContext)
     {
         $completeExpectedOptions = array_merge([
             'use_cache' => true,

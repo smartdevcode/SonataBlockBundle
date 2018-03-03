@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -36,7 +34,7 @@ abstract class AbstractAdminBlockService extends AbstractBlockService implements
     /**
      * {@inheritdoc}
      */
-    public function buildCreateForm(FormMapper $formMapper, BlockInterface $block): void
+    public function buildCreateForm(FormMapper $formMapper, BlockInterface $block)
     {
         $this->buildEditForm($formMapper, $block);
     }
@@ -44,49 +42,49 @@ abstract class AbstractAdminBlockService extends AbstractBlockService implements
     /**
      * @param BlockInterface $block
      */
-    public function prePersist(BlockInterface $block): void
+    public function prePersist(BlockInterface $block)
     {
     }
 
     /**
      * @param BlockInterface $block
      */
-    public function postPersist(BlockInterface $block): void
+    public function postPersist(BlockInterface $block)
     {
     }
 
     /**
      * @param BlockInterface $block
      */
-    public function preUpdate(BlockInterface $block): void
+    public function preUpdate(BlockInterface $block)
     {
     }
 
     /**
      * @param BlockInterface $block
      */
-    public function postUpdate(BlockInterface $block): void
+    public function postUpdate(BlockInterface $block)
     {
     }
 
     /**
      * @param BlockInterface $block
      */
-    public function preRemove(BlockInterface $block): void
+    public function preRemove(BlockInterface $block)
     {
     }
 
     /**
      * @param BlockInterface $block
      */
-    public function postRemove(BlockInterface $block): void
+    public function postRemove(BlockInterface $block)
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $form, BlockInterface $block): void
+    public function buildEditForm(FormMapper $form, BlockInterface $block)
     {
     }
 
@@ -94,7 +92,7 @@ abstract class AbstractAdminBlockService extends AbstractBlockService implements
      * @param ErrorElement   $errorElement
      * @param BlockInterface $block
      */
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
     {
     }
 

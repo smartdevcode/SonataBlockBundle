@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -40,7 +38,7 @@ class TemplateBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
         $formMapper->add('settings', ImmutableArrayType::class, [
             'keys' => [
@@ -55,7 +53,7 @@ class TemplateBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'template' => '@SonataBlock/Block/block_template.html.twig',

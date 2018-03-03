@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -110,7 +108,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $form, BlockInterface $block): void
+    public function buildEditForm(FormMapper $form, BlockInterface $block)
     {
         $form->add('settings', ImmutableArrayType::class, [
             'keys' => $this->getFormSettingsKeys(),
@@ -121,7 +119,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
     {
         if (($name = $block->getSetting('menu_name')) && '' !== $name && !$this->menuProvider->has($name)) {
             // If we specified a menu_name, check that it exists
@@ -134,7 +132,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'title' => $this->getName(),
