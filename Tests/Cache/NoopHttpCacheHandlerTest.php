@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -18,7 +16,7 @@ use Sonata\BlockBundle\Cache\NoopHttpCacheHandler;
 
 class NoopHttpCacheHandlerTest extends TestCase
 {
-    public function testComputeTtl(): void
+    public function testComputeTtl()
     {
         // check interface
         new NoopHttpCacheHandler();

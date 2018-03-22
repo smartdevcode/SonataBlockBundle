@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -18,7 +16,6 @@ use Sonata\BlockBundle\Exception\Filter\FilterInterface;
 use Sonata\BlockBundle\Exception\Renderer\RendererInterface;
 use Sonata\BlockBundle\Exception\Strategy\StrategyManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Test the Exception Strategy Manager.
@@ -80,7 +77,7 @@ class StrategyManagerTest extends TestCase
     /**
      * setup a basic scenario to avoid long test setup.
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->renderer1 = $this->createMock('\Sonata\BlockBundle\Exception\Renderer\RendererInterface');
         $this->renderer2 = $this->createMock('\Sonata\BlockBundle\Exception\Renderer\RendererInterface');
@@ -120,7 +117,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getBlockRenderer() with existing block renderer.
      */
-    public function testGetBlockRendererWithExisting(): void
+    public function testGetBlockRendererWithExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.type1');
@@ -136,7 +133,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getBlockRenderer() with non existing block renderer.
      */
-    public function testGetBlockRendererWithNonExisting(): void
+    public function testGetBlockRendererWithNonExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.other_type');
@@ -152,7 +149,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getBlockFilter() with an existing block filter.
      */
-    public function testGetBlockFilterWithExisting(): void
+    public function testGetBlockFilterWithExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.type1');
@@ -168,7 +165,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test getting the default block renderer.
      */
-    public function testGetBlockFilterWithNonExisting(): void
+    public function testGetBlockFilterWithNonExisting()
     {
         // GIVEN
         $block = $this->getMockBlock('block.other_type');
@@ -184,7 +181,7 @@ class StrategyManagerTest extends TestCase
     /**
      * test handleException() with a keep none filter.
      */
-    public function testHandleExceptionWithKeepNoneFilter(): void
+    public function testHandleExceptionWithKeepNoneFilter()
     {
         // GIVEN
         $this->filter1->expects($this->once())->method('handle')->will($this->returnValue(false));
@@ -204,13 +201,11 @@ class StrategyManagerTest extends TestCase
     /**
      * test handleException() with a keep all filter.
      */
-    public function testHandleExceptionWithKeepAllFilter(): void
+    public function testHandleExceptionWithKeepAllFilter()
     {
-        $rendererResponse = new Response();
-        $rendererResponse->setContent('renderer response');
         // GIVEN
         $this->filter1->expects($this->once())->method('handle')->will($this->returnValue(true));
-        $this->renderer1->expects($this->once())->method('render')->will($this->returnValue($rendererResponse));
+        $this->renderer1->expects($this->once())->method('render')->will($this->returnValue('renderer response'));
 
         $exception = new \Exception();
         $block = $this->getMockBlock('block.other_type');
@@ -220,7 +215,7 @@ class StrategyManagerTest extends TestCase
 
         // THEN
         $this->assertNotNull($response, 'should return something');
-        $this->assertEquals('renderer response', $response->getContent(), 'should return the renderer response');
+        $this->assertEquals('renderer response', $response, 'should return the renderer response');
     }
 
     /**

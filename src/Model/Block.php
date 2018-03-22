@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -26,7 +24,7 @@ class Block extends BaseBlock
     /**
      * {@inheritdoc}
      */
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }

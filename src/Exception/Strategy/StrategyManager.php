@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -85,7 +83,7 @@ class StrategyManager implements StrategyManagerInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function setDefaultFilter($name): void
+    public function setDefaultFilter($name)
     {
         if (!array_key_exists($name, $this->filters)) {
             throw new \InvalidArgumentException(sprintf('Cannot set default exception filter "%s". It does not exist.', $name));
@@ -101,7 +99,7 @@ class StrategyManager implements StrategyManagerInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function setDefaultRenderer($name): void
+    public function setDefaultRenderer($name)
     {
         if (!array_key_exists($name, $this->renderers)) {
             throw new \InvalidArgumentException(sprintf('Cannot set default exception renderer "%s". It does not exist.', $name));
