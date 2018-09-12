@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -15,7 +13,6 @@ namespace Sonata\BlockBundle\Tests\Exception\Renderer;
 
 use PHPUnit\Framework\TestCase;
 use Sonata\BlockBundle\Exception\Renderer\InlineRenderer;
-use Twig\Environment;
 
 /**
  * Test the inline exception renderer.
@@ -27,7 +24,7 @@ class InlineRendererTest extends TestCase
     /**
      * test the render() method.
      */
-    public function testRender(): void
+    public function testRender()
     {
         // GIVEN
         $template = 'test-template';
@@ -38,9 +35,9 @@ class InlineRendererTest extends TestCase
         // mock a block instance that provoked the exception
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
-        // mock the twig render() to return an html result
-        $twig = $this->createMock(Environment::class);
-        $twig->expects($this->once())
+        // mock the templating render() to return an html result
+        $templating = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $templating->expects($this->once())
             ->method('render')
             ->with(
                 $this->equalTo($template),
@@ -51,7 +48,7 @@ class InlineRendererTest extends TestCase
             ->will($this->returnValue('html'));
 
         // create renderer to test
-        $renderer = new InlineRenderer($twig, $template);
+        $renderer = new InlineRenderer($templating, $template);
 
         // WHEN
         $response = $renderer->render($exception, $block);

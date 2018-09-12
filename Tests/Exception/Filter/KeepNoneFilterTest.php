@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -30,7 +28,7 @@ class KeepNoneFilterTest extends TestCase
      *
      * @dataProvider getExceptions
      */
-    public function testFilter(\Exception $exception): void
+    public function testFilter(\Exception $exception)
     {
         // GIVEN
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');

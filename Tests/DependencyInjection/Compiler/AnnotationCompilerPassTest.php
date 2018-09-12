@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -19,7 +17,7 @@ use Sonata\BlockBundle\Annotation\Block;
 
 class AnnotationCompilerPassTest extends TestCase
 {
-    public function testMinimalBlock(): void
+    public function testMinimalBlock()
     {
         /*
          * @Block()
@@ -36,7 +34,7 @@ class AnnotationCompilerPassTest extends TestCase
         );
     }
 
-    public function testBlock(): void
+    public function testBlock()
     {
         /*
          * @Block()

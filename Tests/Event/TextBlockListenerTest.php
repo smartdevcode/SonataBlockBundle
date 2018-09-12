@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -19,7 +17,7 @@ use Sonata\BlockBundle\Event\TextBlockListener;
 
 class TextBlockListenerTest extends TestCase
 {
-    public function testEvent(): void
+    public function testEvent()
     {
         $event = new BlockEvent();
 
@@ -33,7 +31,7 @@ class TextBlockListenerTest extends TestCase
         $this->assertEquals('This block is coming from inline event from the template', $blocks[0]->getSetting('content'));
     }
 
-    public function testEventWithAdmin(): void
+    public function testEventWithAdmin()
     {
         $admin = $this->createMock('Sonata\AdminBundle\Admin\AdminInterface');
         $admin->expects($this->once())->method('getSubject');
