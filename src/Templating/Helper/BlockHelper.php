@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -324,7 +322,7 @@ class BlockHelper extends Helper
      * @param BlockContextInterface $blockContext
      * @param array                 $stats
      */
-    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null): void
+    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null)
     {
         if ($blockContext->getBlock()->hasParent()) {
             return;
@@ -336,6 +334,20 @@ class BlockHelper extends Helper
             'js' => $service->getJavascripts('all'),
             'css' => $service->getStylesheets('all'),
         ];
+
+        if (\count($assets['js']) > 0) {
+            @trigger_error(
+                'Defining javascripts assets inside a block is deprecated since 3.x and will be removed in 4.0',
+                E_USER_DEPRECATED
+            );
+        }
+
+        if (\count($assets['css']) > 0) {
+            @trigger_error(
+                'Defining css assets inside a block is deprecated since 3.x and will be removed in 4.0',
+                E_USER_DEPRECATED
+            );
+        }
 
         if ($blockContext->getBlock()->hasChildren()) {
             $iterator = new \RecursiveIteratorIterator(new RecursiveBlockIterator($blockContext->getBlock()->getChildren()));
@@ -399,7 +411,7 @@ class BlockHelper extends Helper
      * @param BlockInterface $block
      * @param array          $stats
      */
-    protected function stopTracing(BlockInterface $block, array $stats): void
+    protected function stopTracing(BlockInterface $block, array $stats)
     {
         $e = $this->traces[$block->getId()]->stop();
 

@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -24,7 +22,7 @@ class SonataBlockBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function build(ContainerBuilder $container): void
+    public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new TweakCompilerPass());
         $container->addCompilerPass(new GlobalVariablesCompilerPass());
@@ -35,7 +33,7 @@ class SonataBlockBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function boot(): void
+    public function boot()
     {
         $this->registerFormMapping();
     }
@@ -43,7 +41,7 @@ class SonataBlockBundle extends Bundle
     /**
      * Register form mapping information.
      */
-    public function registerFormMapping(): void
+    public function registerFormMapping()
     {
         FormHelper::registerFormTypeMapping([
             'sonata_block_service_choice' => 'Sonata\BlockBundle\Form\Type\ServiceListType',

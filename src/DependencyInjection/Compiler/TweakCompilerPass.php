@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -27,7 +25,7 @@ class TweakCompilerPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container): void
+    public function process(ContainerBuilder $container)
     {
         $manager = $container->getDefinition('sonata.block.manager');
         $registry = $container->getDefinition('sonata.block.menu.registry');
@@ -38,12 +36,25 @@ class TweakCompilerPass implements CompilerPassInterface
             $definition = $container->getDefinition($id);
             $definition->setPublic(true);
 
+            $arguments = $definition->getArguments();
+
             // Replace empty block id with service id
-            // NEXT_MAJOR: Remove the condition when Symfony 2.8 support will be dropped.
-            if (method_exists($definition, 'setArgument')) {
-                $definition->setArgument(0, $id);
-            } else {
-                $definition->replaceArgument(0, $id);
+            if (empty($arguments) || 0 == \strlen($arguments[0])) {
+                // NEXT_MAJOR: Remove the condition when Symfony 2.8 support will be dropped.
+                if (method_exists($definition, 'setArgument')) {
+                    $definition->setArgument(0, $id);
+                } else {
+                    $definition->replaceArgument(0, $id);
+                }
+            } elseif ($id != $arguments[0] && 0 !== strpos(
+                $container->getParameterBag()->resolveValue($definition->getClass()),
+                'Sonata\\BlockBundle\\Block\\Service\\'
+            )) {
+                // NEXT_MAJOR: Remove deprecation notice
+                @trigger_error(
+                    sprintf('Using service id %s different from block id %s is deprecated since 3.3 and will be removed in 4.0.', $id, $arguments[0]),
+                    E_USER_DEPRECATED
+                );
             }
 
             $manager->addMethodCall('add', [$id, $id, isset($parameters[$id]) ? $parameters[$id]['contexts'] : []]);
@@ -73,7 +84,7 @@ class TweakCompilerPass implements CompilerPassInterface
      *
      * @param ContainerBuilder $container
      */
-    public function applyContext(ContainerBuilder $container): void
+    public function applyContext(ContainerBuilder $container)
     {
         $definition = $container->findDefinition('sonata.block.context_manager');
 

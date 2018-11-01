@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -33,7 +31,7 @@ class TextBlockListener
     /**
      * @param BlockEvent $event
      */
-    public function onBlock(BlockEvent $event): void
+    public function onBlock(BlockEvent $event)
     {
         $content = 'This block is coming from inline event from the template';
         if ($event->getSetting('admin') instanceof AdminInterface && 'edit' == $event->getSetting('action')) {

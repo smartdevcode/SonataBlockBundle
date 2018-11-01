@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -17,13 +15,13 @@ use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\TextBlockService;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\AbstractBlockServiceTestCase;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sonata\BlockBundle\Util\OptionsResolver;
 
 class TextBlockServiceTest extends AbstractBlockServiceTestCase
 {
-    public function testService(): void
+    public function testService()
     {
-        $service = new TextBlockService('sonata.page.block.text', $this->twig);
+        $service = new TextBlockService('sonata.page.block.text', $this->templating);
 
         $block = new Block();
         $block->setType('core.text');
@@ -32,7 +30,7 @@ class TextBlockServiceTest extends AbstractBlockServiceTestCase
         ]);
 
         $optionResolver = new OptionsResolver();
-        $service->configureSettings($optionResolver);
+        $service->setDefaultSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve($block->getSettings()));
 
@@ -44,6 +42,8 @@ class TextBlockServiceTest extends AbstractBlockServiceTestCase
         $service->buildCreateForm($formMapper, $block);
         $service->buildEditForm($formMapper, $block);
 
-        $service->execute($blockContext);
+        $response = $service->execute($blockContext);
+
+        $this->assertEquals('my text', $this->templating->parameters['settings']['content']);
     }
 }
