@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of the Sonata Project package.
  *
@@ -21,7 +23,7 @@ class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
         // NEXT_MAJOR: Switch name and alias
         $this->setAliases(['debug:sonata:block']);
@@ -34,7 +36,7 @@ class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         if ($input->getOption('context')) {
             $services = $this->getBlockServiceManager()->getServicesByContext($input->getOption('context'));
@@ -44,13 +46,7 @@ class DebugBlocksCommand extends BaseCommand
 
         foreach ($services as $code => $service) {
             $resolver = new OptionsResolver();
-
-            // NEXT_MAJOR: Remove this check
-            if (method_exists($service, 'configureSettings')) {
-                $service->configureSettings($resolver);
-            } else {
-                $service->setDefaultSettings($resolver);
-            }
+            $service->configureSettings($resolver);
 
             $settings = $resolver->resolve();
 
