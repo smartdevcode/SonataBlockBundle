@@ -43,7 +43,7 @@ You can write unit tests for block services with the following code.
     {
         public function testDefaultSettings()
         {
-            $blockService = new CustomBlockService('foo', $this->twig);
+            $blockService = new CustomBlockService('foo', $this->templating);
             $blockContext = $this->getBlockContext($blockService);
 
             $this->assertSettings(array(
@@ -55,7 +55,7 @@ You can write unit tests for block services with the following code.
 
         public function testExecute()
         {
-            $blockService = new CustomBlockService('foo', $this->twig);
+            $blockService = new CustomBlockService('foo', $this->templating);
             $blockContext = $this->getBlockContext($blockService);
 
             $blockService->execute($blockContext);

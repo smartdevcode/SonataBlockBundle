@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -18,7 +16,7 @@ use Sonata\BlockBundle\Block\BlockLoaderChain;
 
 class BlockLoaderChainTest extends TestCase
 {
-    public function testBlockNotFoundException(): void
+    public function testBlockNotFoundException()
     {
         $this->expectException(\Sonata\BlockBundle\Exception\BlockNotFoundException::class);
 
@@ -26,7 +24,7 @@ class BlockLoaderChainTest extends TestCase
         $loader->load('foo');
     }
 
-    public function testLoaderWithSupportedLoader(): void
+    public function testLoaderWithSupportedLoader()
     {
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
@@ -41,7 +39,7 @@ class BlockLoaderChainTest extends TestCase
         $this->assertEquals($block, $loaderChain->load('foo'));
     }
 
-    public function testLoaderWithUnSupportedLoader(): void
+    public function testLoaderWithUnSupportedLoader()
     {
         $this->expectException(\Sonata\BlockBundle\Exception\BlockNotFoundException::class);
 

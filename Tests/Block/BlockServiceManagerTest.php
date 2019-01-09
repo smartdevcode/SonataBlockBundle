@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -18,7 +16,7 @@ use Sonata\BlockBundle\Block\BlockServiceManager;
 
 class BlockServiceManagerTest extends TestCase
 {
-    public function testGetBlockService(): void
+    public function testGetBlockService()
     {
         $service = $this->createMock('Sonata\BlockBundle\Block\BlockServiceInterface');
 
@@ -35,7 +33,7 @@ class BlockServiceManagerTest extends TestCase
         $this->assertInstanceOf(\get_class($service), $manager->get($block));
     }
 
-    public function testInvalidServiceType(): void
+    public function testInvalidServiceType()
     {
         $this->expectException(\RuntimeException::class);
 
@@ -54,7 +52,7 @@ class BlockServiceManagerTest extends TestCase
         $this->assertInstanceOf(\get_class($service), $manager->get($block));
     }
 
-    public function testGetBlockServiceException(): void
+    public function testGetBlockServiceException()
     {
         $this->expectException(\RuntimeException::class);
 
@@ -68,7 +66,7 @@ class BlockServiceManagerTest extends TestCase
         $manager->get($block);
     }
 
-    public function testGetEmptyListFromInvalidContext(): void
+    public function testGetEmptyListFromInvalidContext()
     {
         $container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $manager = new BlockServiceManager($container, true);
@@ -80,7 +78,7 @@ class BlockServiceManagerTest extends TestCase
         $this->assertEmpty($manager->getServicesByContext('fake'));
     }
 
-    public function testGetListFromValidContext(): void
+    public function testGetListFromValidContext()
     {
         $container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $manager = new BlockServiceManager($container, true);
@@ -92,7 +90,7 @@ class BlockServiceManagerTest extends TestCase
         $this->assertNotEmpty($manager->getServicesByContext('fake'));
     }
 
-    public function testOrderServices(): void
+    public function testOrderServices()
     {
         $container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
         $manager = new BlockServiceManager($container, true);

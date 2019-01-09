@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -23,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BlockHelperTest extends TestCase
 {
-    public function testRenderEventWithNoListener(): void
+    public function testRenderEventWithNoListener()
     {
         $blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
         $blockRenderer = $this->createMock('Sonata\BlockBundle\Block\BlockRendererInterface');
@@ -41,7 +39,7 @@ class BlockHelperTest extends TestCase
     /**
      * @group legacy
      */
-    public function testRenderEventWithListeners(): void
+    public function testRenderEventWithListeners()
     {
         $blockService = $this->createMock('Sonata\BlockBundle\Block\BlockServiceInterface');
         $blockService->expects($this->once())->method('getJavascripts')->will($this->returnValue([

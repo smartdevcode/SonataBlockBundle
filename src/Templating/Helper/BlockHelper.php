@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -324,7 +322,7 @@ class BlockHelper extends Helper
      * @param BlockContextInterface $blockContext
      * @param array                 $stats
      */
-    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null): void
+    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null)
     {
         if ($blockContext->getBlock()->hasParent()) {
             return;
@@ -413,7 +411,7 @@ class BlockHelper extends Helper
      * @param BlockInterface $block
      * @param array          $stats
      */
-    protected function stopTracing(BlockInterface $block, array $stats): void
+    protected function stopTracing(BlockInterface $block, array $stats)
     {
         $e = $this->traces[$block->getId()]->stop();
 

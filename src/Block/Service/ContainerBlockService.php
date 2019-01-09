@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  * This file is part of the Sonata Project package.
  *
@@ -35,7 +33,7 @@ class ContainerBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
         $formMapper->add('enabled');
 
@@ -82,7 +80,7 @@ class ContainerBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'code' => '',
@@ -118,8 +116,8 @@ class ContainerBlockService extends AbstractAdminBlockService
 
         $segments = explode($key, $layout);
         $decorator = [
-            'pre' => $segments[0] ?? '',
-            'post' => $segments[1] ?? '',
+            'pre' => isset($segments[0]) ? $segments[0] : '',
+            'post' => isset($segments[1]) ? $segments[1] : '',
         ];
 
         return $decorator;
