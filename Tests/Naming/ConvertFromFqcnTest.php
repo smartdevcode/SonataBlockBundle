@@ -21,7 +21,7 @@ class ConvertFromFqcnTest extends TestCase
     /**
      * @dataProvider fqcnToBlockNameProvider
      */
-    public function testFqcnToBlockName($fqcn, $expectedBlockName)
+    public function testFqcnToBlockName($fqcn, $expectedBlockName): void
     {
         $convert = (new ConvertFromFqcn());
 
@@ -45,7 +45,7 @@ class ConvertFromFqcnTest extends TestCase
         ];
     }
 
-    public function testInvalidBlockName()
+    public function testInvalidBlockName(): void
     {
         $this->expectException(\Sonata\BlockBundle\Naming\Exception\NamingException::class);
 

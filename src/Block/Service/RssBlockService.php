@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Meta\Metadata;
 use Sonata\BlockBundle\Model\BlockInterface;
@@ -32,7 +32,7 @@ class RssBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'url' => false,
@@ -47,7 +47,7 @@ class RssBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
     {
         $formMapper->add('settings', ImmutableArrayType::class, [
             'keys' => [
@@ -79,7 +79,7 @@ class RssBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
     {
         $errorElement
             ->with('settings[url]')

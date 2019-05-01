@@ -324,7 +324,7 @@ class BlockHelper extends Helper
      * @param BlockContextInterface $blockContext
      * @param array                 $stats
      */
-    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null)
+    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null): void
     {
         if ($blockContext->getBlock()->hasParent()) {
             return;
@@ -413,7 +413,7 @@ class BlockHelper extends Helper
      * @param BlockInterface $block
      * @param array          $stats
      */
-    protected function stopTracing(BlockInterface $block, array $stats)
+    protected function stopTracing(BlockInterface $block, array $stats): void
     {
         $e = $this->traces[$block->getId()]->stop();
 

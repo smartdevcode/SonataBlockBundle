@@ -23,7 +23,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BlockHelperTest extends TestCase
 {
-    public function testRenderEventWithNoListener()
+    public function testRenderEventWithNoListener(): void
     {
         $blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
         $blockRenderer = $this->createMock('Sonata\BlockBundle\Block\BlockRendererInterface');
@@ -41,7 +41,7 @@ class BlockHelperTest extends TestCase
     /**
      * @group legacy
      */
-    public function testRenderEventWithListeners()
+    public function testRenderEventWithListeners(): void
     {
         $blockService = $this->createMock('Sonata\BlockBundle\Block\BlockServiceInterface');
         $blockService->expects($this->once())->method('getJavascripts')->will($this->returnValue([

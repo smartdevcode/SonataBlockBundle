@@ -16,7 +16,6 @@ namespace Sonata\BlockBundle\DependencyInjection\Compiler;
 use Sonata\BlockBundle\Naming\ConvertFromFqcn;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -29,7 +28,7 @@ class TweakCompilerPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $manager = $container->getDefinition('sonata.block.manager');
         $registry = $container->getDefinition('sonata.block.menu.registry');
@@ -43,7 +42,13 @@ class TweakCompilerPass implements CompilerPassInterface
             $definition->setPublic(true);
 
             if (!$definition->isAutowired()) {
-                $this->replaceBlockName($container, $definition, $id);
+                // Replace empty block id with service id
+                // NEXT_MAJOR: Remove the condition when Symfony 2.8 support will be dropped.
+                if (method_exists($definition, 'setArgument')) {
+                    $definition->setArgument(0, $id);
+                } else {
+                    $definition->replaceArgument(0, $id);
+                }
             }
 
             $blockId = $id;
@@ -90,7 +95,7 @@ class TweakCompilerPass implements CompilerPassInterface
      *
      * @param ContainerBuilder $container
      */
-    public function applyContext(ContainerBuilder $container)
+    public function applyContext(ContainerBuilder $container): void
     {
         $definition = $container->findDefinition('sonata.block.context_manager');
 
@@ -108,6 +113,8 @@ class TweakCompilerPass implements CompilerPassInterface
 
     /**
      * Replaces the empty service name with the service id.
+     *
+     * @param string[][] $tags
      */
     private function replaceBlockName(ContainerBuilder $container, Definition $definition, $id)
     {

@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Form\Type\ContainerTemplateType;
 use Sonata\BlockBundle\Meta\Metadata;
@@ -35,7 +35,7 @@ class ContainerBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
     {
         $formMapper->add('enabled');
 
@@ -82,7 +82,7 @@ class ContainerBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'code' => '',

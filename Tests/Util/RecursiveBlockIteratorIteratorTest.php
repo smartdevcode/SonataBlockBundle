@@ -18,7 +18,7 @@ use Sonata\BlockBundle\Util\RecursiveBlockIteratorIterator;
 
 class RecursiveBlockIteratorIteratorTest extends TestCase
 {
-    public function testInterface()
+    public function testInterface(): void
     {
         $block2 = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
         $block2->expects($this->any())->method('getType')->will($this->returnValue('block2'));
