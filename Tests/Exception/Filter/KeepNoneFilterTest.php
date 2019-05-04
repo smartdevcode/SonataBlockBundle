@@ -30,7 +30,7 @@ class KeepNoneFilterTest extends TestCase
      *
      * @dataProvider getExceptions
      */
-    public function testFilter(\Exception $exception)
+    public function testFilter(\Exception $exception): void
     {
         // GIVEN
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');

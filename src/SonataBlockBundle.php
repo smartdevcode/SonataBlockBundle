@@ -15,7 +15,6 @@ namespace Sonata\BlockBundle;
 
 use Sonata\BlockBundle\DependencyInjection\Compiler\GlobalVariablesCompilerPass;
 use Sonata\BlockBundle\DependencyInjection\Compiler\TweakCompilerPass;
-use Sonata\CoreBundle\Form\FormHelper;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
@@ -24,7 +23,7 @@ class SonataBlockBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function build(ContainerBuilder $container)
+    public function build(ContainerBuilder $container): void
     {
         $container->addCompilerPass(new TweakCompilerPass());
         $container->addCompilerPass(new GlobalVariablesCompilerPass());
@@ -35,19 +34,8 @@ class SonataBlockBundle extends Bundle
     /**
      * {@inheritdoc}
      */
-    public function boot()
+    public function boot(): void
     {
         $this->registerFormMapping();
-    }
-
-    /**
-     * Register form mapping information.
-     */
-    public function registerFormMapping()
-    {
-        FormHelper::registerFormTypeMapping([
-            'sonata_block_service_choice' => 'Sonata\BlockBundle\Form\Type\ServiceListType',
-            'sonata_type_container_template_choice' => 'Sonata\BlockBundle\Form\Type\ContainerTemplateType',
-        ]);
     }
 }

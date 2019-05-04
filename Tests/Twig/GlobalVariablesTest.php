@@ -18,7 +18,7 @@ use Sonata\BlockBundle\Twig\GlobalVariables;
 
 class GlobalVariablesTest extends TestCase
 {
-    public function testGlobalVariables()
+    public function testGlobalVariables(): void
     {
         $variables = new GlobalVariables([]);
 

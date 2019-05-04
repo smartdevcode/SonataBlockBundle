@@ -23,11 +23,10 @@ class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
-        // NEXT_MAJOR: Switch name and alias
-        $this->setAliases(['debug:sonata:block']);
-        $this->setName('sonata:block:debug');
+        $this->setAliases(['sonata:block:debug']);
+        $this->setName('debug:sonata:block');
         $this->setDescription('Debug all blocks available, show default settings of each block');
 
         $this->addOption('context', 'c', InputOption::VALUE_REQUIRED, 'display service for the specified context');
@@ -36,7 +35,7 @@ class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         if ($input->getOption('context')) {
             $services = $this->getBlockServiceManager()->getServicesByContext($input->getOption('context'));
@@ -46,13 +45,7 @@ class DebugBlocksCommand extends BaseCommand
 
         foreach ($services as $code => $service) {
             $resolver = new OptionsResolver();
-
-            // NEXT_MAJOR: Remove this check
-            if (method_exists($service, 'configureSettings')) {
-                $service->configureSettings($resolver);
-            } else {
-                $service->setDefaultSettings($resolver);
-            }
+            $service->configureSettings($resolver);
 
             $settings = $resolver->resolve();
 

@@ -19,7 +19,7 @@ use Sonata\BlockBundle\Event\TextBlockListener;
 
 class TextBlockListenerTest extends TestCase
 {
-    public function testEvent()
+    public function testEvent(): void
     {
         $event = new BlockEvent();
 
@@ -33,7 +33,7 @@ class TextBlockListenerTest extends TestCase
         $this->assertSame('This block is coming from inline event from the template', $blocks[0]->getSetting('content'));
     }
 
-    public function testEventWithAdmin()
+    public function testEventWithAdmin(): void
     {
         $admin = $this->createMock('Sonata\AdminBundle\Admin\AdminInterface');
         $admin->expects($this->once())->method('getSubject');

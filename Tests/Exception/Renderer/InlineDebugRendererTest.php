@@ -15,6 +15,7 @@ namespace Sonata\BlockBundle\Tests\Exception\Renderer;
 
 use PHPUnit\Framework\TestCase;
 use Sonata\BlockBundle\Exception\Renderer\InlineDebugRenderer;
+use Twig\Environment;
 
 /**
  * Test the inline debug exception renderer.
@@ -26,16 +27,16 @@ class InlineDebugRendererTest extends TestCase
     /**
      * test the renderer without debug mode.
      */
-    public function testRenderWithoutDebug()
+    public function testRenderWithoutDebug(): void
     {
         // GIVEN
         $template = 'test-template';
         $debug = false;
         $exception = $this->createMock('\Exception');
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
-        $templating = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
+        $twig = $this->createMock(Environment::class);
 
-        $renderer = new InlineDebugRenderer($templating, $template, $debug);
+        $renderer = new InlineDebugRenderer($twig, $template, $debug);
 
         // WHEN
         $response = $renderer->render($exception, $block);
@@ -48,7 +49,7 @@ class InlineDebugRendererTest extends TestCase
     /**
      * test the render() method with debug enabled.
      */
-    public function testRenderWithDebugEnabled()
+    public function testRenderWithDebugEnabled(): void
     {
         // GIVEN
         $template = 'test-template';
@@ -60,26 +61,38 @@ class InlineDebugRendererTest extends TestCase
         // mock a block instance that provoked the exception
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
-        // mock the templating render() to return an html result
-        $templating = $this->createMock('Symfony\Bundle\FrameworkBundle\Templating\EngineInterface');
-        $templating->expects($this->once())
+        // mock the twig render() to return an html result
+        $twig = $this->createMock(Environment::class);
+        $twig->expects($this->once())
             ->method('render')
             ->with(
                 $this->equalTo($template),
                 $this->logicalAnd(
                     $this->arrayHasKey('exception'),
-                    $this->arrayHasKey('status_code'),
-                    $this->arrayHasKey('status_text'),
-                    $this->arrayHasKeyValue('logger', false),
-                    $this->arrayHasKeyValue('currentContent', false),
-                    $this->arrayHasKeyValue('block', $block),
-                    $this->arrayHasKeyValue('forceStyle', true)
+                    $this->callback(static function ($subject) use ($block) {
+                        $expected = [
+                            'status_code' => 500,
+                            'status_text' => 'Internal Server Error',
+                            'logger' => false,
+                            'currentContent' => false,
+                            'block' => $block,
+                            'forceStyle' => true,
+                        ];
+
+                        foreach ($expected as $key => $value) {
+                            if (!\array_key_exists($key, $subject) || $subject[$key] !== $value) {
+                                return false;
+                            }
+                        }
+
+                        return true;
+                    })
                 )
             )
             ->willReturn('html');
 
         // create renderer to test
-        $renderer = new InlineDebugRenderer($templating, $template, $debug);
+        $renderer = new InlineDebugRenderer($twig, $template, $debug);
 
         // WHEN
         $response = $renderer->render($exception, $block);
@@ -87,20 +100,5 @@ class InlineDebugRendererTest extends TestCase
         // THEN
         $this->assertInstanceOf('Symfony\Component\HttpFoundation\Response', $response, 'Should return a Response');
         $this->assertSame('html', $response->getContent(), 'Should contain the templating html result');
-    }
-
-    /**
-     * Returns a PHPUnit Constraint that ensures that an array has a key with given value.
-     *
-     * @param mixed $key   Key to be found in array
-     * @param mixed $value Value to be found in array
-     *
-     * @return \PHPUnit_Framework_Constraint_Callback
-     */
-    public function arrayHasKeyValue($key, $value)
-    {
-        return new \PHPUnit\Framework\Constraint\Callback(static function ($test) use ($key, $value) {
-            return \is_array($test) && \array_key_exists($key, $test) && $test[$key] === $value;
-        });
     }
 }
