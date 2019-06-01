@@ -35,7 +35,7 @@ class Block implements MetadataProcessorInterface
     /**
      * @param ClassMetadata $metadata
      */
-    public function processMetadata(ClassMetadata $metadata): void
+    public function processMetadata(ClassMetadata $metadata)
     {
         if (!empty($this->id)) {
             $metadata->id = $this->id;

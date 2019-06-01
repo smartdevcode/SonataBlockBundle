@@ -18,20 +18,20 @@ use Sonata\BlockBundle\Model\Block;
 
 class BlockTest extends TestCase
 {
-    public function testGetTtl(): void
+    public function testGetTtl()
     {
         $block = new Block();
 
         $this->assertFalse($block->hasChildren());
 
         $child1 = $this->getMockBuilder('Sonata\BlockBundle\Model\Block')->getMock();
-        $child1->expects($this->once())->method('getTtl')->willReturn(100);
+        $child1->expects($this->once())->method('getTtl')->will($this->returnValue(100));
 
         $child2 = $this->getMockBuilder('Sonata\BlockBundle\Model\Block')->getMock();
-        $child2->expects($this->once())->method('getTtl')->willReturn(50);
+        $child2->expects($this->once())->method('getTtl')->will($this->returnValue(50));
 
         $child3 = $this->getMockBuilder('Sonata\BlockBundle\Model\Block')->getMock();
-        $child3->expects($this->once())->method('getTtl')->willReturn(65);
+        $child3->expects($this->once())->method('getTtl')->will($this->returnValue(65));
 
         $block->addChildren($child1);
         $block->addChildren($child2);
@@ -42,7 +42,7 @@ class BlockTest extends TestCase
         $this->assertTrue($block->hasChildren());
     }
 
-    public function testSetterGetter(): void
+    public function testSetterGetter()
     {
         $time = new \DateTime();
         $parent = $this->getMockBuilder('Sonata\BlockBundle\Model\Block')->getMock();
@@ -66,7 +66,7 @@ class BlockTest extends TestCase
         $this->assertSame($parent, $block->getParent());
     }
 
-    public function testSetting(): void
+    public function testSetting()
     {
         $block = new Block();
         $block->setSetting('foo', 'bar');

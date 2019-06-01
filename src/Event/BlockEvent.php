@@ -39,7 +39,7 @@ class BlockEvent extends Event
     /**
      * @param BlockInterface $block
      */
-    public function addBlock(BlockInterface $block): void
+    public function addBlock(BlockInterface $block)
     {
         $this->blocks[] = $block;
     }

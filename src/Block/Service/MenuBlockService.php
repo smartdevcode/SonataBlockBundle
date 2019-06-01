@@ -15,21 +15,21 @@ namespace Sonata\BlockBundle\Block\Service;
 
 use Knp\Menu\ItemInterface;
 use Knp\Menu\Provider\MenuProviderInterface;
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Menu\MenuRegistry;
 use Sonata\BlockBundle\Menu\MenuRegistryInterface;
 use Sonata\BlockBundle\Meta\Metadata;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\Form\Type\ImmutableArrayType;
-use Sonata\Form\Validator\ErrorElement;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Twig\Environment;
 
 /**
  * @author Hugo Briand <briand@ekino.com>
@@ -56,11 +56,14 @@ class MenuBlockService extends AbstractAdminBlockService
     protected $menuRegistry;
 
     /**
+     * @param string                     $name
+     * @param EngineInterface            $templating
+     * @param MenuProviderInterface      $menuProvider
      * @param MenuRegistryInterface|null $menuRegistry
      */
-    public function __construct(string $name, Environment $twig, MenuProviderInterface $menuProvider, $menuRegistry = null)
+    public function __construct($name, EngineInterface $templating, MenuProviderInterface $menuProvider, $menuRegistry = null)
     {
-        parent::__construct($name, $twig);
+        parent::__construct($name, $templating);
 
         $this->menuProvider = $menuProvider;
 
@@ -107,7 +110,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $form, BlockInterface $block): void
+    public function buildEditForm(FormMapper $form, BlockInterface $block)
     {
         $form->add('settings', ImmutableArrayType::class, [
             'keys' => $this->getFormSettingsKeys(),
@@ -118,7 +121,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
     {
         if (($name = $block->getSetting('menu_name')) && '' !== $name && !$this->menuProvider->has($name)) {
             // If we specified a menu_name, check that it exists
@@ -131,7 +134,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'title' => $this->getName(),

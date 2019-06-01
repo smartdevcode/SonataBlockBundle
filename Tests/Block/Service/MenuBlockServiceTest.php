@@ -15,7 +15,6 @@ namespace Sonata\BlockBundle\Tests\Block\Service;
 
 use Knp\Menu\Provider\MenuProviderInterface;
 use Sonata\BlockBundle\Block\Service\MenuBlockService;
-use Sonata\BlockBundle\Form\Mapper\FormMapper\FormMapper;
 use Sonata\BlockBundle\Menu\MenuRegistryInterface;
 use Sonata\BlockBundle\Test\AbstractBlockServiceTestCase;
 use Sonata\Form\Type\ImmutableArrayType;
@@ -36,7 +35,7 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
      */
     private $menuRegistry;
 
-    protected function setUp(): void
+    protected function setUp()
     {
         parent::setUp();
 
@@ -44,14 +43,14 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
         $this->menuRegistry = $this->createMock('Sonata\BlockBundle\Menu\MenuRegistryInterface');
     }
 
-    public function testBuildEditForm(): void
+    public function testBuildEditForm()
     {
         $this->menuRegistry->expects($this->once())->method('getAliasNames')
-            ->willReturn([
+            ->will($this->returnValue([
                 'acme:demobundle:menu' => 'Test Menu',
-            ]);
+            ]));
 
-        $formMapper = $this->createMock(FormMapper::class);
+        $formMapper = $this->getMockBuilder('Sonata\AdminBundle\Form\FormMapper')->disableOriginalConstructor()->getMock();
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
         $choiceOptions = [
@@ -59,8 +58,6 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
             'label' => 'form.label_url',
             'choice_translation_domain' => 'SonataBlockBundle',
         ];
-
-        $choices = ['Test Menu' => 'acme:demobundle:menu'];
 
         // choice_as_value options is not needed in SF 3.0+
         if (method_exists(FormTypeInterface::class, 'setDefaultOptions')) {
@@ -115,13 +112,13 @@ class MenuBlockServiceTest extends AbstractBlockServiceTestCase
                 'translation_domain' => 'SonataBlockBundle',
             ]);
 
-        $blockService = new MenuBlockService('sonata.page.block.menu', $this->twig, $this->menuProvider, $this->menuRegistry);
+        $blockService = new MenuBlockService('sonata.page.block.menu', $this->templating, $this->menuProvider, $this->menuRegistry);
         $blockService->buildEditForm($formMapper, $block);
     }
 
-    public function testDefaultSettings(): void
+    public function testDefaultSettings()
     {
-        $blockService = new MenuBlockService('sonata.page.block.menu', $this->twig, $this->menuProvider, $this->menuRegistry);
+        $blockService = new MenuBlockService('sonata.page.block.menu', $this->templating, $this->menuProvider, $this->menuRegistry);
         $blockContext = $this->getBlockContext($blockService);
 
         $this->assertSettings([

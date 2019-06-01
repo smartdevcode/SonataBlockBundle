@@ -16,7 +16,7 @@ namespace Sonata\BlockBundle\Exception\Renderer;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Response;
-use Twig\Environment;
+use Symfony\Component\Templating\EngineInterface;
 
 /**
  * This renderer uses a template to display an error message at the block position with extensive debug information.
@@ -25,6 +25,11 @@ use Twig\Environment;
  */
 class InlineDebugRenderer implements RendererInterface
 {
+    /**
+     * @var EngineInterface
+     */
+    protected $templating;
+
     /**
      * @var string
      */
@@ -41,13 +46,14 @@ class InlineDebugRenderer implements RendererInterface
     protected $debug;
 
     /**
-     * @var Environment
+     * @param EngineInterface $templating Templating engine
+     * @param string          $template   Template to render
+     * @param bool            $debug      Whether the debug is enabled or not
+     * @param bool            $forceStyle Whether to force style within the template or not
      */
-    private $twig;
-
-    public function __construct(Environment $twig, string $template, bool $debug, bool $forceStyle = true)
+    public function __construct(EngineInterface $templating, $template, $debug, $forceStyle = true)
     {
-        $this->twig = $twig;
+        $this->templating = $templating;
         $this->template = $template;
         $this->debug = $debug;
         $this->forceStyle = $forceStyle;
@@ -56,7 +62,7 @@ class InlineDebugRenderer implements RendererInterface
     /**
      * {@inheritdoc}
      */
-    public function render(\Exception $exception, BlockInterface $block, Response $response = null): Response
+    public function render(\Exception $exception, BlockInterface $block, Response $response = null)
     {
         $response = $response ?: new Response();
 
@@ -78,7 +84,7 @@ class InlineDebugRenderer implements RendererInterface
             'forceStyle' => $this->forceStyle,
         ];
 
-        $content = $this->twig->render($this->template, $parameters);
+        $content = $this->templating->render($this->template, $parameters);
         $response->setContent($content);
 
         return $response;

@@ -45,7 +45,7 @@ final class MenuRegistry implements MenuRegistryInterface
     /**
      * {@inheritdoc}
      */
-    public function add($menu): void
+    public function add($menu)
     {
         if ($menu instanceof MenuBuilderInterface) {
             @trigger_error(

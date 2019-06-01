@@ -48,7 +48,7 @@ class BlockRendererTest extends TestCase
     /**
      * Setup test object.
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
         $this->exceptionStrategyManager = $this->createMock('Sonata\BlockBundle\Exception\Strategy\StrategyManagerInterface');
@@ -60,7 +60,7 @@ class BlockRendererTest extends TestCase
     /**
      * Test rendering a block without errors.
      */
-    public function testRenderWithoutErrors(): void
+    public function testRenderWithoutErrors()
     {
         // GIVEN
 
@@ -68,8 +68,8 @@ class BlockRendererTest extends TestCase
         $response = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $service = $this->createMock('Sonata\BlockBundle\Block\BlockServiceInterface');
         $service->expects($this->once())->method('load');
-        $service->expects($this->once())->method('execute')->willReturn($response);
-        $this->blockServiceManager->expects($this->once())->method('get')->willReturn($service);
+        $service->expects($this->once())->method('execute')->will($this->returnValue($response));
+        $this->blockServiceManager->expects($this->once())->method('get')->will($this->returnValue($service));
 
         // mock a block object
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
@@ -85,7 +85,7 @@ class BlockRendererTest extends TestCase
     /**
      * Test rendering a block that returns a wrong response.
      */
-    public function testRenderWithWrongResponse(): void
+    public function testRenderWithWrongResponse()
     {
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('A block service must return a Response object');
@@ -95,16 +95,16 @@ class BlockRendererTest extends TestCase
         // mock a block service that returns a string response
         $service = $this->createMock('Sonata\BlockBundle\Block\BlockServiceInterface');
         $service->expects($this->once())->method('load');
-        $service->expects($this->once())->method('execute')->willReturn('wrong response');
+        $service->expects($this->once())->method('execute')->will($this->returnValue('wrong response'));
 
-        $this->blockServiceManager->expects($this->once())->method('get')->willReturn($service);
+        $this->blockServiceManager->expects($this->once())->method('get')->will($this->returnValue($service));
 
         // mock the exception strategy manager to rethrow the exception
         $this->exceptionStrategyManager->expects($this->once())
             ->method('handleException')
-            ->willReturnCallback(static function ($e): void {
+            ->will($this->returnCallback(static function ($e) {
                 throw $e;
-            });
+            }));
 
         // mock the logger to ensure a crit message is logged
         $this->logger->expects($this->once())->method('error');
@@ -123,7 +123,7 @@ class BlockRendererTest extends TestCase
     /**
      * Test rendering a block that throws an exception.
      */
-    public function testRenderBlockWithException(): void
+    public function testRenderBlockWithException()
     {
         // GIVEN
 
@@ -134,18 +134,18 @@ class BlockRendererTest extends TestCase
         $exception = $this->createMock('\Exception');
         $service->expects($this->once())
             ->method('execute')
-            ->willReturnCallback(static function () use ($exception): void {
+            ->will($this->returnCallback(static function () use ($exception) {
                 throw $exception;
-            });
+            }));
 
-        $this->blockServiceManager->expects($this->once())->method('get')->willReturn($service);
+        $this->blockServiceManager->expects($this->once())->method('get')->will($this->returnValue($service));
 
         // mock the exception strategy manager to return a response when given the correct exception
         $response = $this->createMock('Symfony\Component\HttpFoundation\Response');
         $this->exceptionStrategyManager->expects($this->once())
             ->method('handleException')
             ->with($this->equalTo($exception))
-            ->willReturn($response);
+            ->will($this->returnValue($response));
 
         // mock the logger to ensure a crit message is logged
         $this->logger->expects($this->once())->method('error');

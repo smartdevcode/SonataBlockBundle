@@ -15,7 +15,7 @@ namespace Sonata\BlockBundle\Block;
 
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Interface BlockServiceInterface.
@@ -38,6 +38,19 @@ interface BlockServiceInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * Define the default options for the block.
+     *
+     * NEXT_MAJOR: rename this method.
+     *
+     * @param OptionsResolverInterface $resolver
+     *
+     * @deprecated since version 2.3, to be renamed in 4.0.
+     *             Use the method configureSettings instead.
+     *             This method will be added to the BlockServiceInterface with SonataBlockBundle 4.0
+     */
+    public function setDefaultSettings(OptionsResolverInterface $resolver);
 
     /**
      * @param BlockInterface $block
@@ -68,11 +81,4 @@ interface BlockServiceInterface
      * @return array
      */
     public function getCacheKeys(BlockInterface $block);
-
-    /**
-     * Define the default options for the block.
-     *
-     * @param OptionsResolver $resolver
-     */
-    public function configureSettings(OptionsResolver $resolver);
 }

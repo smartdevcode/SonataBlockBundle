@@ -11,17 +11,13 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
-namespace Sonata\BlockBundle\Tests\Resources;
+namespace Symfony\Component\OptionsResolver;
 
-use Sonata\CoreBundle\Test\XliffValidatorTestCase;
-
-class XliffTest extends XliffValidatorTestCase
-{
+if (!interface_exists('Symfony\Component\OptionsResolver\OptionsResolverInterface')) {
     /**
-     * @return array List all path to validate xliff
+     * @deprecated since 3.9, to be removed in 4.0. Use \Symfony\Component\OptionsResolver\OptionsResolver instead.
      */
-    public function getXliffPaths()
+    interface OptionsResolverInterface
     {
-        return [[__DIR__.'/../../Resources/translations']];
     }
 }

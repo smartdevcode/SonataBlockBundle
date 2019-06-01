@@ -19,7 +19,7 @@ use Sonata\BlockBundle\Annotation\Block;
 
 class AnnotationCompilerPassTest extends TestCase
 {
-    public function testMinimalBlock(): void
+    public function testMinimalBlock()
     {
         /*
          * @Block()
@@ -36,7 +36,7 @@ class AnnotationCompilerPassTest extends TestCase
         );
     }
 
-    public function testBlock(): void
+    public function testBlock()
     {
         /*
          * @Block()
