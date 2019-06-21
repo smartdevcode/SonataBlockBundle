@@ -86,7 +86,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setName($name): void
+    public function setName($name)
     {
         $this->name = $name;
     }
@@ -102,7 +102,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setType($type): void
+    public function setType($type)
     {
         $this->type = $type;
     }
@@ -118,7 +118,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setSettings(array $settings = []): void
+    public function setSettings(array $settings = [])
     {
         $this->settings = $settings;
     }
@@ -134,7 +134,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setSetting($name, $value): void
+    public function setSetting($name, $value)
     {
         $this->settings[$name] = $value;
     }
@@ -150,7 +150,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setEnabled($enabled): void
+    public function setEnabled($enabled)
     {
         $this->enabled = $enabled;
     }
@@ -166,7 +166,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setPosition($position): void
+    public function setPosition($position)
     {
         $this->position = $position;
     }
@@ -182,7 +182,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setCreatedAt(\DateTime $createdAt = null): void
+    public function setCreatedAt(\DateTime $createdAt = null)
     {
         $this->createdAt = $createdAt;
     }
@@ -198,7 +198,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setUpdatedAt(\DateTime $updatedAt = null): void
+    public function setUpdatedAt(\DateTime $updatedAt = null)
     {
         $this->updatedAt = $updatedAt;
     }
@@ -214,7 +214,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function addChildren(BlockInterface $child): void
+    public function addChildren(BlockInterface $child)
     {
         $this->children[] = $child;
 
@@ -232,7 +232,7 @@ abstract class BaseBlock implements BlockInterface
     /**
      * {@inheritdoc}
      */
-    public function setParent(BlockInterface $parent = null): void
+    public function setParent(BlockInterface $parent = null)
     {
         $this->parent = $parent;
     }

@@ -33,7 +33,7 @@ class BlockExtensionTest extends TestCase
      */
     protected $env;
 
-    public function setUp(): void
+    public function setUp()
     {
         $this->blockHelper = $this->getMockBuilder(
             'Sonata\BlockBundle\Templating\Helper\BlockHelper'
@@ -68,7 +68,7 @@ class BlockExtensionTest extends TestCase
     /**
      * @dataProvider provideFunction
      */
-    public function testFunction($name, $args, $expectedMethod): void
+    public function testFunction($name, $args, $expectedMethod)
     {
         $this->blockHelper->expects($this->once())
             ->method($expectedMethod);

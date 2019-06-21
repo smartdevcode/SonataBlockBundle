@@ -15,7 +15,7 @@ namespace Sonata\BlockBundle\Exception\Renderer;
 
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Twig\Environment;
+use Symfony\Component\Templating\EngineInterface;
 
 /**
  * This renderer uses a template to display an error message at the block position.
@@ -25,32 +25,36 @@ use Twig\Environment;
 class InlineRenderer implements RendererInterface
 {
     /**
+     * @var EngineInterface
+     */
+    protected $templating;
+
+    /**
      * @var string
      */
     protected $template;
 
     /**
-     * @var Environment
+     * @param EngineInterface $templating Templating engine
+     * @param string          $template   Template to render
      */
-    private $twig;
-
-    public function __construct(Environment $twig, string $template)
+    public function __construct(EngineInterface $templating, $template)
     {
-        $this->twig = $twig;
+        $this->templating = $templating;
         $this->template = $template;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function render(\Exception $exception, BlockInterface $block, Response $response = null): Response
+    public function render(\Exception $exception, BlockInterface $block, Response $response = null)
     {
         $parameters = [
             'exception' => $exception,
             'block' => $block,
         ];
 
-        $content = $this->twig->render($this->template, $parameters);
+        $content = $this->templating->render($this->template, $parameters);
 
         $response = $response ?: new Response();
         $response->setContent($content);

@@ -18,15 +18,28 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class DebugBlocksCommand extends BaseCommand
+/**
+ * @final since sonata-project/block-bundle 4.0
+ *
+ * NEXT_MAJOR: Uncomment the "final" class declaration
+ */
+/* final */class DebugBlocksCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
+     *
+     * NEXT_MAJOR: Rename to "debug:sonata:block"
      */
-    public function configure(): void
+    protected static $defaultName = 'sonata:block:debug';
+
+    /**
+     * {@inheritdoc}
+     */
+    public function configure()
     {
-        $this->setAliases(['sonata:block:debug']);
-        $this->setName('debug:sonata:block');
+        $this->setName(static::$defaultName); // BC for symfony/console < 3.4.0
+        // NEXT_MAJOR: Replace the current alias by "sonata:block:debug"
+        $this->setAliases(['debug:sonata:block']);
         $this->setDescription('Debug all blocks available, show default settings of each block');
 
         $this->addOption('context', 'c', InputOption::VALUE_REQUIRED, 'display service for the specified context');
@@ -35,17 +48,31 @@ class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output): void
+    public function execute(InputInterface $input, OutputInterface $output)
     {
+        if ('sonata:block:debug' === $input->getArgument('command')) {
+            // NEXT_MAJOR: Remove this check
+            @trigger_error(
+                'Command "sonata:block:debug" is deprecated since sonata-project/block-bundle 3.x and will be removed with the 4.0 release.'.
+                ' Use the "debug:sonata:block" command instead.',
+                E_USER_DEPRECATED
+            );
+        }
         if ($input->getOption('context')) {
-            $services = $this->getBlockServiceManager()->getServicesByContext($input->getOption('context'));
+            $services = $this->blockManager->getServicesByContext($input->getOption('context'));
         } else {
-            $services = $this->getBlockServiceManager()->getServices();
+            $services = $this->blockManager->getServices();
         }
 
         foreach ($services as $code => $service) {
             $resolver = new OptionsResolver();
-            $service->configureSettings($resolver);
+
+            // NEXT_MAJOR: Remove this check
+            if (method_exists($service, 'configureSettings')) {
+                $service->configureSettings($resolver);
+            } else {
+                $service->setDefaultSettings($resolver);
+            }
 
             $settings = $resolver->resolve();
 

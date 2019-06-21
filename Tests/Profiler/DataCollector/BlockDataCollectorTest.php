@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class BlockDataCollectorTest extends TestCase
 {
-    public function testBlockDataCollector(): void
+    public function testBlockDataCollector()
     {
         $blockHelper = $this->prophesize(BlockHelper::class);
         $request = $this->prophesize(Request::class);

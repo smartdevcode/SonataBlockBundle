@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Form\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 /**
  * @author Christian Gripp <mail@core23.de>
