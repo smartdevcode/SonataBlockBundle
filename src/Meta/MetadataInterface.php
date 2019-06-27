@@ -15,8 +15,10 @@ namespace Sonata\BlockBundle\Meta;
 
 /**
  * @author Hugo Briand <briand@ekino.com>
+ *
+ * NEXT_MAJOR: Remove CoreBundle dependency
  */
-interface MetadataInterface
+interface MetadataInterface extends \Sonata\CoreBundle\Model\MetadataInterface
 {
     /**
      * @return string

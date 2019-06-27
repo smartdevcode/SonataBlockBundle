@@ -29,6 +29,8 @@ interface RendererInterface
      * @param \Exception     $exception Exception provoked
      * @param BlockInterface $block     Block that provoked the exception
      * @param Response       $response  Response to alter
+     *
+     * @return Response
      */
-    public function render(\Exception $exception, BlockInterface $block, Response $response = null): Response;
+    public function render(\Exception $exception, BlockInterface $block, Response $response = null);
 }

@@ -19,7 +19,7 @@ use Sonata\BlockBundle\Cache\NoopHttpCacheHandler;
 
 final class NoopHttpCacheHandlerTest extends TestCase
 {
-    public function testInterface(): void
+    public function testInterface()
     {
         $this->assertInstanceOf(
             HttpCacheHandlerInterface::class,

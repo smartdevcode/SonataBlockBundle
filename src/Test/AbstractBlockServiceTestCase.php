@@ -17,11 +17,9 @@ use PHPUnit\Framework\TestCase;
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Block\BlockContextManager;
 use Sonata\BlockBundle\Block\BlockContextManagerInterface;
-use Sonata\BlockBundle\Block\BlockLoaderInterface;
+use Sonata\BlockBundle\Block\BlockServiceInterface;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
-use Sonata\BlockBundle\Model\BlockInterface;
-use Twig\Environment;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Abstract test class for block service tests.
@@ -30,6 +28,11 @@ use Twig\Environment;
  */
 abstract class AbstractBlockServiceTestCase extends TestCase
 {
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject|ContainerInterface
+     */
+    protected $container;
+
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject|BlockServiceManagerInterface
      */
@@ -41,21 +44,17 @@ abstract class AbstractBlockServiceTestCase extends TestCase
     protected $blockContextManager;
 
     /**
-     * @var Environment
+     * @var FakeTemplating
      */
-    protected $twig;
+    protected $templating;
 
-    protected function setUp(): void
+    protected function setUp()
     {
-        $this->twig = $this->getMockBuilder(Environment::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->container = $this->createMock('Symfony\Component\DependencyInjection\ContainerInterface');
+        $this->templating = new FakeTemplating();
 
-        $this->twig->method('render')
-            ->willReturn('');
-
-        $blockLoader = $this->createMock(BlockLoaderInterface::class);
-        $this->blockServiceManager = $this->createMock(BlockServiceManagerInterface::class);
+        $blockLoader = $this->createMock('Sonata\BlockBundle\Block\BlockLoaderInterface');
+        $this->blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
         $this->blockContextManager = new BlockContextManager($blockLoader, $this->blockServiceManager);
     }
 
@@ -70,11 +69,11 @@ abstract class AbstractBlockServiceTestCase extends TestCase
     {
         $this->blockServiceManager->expects($this->once())->method('get')->willReturn($blockService);
 
-        $block = $this->createMock(BlockInterface::class);
+        $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
         $block->expects($this->once())->method('getSettings')->willReturn([]);
 
         $blockContext = $this->blockContextManager->get($block);
-        $this->assertInstanceOf(BlockContextInterface::class, $blockContext);
+        $this->assertInstanceOf('Sonata\BlockBundle\Block\BlockContextInterface', $blockContext);
 
         return $blockContext;
     }
@@ -85,7 +84,7 @@ abstract class AbstractBlockServiceTestCase extends TestCase
      * @param array                 $expected     Expected settings
      * @param BlockContextInterface $blockContext BlockContext object
      */
-    protected function assertSettings(array $expected, BlockContextInterface $blockContext): void
+    protected function assertSettings(array $expected, BlockContextInterface $blockContext)
     {
         $completeExpectedOptions = array_merge([
             'use_cache' => true,
