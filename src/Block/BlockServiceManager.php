@@ -14,9 +14,8 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Block;
 
 use Psr\Log\LoggerInterface;
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Form\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class BlockServiceManager implements BlockServiceManagerInterface
@@ -42,9 +41,7 @@ class BlockServiceManager implements BlockServiceManagerInterface
     protected $contexts;
 
     /**
-     * @param ContainerInterface   $container
-     * @param mixed                $debug
-     * @param LoggerInterface|null $logger
+     * @param mixed $debug
      */
     public function __construct(ContainerInterface $container, $debug, LoggerInterface $logger = null)
     {
@@ -82,7 +79,7 @@ class BlockServiceManager implements BlockServiceManagerInterface
     /**
      * {@inheritdoc}
      */
-    public function add($name, $service, $contexts = []): void
+    public function add($name, $service, $contexts = [])
     {
         $this->services[$name] = $service;
 
@@ -95,6 +92,19 @@ class BlockServiceManager implements BlockServiceManagerInterface
         }
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function setServices(array $blockServices)
+    {
+        foreach ($blockServices as $name => $service) {
+            $this->add($name, $service);
+        }
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getServices()
     {
         foreach ($this->services as $name => $id) {
@@ -131,11 +141,29 @@ class BlockServiceManager implements BlockServiceManagerInterface
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public function getLoadedServices()
+    {
+        $services = [];
+
+        foreach ($this->services as $service) {
+            if (!$service instanceof BlockServiceInterface) {
+                continue;
+            }
+
+            $services[] = $service;
+        }
+
+        return $services;
+    }
+
+    /**
      * @todo: this function should be remove into a proper statefull object
      *
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, BlockInterface $block): void
+    public function validate(ErrorElement $errorElement, BlockInterface $block)
     {
         if (!$block->getId() && !$block->getType()) {
             return;

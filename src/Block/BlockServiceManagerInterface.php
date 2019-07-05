@@ -13,9 +13,8 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block;
 
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Form\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 interface BlockServiceManagerInterface
 {
@@ -29,11 +28,17 @@ interface BlockServiceManagerInterface
     /**
      * Return the block service linked to the link.
      *
-     * @param BlockInterface $block
      *
      * @return BlockServiceInterface
      */
     public function get(BlockInterface $block);
+
+    /**
+     * NEXT_MAJOR: remove this method.
+     *
+     * @deprecated will be removed in 2.4, use the add method instead
+     */
+    public function setServices(array $blockServices);
 
     /**
      * @return array
@@ -63,8 +68,13 @@ interface BlockServiceManagerInterface
     public function getService($name);
 
     /**
-     * @param ErrorElement   $errorElement
-     * @param BlockInterface $block
+     * NEXT_MAJOR: remove this method.
+     *
+     * @deprecated will be removed in 2.4
+     *
+     * @return array
      */
+    public function getLoadedServices();
+
     public function validate(ErrorElement $errorElement, BlockInterface $block);
 }

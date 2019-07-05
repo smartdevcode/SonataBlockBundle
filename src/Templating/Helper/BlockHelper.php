@@ -21,13 +21,15 @@ use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Sonata\BlockBundle\Cache\HttpCacheHandlerInterface;
 use Sonata\BlockBundle\Event\BlockEvent;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Sonata\BlockBundle\Util\RecursiveBlockIterator;
 use Sonata\Cache\CacheAdapterInterface;
 use Sonata\Cache\CacheManagerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Stopwatch\Stopwatch;
+use Symfony\Component\Templating\Helper\Helper;
 
-class BlockHelper
+class BlockHelper extends Helper
 {
     /**
      * @var BlockServiceManagerInterface
@@ -83,14 +85,9 @@ class BlockHelper
     private $stopwatch;
 
     /**
-     * @param BlockServiceManagerInterface $blockServiceManager
-     * @param array                        $cacheBlocks
-     * @param BlockRendererInterface       $blockRenderer
-     * @param BlockContextManagerInterface $blockContextManager
-     * @param EventDispatcherInterface     $eventDispatcher
-     * @param CacheManagerInterface        $cacheManager
-     * @param HttpCacheHandlerInterface    $cacheHandler
-     * @param Stopwatch                    $stopwatch
+     * @param CacheManagerInterface     $cacheManager
+     * @param HttpCacheHandlerInterface $cacheHandler
+     * @param Stopwatch                 $stopwatch
      */
     public function __construct(BlockServiceManagerInterface $blockServiceManager, array $cacheBlocks, BlockRendererInterface $blockRenderer,
                                 BlockContextManagerInterface $blockContextManager, EventDispatcherInterface $eventDispatcher,
@@ -113,6 +110,14 @@ class BlockHelper
         $this->traces = [
             '_events' => [],
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'sonata_block';
     }
 
     /**
@@ -156,7 +161,6 @@ class BlockHelper
 
     /**
      * @param string $name
-     * @param array  $options
      *
      * @return string
      */
@@ -199,7 +203,6 @@ class BlockHelper
 
     /**
      * @param mixed $block
-     * @param array $options
      *
      * @return string|null
      */
@@ -218,6 +221,8 @@ class BlockHelper
         }
 
         $service = $this->blockServiceManager->get($blockContext->getBlock());
+
+        $this->computeAssets($blockContext, $stats);
 
         $useCache = $blockContext->getSetting('use_cache');
 
@@ -307,8 +312,59 @@ class BlockHelper
     }
 
     /**
-     * @param BlockInterface $block
+     * Traverse the parent block and its children to retrieve the correct list css and javascript only for main block.
      *
+     * @param array $stats
+     */
+    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null)
+    {
+        if ($blockContext->getBlock()->hasParent()) {
+            return;
+        }
+
+        $service = $this->blockServiceManager->get($blockContext->getBlock());
+
+        $assets = [
+            'js' => $service->getJavascripts('all'),
+            'css' => $service->getStylesheets('all'),
+        ];
+
+        if (\count($assets['js']) > 0) {
+            @trigger_error(
+                'Defining javascripts assets inside a block is deprecated since 3.3.0 and will be removed in 4.0',
+                E_USER_DEPRECATED
+            );
+        }
+
+        if (\count($assets['css']) > 0) {
+            @trigger_error(
+                'Defining css assets inside a block is deprecated since 3.2.0 and will be removed in 4.0',
+                E_USER_DEPRECATED
+            );
+        }
+
+        if ($blockContext->getBlock()->hasChildren()) {
+            $iterator = new \RecursiveIteratorIterator(new RecursiveBlockIterator($blockContext->getBlock()->getChildren()));
+
+            foreach ($iterator as $block) {
+                $assets = [
+                    'js' => array_merge($this->blockServiceManager->get($block)->getJavascripts('all'), $assets['js']),
+                    'css' => array_merge($this->blockServiceManager->get($block)->getStylesheets('all'), $assets['css']),
+                ];
+            }
+        }
+
+        if ($this->stopwatch) {
+            $stats['assets'] = $assets;
+        }
+
+        $this->assets = [
+            'js' => array_unique(array_merge($assets['js'], $this->assets['js'])),
+            'css' => array_unique(array_merge($assets['css'], $this->assets['css'])),
+        ];
+    }
+
+    /**
      * @return array
      */
     protected function startTracing(BlockInterface $block)
@@ -343,11 +399,7 @@ class BlockHelper
         ];
     }
 
-    /**
-     * @param BlockInterface $block
-     * @param array          $stats
-     */
-    protected function stopTracing(BlockInterface $block, array $stats): void
+    protected function stopTracing(BlockInterface $block, array $stats)
     {
         $e = $this->traces[$block->getId()]->stop();
 
@@ -361,8 +413,6 @@ class BlockHelper
     }
 
     /**
-     * @param BlockEvent $event
-     *
      * @return array
      */
     protected function getEventBlocks(BlockEvent $event)
@@ -401,8 +451,7 @@ class BlockHelper
     }
 
     /**
-     * @param BlockInterface $block
-     * @param array          $stats
+     * @param array $stats
      *
      * @return CacheAdapterInterface|false
      */

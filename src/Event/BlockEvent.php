@@ -28,18 +28,12 @@ class BlockEvent extends Event
      */
     protected $blocks = [];
 
-    /**
-     * @param array $settings
-     */
     public function __construct(array $settings = [])
     {
         $this->settings = $settings;
     }
 
-    /**
-     * @param BlockInterface $block
-     */
-    public function addBlock(BlockInterface $block): void
+    public function addBlock(BlockInterface $block)
     {
         $this->blocks[] = $block;
     }

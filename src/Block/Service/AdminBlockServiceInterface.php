@@ -13,32 +13,20 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Form\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
 
 /**
  * @author Christian Gripp <mail@core23.de>
  */
 interface AdminBlockServiceInterface extends BlockServiceInterface
 {
-    /**
-     * @param FormMapper     $form
-     * @param BlockInterface $block
-     */
     public function buildEditForm(FormMapper $form, BlockInterface $block);
 
-    /**
-     * @param FormMapper     $form
-     * @param BlockInterface $block
-     */
     public function buildCreateForm(FormMapper $form, BlockInterface $block);
 
-    /**
-     * @param ErrorElement   $errorElement
-     * @param BlockInterface $block
-     */
     public function validateBlock(ErrorElement $errorElement, BlockInterface $block);
 
     /**

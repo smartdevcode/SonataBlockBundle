@@ -15,25 +15,20 @@ namespace Sonata\BlockBundle\Tests\Templating\Helper;
 
 use PHPUnit\Framework\TestCase;
 use Sonata\BlockBundle\Block\BlockContext;
-use Sonata\BlockBundle\Block\BlockContextManagerInterface;
-use Sonata\BlockBundle\Block\BlockRendererInterface;
-use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Event\BlockEvent;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Templating\Helper\BlockHelper;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 class BlockHelperTest extends TestCase
 {
-    public function testRenderEventWithNoListener(): void
+    public function testRenderEventWithNoListener()
     {
-        $blockServiceManager = $this->createMock(BlockServiceManagerInterface::class);
-        $blockRenderer = $this->createMock(BlockRendererInterface::class);
-        $blockContextManager = $this->createMock(BlockContextManagerInterface::class);
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
+        $blockRenderer = $this->createMock('Sonata\BlockBundle\Block\BlockRendererInterface');
+        $blockContextManager = $this->createMock('Sonata\BlockBundle\Block\BlockContextManagerInterface');
+        $eventDispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $eventDispatcher->expects($this->once())->method('dispatch')->willReturnCallback(static function ($name, BlockEvent $event) {
             return $event;
         });
@@ -46,24 +41,30 @@ class BlockHelperTest extends TestCase
     /**
      * @group legacy
      */
-    public function testRenderEventWithListeners(): void
+    public function testRenderEventWithListeners()
     {
-        $blockService = $this->createMock(BlockServiceInterface::class);
+        $blockService = $this->createMock('Sonata\BlockBundle\Block\BlockServiceInterface');
+        $blockService->expects($this->once())->method('getJavascripts')->willReturn([
+            '/js/base.js',
+        ]);
+        $blockService->expects($this->once())->method('getStylesheets')->willReturn([
+            '/css/base.css',
+        ]);
 
-        $blockServiceManager = $this->createMock(BlockServiceManagerInterface::class);
+        $blockServiceManager = $this->createMock('Sonata\BlockBundle\Block\BlockServiceManagerInterface');
         $blockServiceManager->expects($this->any())->method('get')->willReturn($blockService);
 
-        $blockRenderer = $this->createMock(BlockRendererInterface::class);
+        $blockRenderer = $this->createMock('Sonata\BlockBundle\Block\BlockRendererInterface');
         $blockRenderer->expects($this->once())->method('render')->willReturn(new Response('<span>test</span>'));
 
-        $blockContextManager = $this->createMock(BlockContextManagerInterface::class);
+        $blockContextManager = $this->createMock('Sonata\BlockBundle\Block\BlockContextManagerInterface');
         $blockContextManager->expects($this->once())->method('get')->willReturnCallback(static function (BlockInterface $block) {
             $context = new BlockContext($block, $block->getSettings());
 
             return $context;
         });
 
-        $eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $eventDispatcher = $this->createMock('Symfony\Component\EventDispatcher\EventDispatcherInterface');
         $eventDispatcher->expects($this->once())->method('dispatch')->willReturnCallback(static function ($name, BlockEvent $event) {
             $block = new Block();
             $block->setId(1);
@@ -79,5 +80,21 @@ class BlockHelperTest extends TestCase
         $helper = new BlockHelper($blockServiceManager, [], $blockRenderer, $blockContextManager, $eventDispatcher);
 
         $this->assertSame('<span>test</span>', $helper->renderEvent('my.event'));
+
+        $this->assertSame(trim($helper->includeJavascripts('screen', '/application')), '<script src="/application/js/base.js" type="text/javascript"></script>');
+        $this->assertSame(trim($helper->includeJavascripts('screen', '')), '<script src="/js/base.js" type="text/javascript"></script>');
+
+        $this->assertSame($helper->includeStylesheets('screen', '/application'), <<<'EXPECTED'
+<style type='text/css' media='screen'>
+@import url(/application/css/base.css);
+</style>
+EXPECTED
+);
+        $this->assertSame($helper->includeStylesheets('screen', ''), <<<'EXPECTED'
+<style type='text/css' media='screen'>
+@import url(/css/base.css);
+</style>
+EXPECTED
+);
     }
 }

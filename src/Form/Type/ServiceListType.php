@@ -23,9 +23,6 @@ class ServiceListType extends AbstractType
 {
     protected $manager;
 
-    /**
-     * @param BlockServiceManagerInterface $manager
-     */
     public function __construct(BlockServiceManagerInterface $manager)
     {
         $this->manager = $manager;
@@ -55,7 +52,10 @@ class ServiceListType extends AbstractType
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $manager = $this->manager;
 

@@ -27,9 +27,6 @@ class ContainerTemplateType extends AbstractType
      */
     protected $templateChoices;
 
-    /**
-     * @param array $templateChoices
-     */
     public function __construct(array $templateChoices)
     {
         $this->templateChoices = $templateChoices;
@@ -59,7 +56,10 @@ class ContainerTemplateType extends AbstractType
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'choices' => $this->templateChoices,

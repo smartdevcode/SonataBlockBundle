@@ -18,10 +18,13 @@ Now, enable the bundle in ``bundles.php`` file::
     return [
         // ...
         Knp\Bundle\MenuBundle\KnpMenuBundle::class => ['all' => true],
+        Sonata\CoreBundle\SonataCoreBundle::class => ['all' => true],
         Sonata\BlockBundle\SonataBlockBundle::class => ['all' => true],
-        Sonata\Form\Bridge\Symfony\Bundle\SonataFormBundle::class => ['all' => true],
-        Sonata\Twig\Bridge\Symfony\Bundle\SonataTwigBundle::class => ['all' => true],
     ];
+
+Some features provided by this bundle require the ``SonataAdminBundle``.
+Please add an explicit required dependency to your project's `composer.json` to
+the ``SonataAdminBundle`` with the version listed in the suggestions of this Bundle.
 
 Configuration
 -------------
