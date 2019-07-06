@@ -21,30 +21,56 @@ use Symfony\Component\Form\FormBuilderInterface;
 interface FormMapper
 {
     /**
-     * @param mixed $type
+     * @param string $name
+     * @param mixed  $type
+     *
+     * @return FormBuilderInterface
      */
-    public function create(string $name, ?string $type = null, array $options = []): FormBuilderInterface;
+    public function create($name, $type = null, array $options = []);
 
     /**
-     * @param string[] $keys field names
+     * @param array $keys field names
+     *
+     * @return self
      */
-    public function reorder(array $keys): self;
+    public function reorder(array $keys);
 
     /**
      * @param FormBuilderInterface|string $name
+     * @param string                      $type
+     *
+     * @return self
      */
-    public function add($name, ?string $type = null, array $options = []): self;
-
-    public function remove(string $key): self;
-
-    public function setHelps(array $helps = []): self;
-
-    public function addHelp(string $name, string $help): self;
-
-    public function has(string $key): bool;
+    public function add($name, $type = null, array $options = []);
 
     /**
+     * @param string $key
+     *
+     * @return self
+     */
+    public function remove($key);
+
+    /**
+     * @return self
+     */
+    public function setHelps(array $helps = []);
+
+    /**
+     * @return self
+     */
+    public function addHelp($name, $help);
+
+    /**
+     * @param string $key
+     *
+     * @return bool
+     */
+    public function has($key);
+
+    /**
+     * @param string $key
+     *
      * @return mixed
      */
-    public function get(string $name);
+    public function get($name);
 }
