@@ -15,10 +15,10 @@ namespace Sonata\BlockBundle\Block\Service;
 
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Twig\Environment;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -31,25 +31,14 @@ abstract class AbstractBlockService implements BlockServiceInterface
     protected $name;
 
     /**
-     * @var EngineInterface|null
+     * @var Environment
      */
-    protected $templating;
+    private $twig;
 
-    /**
-     * @param string          $name
-     * @param EngineInterface $templating
-     */
-    public function __construct($name = null, EngineInterface $templating = null)
+    public function __construct(string $name, Environment $twig)
     {
-        if (null === $name || null === $templating) {
-            @trigger_error(
-                'The $name and $templating parameters will be required fields with the 4.0 release.',
-                E_USER_DEPRECATED
-            );
-        }
-
         $this->name = $name;
-        $this->templating = $templating;
+        $this->twig = $twig;
     }
 
     /**
@@ -62,7 +51,11 @@ abstract class AbstractBlockService implements BlockServiceInterface
      */
     public function renderResponse($view, array $parameters = [], Response $response = null)
     {
-        return $this->getTemplating()->renderResponse($view, $parameters, $response);
+        $response = $response ?? new Response();
+
+        $response->setContent($this->twig->render($view, $parameters));
+
+        return $response;
     }
 
     /**
@@ -85,7 +78,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaultSettings(OptionsResolverInterface $resolver)
+    public function setDefaultSettings(OptionsResolverInterface $resolver): void
     {
         $this->configureSettings($resolver);
     }
@@ -93,7 +86,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * Define the default options for the block.
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
     }
 
@@ -111,24 +104,8 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function load(BlockInterface $block)
+    public function load(BlockInterface $block): void
     {
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getJavascripts($media)
-    {
-        return [];
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getStylesheets($media)
-    {
-        return [];
     }
 
     /**
@@ -153,8 +130,8 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getTemplating()
+    public function getTwig()
     {
-        return $this->templating;
+        return $this->twig;
     }
 }

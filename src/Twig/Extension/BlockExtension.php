@@ -67,12 +67,4 @@ class BlockExtension extends AbstractExtension
             ),
         ];
     }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getName()
-    {
-        return 'sonata_block';
-    }
 }

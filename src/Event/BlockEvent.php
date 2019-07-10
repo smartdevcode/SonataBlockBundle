@@ -36,7 +36,7 @@ class BlockEvent extends Event
         $this->settings = $settings;
     }
 
-    public function addBlock(BlockInterface $block)
+    public function addBlock(BlockInterface $block): void
     {
         $this->blocks[] = $block;
     }

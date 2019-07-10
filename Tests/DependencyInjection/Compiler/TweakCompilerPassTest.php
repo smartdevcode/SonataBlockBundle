@@ -28,7 +28,7 @@ final class TweakCompilerPassTest extends TestCase
     /**
      * Setup test object.
      */
-    public function setUp()
+    public function setUp(): void
     {
         $this->container = new ContainerBuilder();
 
@@ -42,7 +42,7 @@ final class TweakCompilerPassTest extends TestCase
         $this->container->setParameter('sonata_block.blocks_by_class', []);
     }
 
-    public function testProcessAutowired()
+    public function testProcessAutowired(): void
     {
         if (!method_exists(Definition::class, 'setAutoconfigured')) {
             $this->markTestSkipped(
@@ -64,7 +64,7 @@ final class TweakCompilerPassTest extends TestCase
         $pass->process($this->container);
     }
 
-    public function testProcessSameBlockId()
+    public function testProcessSameBlockId(): void
     {
         /** @var Definition $blockDefinition */
         $blockDefinition = new Definition(null, ['acme.block.service']);
@@ -83,7 +83,7 @@ final class TweakCompilerPassTest extends TestCase
     /**
      * @group legacy
      */
-    public function testProcessDifferentBlockId()
+    public function testProcessDifferentBlockId(): void
     {
         /** @var Definition $blockDefinition */
         $blockDefinition = new Definition(null, ['acme.block.service.name']);

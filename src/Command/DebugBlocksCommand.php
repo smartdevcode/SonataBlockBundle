@@ -36,7 +36,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
     /**
      * {@inheritdoc}
      */
-    public function configure()
+    public function configure(): void
     {
         $this->setName(static::$defaultName); // BC for symfony/console < 3.4.0
         // NEXT_MAJOR: Replace the current alias by "sonata:block:debug"
@@ -49,7 +49,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): void
     {
         if ('sonata:block:debug' === $input->getArgument('command')) {
             // NEXT_MAJOR: Remove this check
@@ -70,13 +70,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
             $output->writeln(sprintf('<info>>> %s</info> (<comment>%s</comment>)', $service->getName(), $code));
 
             $resolver = new OptionsResolver();
-
-            // NEXT_MAJOR: Remove this check
-            if (method_exists($service, 'configureSettings')) {
-                $service->configureSettings($resolver);
-            } else {
-                $service->setDefaultSettings($resolver);
-            }
+            $service->configureSettings($resolver);
 
             try {
                 foreach ($resolver->resolve() as $key => $val) {

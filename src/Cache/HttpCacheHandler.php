@@ -30,7 +30,7 @@ class HttpCacheHandler implements HttpCacheHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function alterResponse(Response $response)
+    public function alterResponse(Response $response): void
     {
         if (!$response->isCacheable()) {
             // the controller flags the response as private so we keep it private!
@@ -52,7 +52,7 @@ class HttpCacheHandler implements HttpCacheHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function updateMetadata(Response $response, BlockContextInterface $blockContext = null)
+    public function updateMetadata(Response $response, BlockContextInterface $blockContext = null): void
     {
         if (null === $this->currentTtl) {
             $this->currentTtl = $response->getTtl();
@@ -66,7 +66,7 @@ class HttpCacheHandler implements HttpCacheHandlerInterface
     /**
      * {@inheritdoc}
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(FilterResponseEvent $event): void
     {
         $this->alterResponse($event->getResponse());
     }

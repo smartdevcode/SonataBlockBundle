@@ -13,11 +13,10 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Meta\Metadata;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Sonata\Form\Validator\ErrorElement;
 
 /**
  * @author Christian Gripp <mail@core23.de>
@@ -25,53 +24,45 @@ use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 abstract class AbstractAdminBlockService extends AbstractBlockService implements AdminBlockServiceInterface
 {
     /**
-     * @param string $name
-     */
-    public function __construct($name, EngineInterface $templating)
-    {
-        parent::__construct($name, $templating);
-    }
-
-    /**
      * {@inheritdoc}
      */
-    public function buildCreateForm(FormMapper $formMapper, BlockInterface $block)
+    public function buildCreateForm(FormMapper $formMapper, BlockInterface $block): void
     {
         $this->buildEditForm($formMapper, $block);
     }
 
-    public function prePersist(BlockInterface $block)
+    public function prePersist(BlockInterface $block): void
     {
     }
 
-    public function postPersist(BlockInterface $block)
+    public function postPersist(BlockInterface $block): void
     {
     }
 
-    public function preUpdate(BlockInterface $block)
+    public function preUpdate(BlockInterface $block): void
     {
     }
 
-    public function postUpdate(BlockInterface $block)
+    public function postUpdate(BlockInterface $block): void
     {
     }
 
-    public function preRemove(BlockInterface $block)
+    public function preRemove(BlockInterface $block): void
     {
     }
 
-    public function postRemove(BlockInterface $block)
+    public function postRemove(BlockInterface $block): void
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $form, BlockInterface $block)
+    public function buildEditForm(FormMapper $form, BlockInterface $block): void
     {
     }
 
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
     {
     }
 

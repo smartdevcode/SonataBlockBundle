@@ -16,7 +16,6 @@ namespace Sonata\BlockBundle\DependencyInjection\Compiler;
 use Sonata\BlockBundle\Naming\ConvertFromFqcn;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -31,7 +30,7 @@ class TweakCompilerPass implements CompilerPassInterface
     /**
      * {@inheritdoc}
      */
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $manager = $container->getDefinition('sonata.block.manager');
         $registry = $container->getDefinition('sonata.block.menu.registry');
@@ -45,7 +44,13 @@ class TweakCompilerPass implements CompilerPassInterface
             $definition->setPublic(true);
 
             if (!$definition->isAutowired()) {
-                $this->replaceBlockName($container, $definition, $id);
+                // Replace empty block id with service id
+                // NEXT_MAJOR: Remove the condition when Symfony 2.8 support will be dropped.
+                if (method_exists($definition, 'setArgument')) {
+                    $definition->setArgument(0, $id);
+                } else {
+                    $definition->replaceArgument(0, $id);
+                }
             }
 
             $blockId = $id;
@@ -90,7 +95,7 @@ class TweakCompilerPass implements CompilerPassInterface
     /**
      * Apply configurations to the context manager.
      */
-    public function applyContext(ContainerBuilder $container)
+    public function applyContext(ContainerBuilder $container): void
     {
         $definition = $container->findDefinition('sonata.block.context_manager');
 
@@ -104,48 +109,6 @@ class TweakCompilerPass implements CompilerPassInterface
                 $definition->addMethodCall('addSettingsByClass', [$class, $settings['settings'], true]);
             }
         }
-    }
-
-    /**
-     * Replaces the empty service name with the service id.
-     */
-    private function replaceBlockName(ContainerBuilder $container, Definition $definition, $id)
-    {
-        $arguments = $definition->getArguments();
-
-        // Replace empty block id with service id
-        if ($this->serviceDefinitionNeedsFirstArgument($definition)) {
-            // NEXT_MAJOR: Remove the if block when Symfony 2.8 support will be dropped.
-            if (method_exists($definition, 'setArgument')) {
-                $definition->setArgument(0, $id);
-
-                return;
-            }
-
-            $definition->replaceArgument(0, $id);
-
-            return;
-        }
-
-        if ($id !== $arguments[0] && 0 !== strpos(
-            (string) $container->getParameterBag()->resolveValue($definition->getClass()),
-            'Sonata\\BlockBundle\\Block\\Service\\'
-        )) {
-            // NEXT_MAJOR: Remove deprecation notice
-            @trigger_error(
-                sprintf('Using service id %s different from block id %s is deprecated since 3.3 and will be removed in 4.0.', $id, $arguments[0]),
-                E_USER_DEPRECATED
-            );
-        }
-    }
-
-    private function serviceDefinitionNeedsFirstArgument(Definition $definition): bool
-    {
-        $arguments = $definition->getArguments();
-
-        return empty($arguments) ||
-            null === ($arguments[0]) ||
-            \is_string($arguments[0]) && 0 === \strlen($arguments[0]);
     }
 
     /**

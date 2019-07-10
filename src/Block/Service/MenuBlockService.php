@@ -15,21 +15,21 @@ namespace Sonata\BlockBundle\Block\Service;
 
 use Knp\Menu\ItemInterface;
 use Knp\Menu\Provider\MenuProviderInterface;
-use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Menu\MenuRegistry;
 use Sonata\BlockBundle\Menu\MenuRegistryInterface;
 use Sonata\BlockBundle\Meta\Metadata;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\Form\Type\ImmutableArrayType;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Environment;
 
 /**
  * @final since sonata-project/block-bundle 3.0
@@ -44,26 +44,16 @@ class MenuBlockService extends AbstractAdminBlockService
     protected $menuProvider;
 
     /**
-     * NEXT_MAJOR: remove property.
-     *
-     * @var array
-     *
-     * @deprecated since 3.3, to be removed in 4.0
-     */
-    protected $menus;
-
-    /**
      * @var MenuRegistryInterface
      */
     protected $menuRegistry;
 
     /**
-     * @param string                     $name
      * @param MenuRegistryInterface|null $menuRegistry
      */
-    public function __construct($name, EngineInterface $templating, MenuProviderInterface $menuProvider, $menuRegistry = null)
+    public function __construct(string $name, Environment $twig, MenuProviderInterface $menuProvider, $menuRegistry = null)
     {
-        parent::__construct($name, $templating);
+        parent::__construct($name, $twig);
 
         $this->menuProvider = $menuProvider;
 
@@ -71,15 +61,6 @@ class MenuBlockService extends AbstractAdminBlockService
             $this->menuRegistry = $menuRegistry;
         } elseif (null === $menuRegistry) {
             $this->menuRegistry = new MenuRegistry();
-        } elseif (\is_array($menuRegistry)) { //NEXT_MAJOR: Remove this case
-            @trigger_error(
-                'Initializing '.__CLASS__.' with an array parameter is deprecated since 3.3 and will be removed in 4.0.',
-                E_USER_DEPRECATED
-            );
-            $this->menuRegistry = new MenuRegistry();
-            foreach ($menuRegistry as $menu) {
-                $this->menuRegistry->add($menu);
-            }
         } else {
             throw new \InvalidArgumentException(sprintf(
                 'MenuRegistry must be either null or instance of %s',
@@ -110,7 +91,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function buildEditForm(FormMapper $form, BlockInterface $block)
+    public function buildEditForm(FormMapper $form, BlockInterface $block): void
     {
         $form->add('settings', ImmutableArrayType::class, [
             'keys' => $this->getFormSettingsKeys(),
@@ -121,7 +102,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
     {
         if (($name = $block->getSetting('menu_name')) && '' !== $name && !$this->menuProvider->has($name)) {
             // If we specified a menu_name, check that it exists
@@ -134,7 +115,7 @@ class MenuBlockService extends AbstractAdminBlockService
     /**
      * {@inheritdoc}
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'title' => $this->getName(),
