@@ -17,10 +17,10 @@ use PHPUnit\Framework\TestCase;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Sonata\BlockBundle\Block\Service\AbstractBlockService;
 use Sonata\BlockBundle\Command\DebugBlocksCommand;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Environment;
 
 /**
  * @author Javier Spagnoletti <phansys@gmail.com>
@@ -97,30 +97,27 @@ final class DebugBlocksCommandTest extends TestCase
         new DebugBlocksCommand();
     }
 
-    /**
-     * @group legacy
-     */
     public function testDebugBlocks(): void
     {
         $this->application = new Application();
-        $templating = $this->createMock(EngineInterface::class);
+        $twig = $this->createMock(Environment::class);
 
         $blockManager = $this->createMock(BlockServiceManagerInterface::class);
         $blockManager
             ->expects($this->any())
             ->method('getServices')
             ->willReturn([
-                'test.without_options' => new class('Test service block without options', $templating) extends AbstractBlockService {
+                'test.without_options' => new class('Test service block without options', $twig) extends AbstractBlockService {
                 },
-                'test.with_simple_option' => new class('Test service block with simple option', $templating) extends AbstractBlockService {
-                    public function configureSettings(OptionsResolver $resolver)
+                'test.with_simple_option' => new class('Test service block with simple option', $twig) extends AbstractBlockService {
+                    public function configureSettings(OptionsResolver $resolver): void
                     {
                         $resolver->setDefault('limit', 150);
                         $resolver->setAllowedTypes('limit', 'int');
                     }
                 },
-                'test.with_required_option' => new class('Test service block with required option', $templating) extends AbstractBlockService {
-                    public function configureSettings(OptionsResolver $resolver)
+                'test.with_required_option' => new class('Test service block with required option', $twig) extends AbstractBlockService {
+                    public function configureSettings(OptionsResolver $resolver): void
                     {
                         $resolver->setRequired('limit');
                         $resolver->setAllowedTypes('limit', 'int');

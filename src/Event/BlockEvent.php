@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Event;
 
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 /**
  * @final since sonata-project/block-bundle 3.0
@@ -36,7 +36,7 @@ class BlockEvent extends Event
         $this->settings = $settings;
     }
 
-    public function addBlock(BlockInterface $block)
+    public function addBlock(BlockInterface $block): void
     {
         $this->blocks[] = $block;
     }

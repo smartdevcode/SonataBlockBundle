@@ -58,10 +58,7 @@ class ContainerTemplateType extends AbstractType
         return ChoiceType::class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'choices' => $this->templateChoices,

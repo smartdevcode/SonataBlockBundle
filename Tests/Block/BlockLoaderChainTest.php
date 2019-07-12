@@ -18,7 +18,7 @@ use Sonata\BlockBundle\Block\BlockLoaderChain;
 
 final class BlockLoaderChainTest extends TestCase
 {
-    public function testBlockNotFoundException()
+    public function testBlockNotFoundException(): void
     {
         $this->expectException(\Sonata\BlockBundle\Exception\BlockNotFoundException::class);
 
@@ -26,7 +26,7 @@ final class BlockLoaderChainTest extends TestCase
         $loader->load('foo');
     }
 
-    public function testLoaderWithSupportedLoader()
+    public function testLoaderWithSupportedLoader(): void
     {
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
@@ -41,7 +41,7 @@ final class BlockLoaderChainTest extends TestCase
         $this->assertSame($block, $loaderChain->load('foo'));
     }
 
-    public function testLoaderWithUnSupportedLoader()
+    public function testLoaderWithUnSupportedLoader(): void
     {
         $this->expectException(\Sonata\BlockBundle\Exception\BlockNotFoundException::class);
 
