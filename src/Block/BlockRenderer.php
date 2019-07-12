@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Block;
 
 use Psr\Log\LoggerInterface;
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Exception\Strategy\StrategyManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -27,27 +26,27 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @final since sonata-project/block-bundle 3.0
  */
-final class BlockRenderer implements BlockRendererInterface
+class BlockRenderer implements BlockRendererInterface
 {
     /**
      * @var BlockServiceManagerInterface
      */
-    private $blockServiceManager;
+    protected $blockServiceManager;
 
     /**
      * @var StrategyManagerInterface
      */
-    private $exceptionStrategyManager;
+    protected $exceptionStrategyManager;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
      * This property hold the last response available from the child or sibling block
@@ -118,7 +117,7 @@ final class BlockRenderer implements BlockRendererInterface
      *
      * @return Response
      */
-    private function createResponse(BlockContextInterface $blockContext, Response $response = null)
+    protected function createResponse(BlockContextInterface $blockContext, Response $response = null)
     {
         if (null === $response) {
             $response = new Response();
@@ -138,7 +137,7 @@ final class BlockRenderer implements BlockRendererInterface
      *
      * @return Response
      */
-    private function addMetaInformation(Response $response, BlockContextInterface $blockContext, BlockServiceInterface $service)
+    protected function addMetaInformation(Response $response, BlockContextInterface $blockContext, BlockServiceInterface $service)
     {
         // a response exists, use it
         if ($this->lastResponse && $this->lastResponse->isCacheable()) {

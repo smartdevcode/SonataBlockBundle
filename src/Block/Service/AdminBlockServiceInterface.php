@@ -13,13 +13,22 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\Form\Validator\ErrorElement;
+use Sonata\CoreBundle\Validator\ErrorElement;
+
+@trigger_error(
+    'The '.__NAMESPACE__.'\AdminBlockServiceInterface interface is deprecated since sonata-project/block-bundle 3.x '.
+    'and will be removed with the 4.0 release. '.
+    'Use '.__NAMESPACE__.'\Service\EditableBlockService instead.',
+    E_USER_DEPRECATED
+);
 
 /**
  * @author Christian Gripp <mail@core23.de>
+ *
+ * @deprecated since sonata-project/block-bundle 3.x, to be removed with 4.0
  */
 interface AdminBlockServiceInterface extends BlockServiceInterface
 {

@@ -19,7 +19,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\OptionsResolver\Exception\MissingOptionsException;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-final class DebugBlocksCommand extends BaseCommand
+/**
+ * @final since sonata-project/block-bundle 3.0
+ *
+ * NEXT_MAJOR: Uncomment the "final" class declaration
+ */
+/* final */class DebugBlocksCommand extends BaseCommand
 {
     /**
      * {@inheritdoc}
@@ -31,7 +36,7 @@ final class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function configure(): void
+    public function configure()
     {
         $this->setName(static::$defaultName); // BC for symfony/console < 3.4.0
         // NEXT_MAJOR: Replace the current alias by "sonata:block:debug"
@@ -44,7 +49,7 @@ final class DebugBlocksCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    public function execute(InputInterface $input, OutputInterface $output): void
+    public function execute(InputInterface $input, OutputInterface $output)
     {
         if ('sonata:block:debug' === $input->getArgument('command')) {
             // NEXT_MAJOR: Remove this check
@@ -65,7 +70,13 @@ final class DebugBlocksCommand extends BaseCommand
             $output->writeln(sprintf('<info>>> %s</info> (<comment>%s</comment>)', $service->getName(), $code));
 
             $resolver = new OptionsResolver();
-            $service->configureSettings($resolver);
+
+            // NEXT_MAJOR: Remove this check
+            if (method_exists($service, 'configureSettings')) {
+                $service->configureSettings($resolver);
+            } else {
+                $service->setDefaultSettings($resolver);
+            }
 
             try {
                 foreach ($resolver->resolve() as $key => $val) {

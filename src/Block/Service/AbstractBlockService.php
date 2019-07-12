@@ -15,10 +15,10 @@ namespace Sonata\BlockBundle\Block\Service;
 
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
-use Twig\Environment;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -31,14 +31,35 @@ abstract class AbstractBlockService implements BlockServiceInterface
     protected $name;
 
     /**
-     * @var Environment
+     * @var EngineInterface|null
      */
-    private $twig;
+    protected $templating;
 
-    public function __construct(string $name, Environment $twig)
+    /**
+     * @param EngineInterface|string $templatingOrDeprecatedName
+     * @param EngineInterface        $templating
+     */
+    public function __construct($templatingOrDeprecatedName = null, EngineInterface $templating = null)
     {
-        $this->name = $name;
-        $this->twig = $twig;
+        if (!$templatingOrDeprecatedName instanceof EngineInterface && 0 !== strpos(static::class, __NAMESPACE__.'\\')) {
+            @trigger_error(
+                sprintf(
+                    'Passing %s as argument 1 to %s::%s() is deprecated since sonata-project/block-bundle 3.x and will throw a \TypeError as of 4.0. You must pass an instance of %s instead',
+                    \gettype($templatingOrDeprecatedName),
+                    static::class, __FUNCTION__,
+                    EngineInterface::class
+                ),
+                E_USER_DEPRECATED
+            );
+        }
+
+        if ($templatingOrDeprecatedName instanceof EngineInterface) {
+            $this->name = '';
+            $this->templating = $templatingOrDeprecatedName;
+        } else {
+            $this->name = $templatingOrDeprecatedName;
+            $this->templating = $templating;
+        }
     }
 
     /**
@@ -51,11 +72,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
      */
     public function renderResponse($view, array $parameters = [], Response $response = null)
     {
-        $response = $response ?? new Response();
-
-        $response->setContent($this->twig->render($view, $parameters));
-
-        return $response;
+        return $this->getTemplating()->renderResponse($view, $parameters, $response);
     }
 
     /**
@@ -78,7 +95,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function setDefaultSettings(OptionsResolverInterface $resolver): void
+    public function setDefaultSettings(OptionsResolverInterface $resolver)
     {
         $this->configureSettings($resolver);
     }
@@ -86,7 +103,7 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * Define the default options for the block.
      */
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
     }
 
@@ -104,8 +121,24 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function load(BlockInterface $block): void
+    public function load(BlockInterface $block)
     {
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getJavascripts($media)
+    {
+        return [];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getStylesheets($media)
+    {
+        return [];
     }
 
     /**
@@ -130,8 +163,8 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * {@inheritdoc}
      */
-    public function getTwig()
+    public function getTemplating()
     {
-        return $this->twig;
+        return $this->templating;
     }
 }

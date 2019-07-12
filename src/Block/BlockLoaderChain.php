@@ -15,12 +15,15 @@ namespace Sonata\BlockBundle\Block;
 
 use Sonata\BlockBundle\Exception\BlockNotFoundException;
 
-final class BlockLoaderChain implements BlockLoaderInterface
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockLoaderChain implements BlockLoaderInterface
 {
     /**
      * @var BlockLoaderInterface[]
      */
-    private $loaders;
+    protected $loaders;
 
     /**
      * @param BlockLoaderInterface[] $loaders

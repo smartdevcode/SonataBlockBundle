@@ -17,7 +17,10 @@ use Sonata\BlockBundle\Templating\Helper\BlockHelper;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
-final class BlockExtension extends AbstractExtension
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockExtension extends AbstractExtension
 {
     /**
      * @var BlockHelper
@@ -63,5 +66,13 @@ final class BlockExtension extends AbstractExtension
                 ['is_safe' => ['html']]
             ),
         ];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function getName()
+    {
+        return 'sonata_block';
     }
 }

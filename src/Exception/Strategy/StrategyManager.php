@@ -27,42 +27,42 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class StrategyManager implements StrategyManagerInterface
+class StrategyManager implements StrategyManagerInterface
 {
     /**
      * @var ContainerInterface
      */
-    private $container;
+    protected $container;
 
     /**
      * @var array
      */
-    private $filters;
+    protected $filters;
 
     /**
      * @var array
      */
-    private $renderers;
+    protected $renderers;
 
     /**
      * @var array
      */
-    private $blockFilters;
+    protected $blockFilters;
 
     /**
      * @var array
      */
-    private $blockRenderers;
+    protected $blockRenderers;
 
     /**
      * @var string
      */
-    private $defaultFilter;
+    protected $defaultFilter;
 
     /**
      * @var string
      */
-    private $defaultRenderer;
+    protected $defaultRenderer;
 
     /**
      * @param ContainerInterface $container      Dependency injection container
@@ -87,7 +87,7 @@ final class StrategyManager implements StrategyManagerInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function setDefaultFilter($name): void
+    public function setDefaultFilter($name)
     {
         if (!\array_key_exists($name, $this->filters)) {
             throw new \InvalidArgumentException(sprintf('Cannot set default exception filter "%s". It does not exist.', $name));
@@ -103,7 +103,7 @@ final class StrategyManager implements StrategyManagerInterface
      *
      * @throws \InvalidArgumentException
      */
-    public function setDefaultRenderer($name): void
+    public function setDefaultRenderer($name)
     {
         if (!\array_key_exists($name, $this->renderers)) {
             throw new \InvalidArgumentException(sprintf('Cannot set default exception renderer "%s". It does not exist.', $name));
@@ -183,7 +183,7 @@ final class StrategyManager implements StrategyManagerInterface
      *
      * @return object
      */
-    private function getFilterService($name)
+    protected function getFilterService($name)
     {
         if (!isset($this->filters[$name])) {
             throw new \RuntimeException('The filter "%s" does not exist.');
@@ -201,7 +201,7 @@ final class StrategyManager implements StrategyManagerInterface
      *
      * @return object
      */
-    private function getRendererService($name)
+    protected function getRendererService($name)
     {
         if (!isset($this->renderers[$name])) {
             throw new \RuntimeException('The renderer "%s" does not exist.');

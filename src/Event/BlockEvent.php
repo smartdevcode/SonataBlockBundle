@@ -14,9 +14,12 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Event;
 
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
-final class BlockEvent extends Event
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockEvent extends Event
 {
     /**
      * @var array
@@ -33,7 +36,7 @@ final class BlockEvent extends Event
         $this->settings = $settings;
     }
 
-    public function addBlock(BlockInterface $block): void
+    public function addBlock(BlockInterface $block)
     {
         $this->blocks[] = $block;
     }

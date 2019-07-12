@@ -19,7 +19,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-final class ServiceListType extends AbstractType
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class ServiceListType extends AbstractType
 {
     protected $manager;
 
@@ -52,7 +55,10 @@ final class ServiceListType extends AbstractType
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    /**
+     * {@inheritdoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
     {
         $manager = $this->manager;
 

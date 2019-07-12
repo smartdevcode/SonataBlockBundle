@@ -22,12 +22,12 @@ use Sonata\BlockBundle\Model\BlockInterface;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class DebugOnlyFilter implements FilterInterface
+class DebugOnlyFilter implements FilterInterface
 {
     /**
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
      * @param bool $debug

@@ -18,7 +18,10 @@ use Sonata\BlockBundle\Event\BlockEvent;
 
 final class BlockEventTest extends TestCase
 {
-    public function testBlockEvent(): void
+    /**
+     * @group legacy
+     */
+    public function testBlockEvent()
     {
         $blockEvent = new BlockEvent();
 

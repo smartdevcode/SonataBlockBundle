@@ -19,7 +19,7 @@ use Sonata\BlockBundle\Block\BlockContextManager;
 
 final class BlockContextManagerTest extends TestCase
 {
-    public function testGetWithValidData(): void
+    public function testGetWithValidData()
     {
         $service = $this->createMock('Sonata\BlockBundle\Block\Service\AbstractBlockService');
 
@@ -48,7 +48,7 @@ final class BlockContextManagerTest extends TestCase
         ], $blockContext->getSettings());
     }
 
-    public function testGetWithSettings(): void
+    public function testGetWithSettings()
     {
         $service = $this->createMock('Sonata\BlockBundle\Block\Service\AbstractBlockService');
         $service->expects($this->once())->method('configureSettings');
@@ -86,7 +86,7 @@ final class BlockContextManagerTest extends TestCase
         ], $blockContext->getSettings());
     }
 
-    public function testWithInvalidSettings(): void
+    public function testWithInvalidSettings()
     {
         $logger = $this->createMock('Psr\Log\LoggerInterface');
         $logger->expects($this->exactly(1))->method('error');

@@ -26,7 +26,7 @@ class Block extends BaseBlock
     /**
      * {@inheritdoc}
      */
-    public function setId($id): void
+    public function setId($id)
     {
         $this->id = $id;
     }

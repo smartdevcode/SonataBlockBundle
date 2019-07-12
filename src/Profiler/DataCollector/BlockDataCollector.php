@@ -25,37 +25,37 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class BlockDataCollector implements DataCollectorInterface, \Serializable
+class BlockDataCollector implements DataCollectorInterface, \Serializable
 {
     /**
      * @var BlockHelper
      */
-    private $blocksHelper;
+    protected $blocksHelper;
 
     /**
      * @var array
      */
-    private $blocks = [];
+    protected $blocks = [];
 
     /**
      * @var array
      */
-    private $containers = [];
+    protected $containers = [];
 
     /**
      * @var array
      */
-    private $realBlocks = [];
+    protected $realBlocks = [];
 
     /**
      * @var array
      */
-    private $containerTypes = [];
+    protected $containerTypes = [];
 
     /**
      * @var array
      */
-    private $events = [];
+    protected $events = [];
 
     /**
      * @param BlockHelper $blockHelper    Block renderer
@@ -70,7 +70,7 @@ final class BlockDataCollector implements DataCollectorInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function collect(Request $request, Response $response, \Exception $exception = null): void
+    public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->blocks = $this->blocksHelper->getTraces();
 
@@ -164,7 +164,7 @@ final class BlockDataCollector implements DataCollectorInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function unserialize($data): void
+    public function unserialize($data)
     {
         $merged = unserialize($data);
 
@@ -185,7 +185,7 @@ final class BlockDataCollector implements DataCollectorInterface, \Serializable
     /**
      * {@inheritdoc}
      */
-    public function reset(): void
+    public function reset()
     {
         $this->blocks = [];
         $this->containers = [];
