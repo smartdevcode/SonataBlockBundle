@@ -22,7 +22,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author Hugo Briand <briand@ekino.com>
  */
-class ContainerTemplateType extends AbstractType
+final class ContainerTemplateType extends AbstractType
 {
     /**
      * @var array
@@ -49,7 +49,7 @@ class ContainerTemplateType extends AbstractType
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'choices' => $this->templateChoices,

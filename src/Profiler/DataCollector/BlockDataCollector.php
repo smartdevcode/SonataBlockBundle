@@ -25,17 +25,17 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class BlockDataCollector extends DataCollector
+final class BlockDataCollector extends DataCollector
 {
     /**
      * @var BlockHelper
      */
-    protected $blocksHelper;
+    private $blocksHelper;
 
     /**
      * @var array
      */
-    protected $containerTypes = [];
+    private $containerTypes = [];
 
     /**
      * @param BlockHelper $blockHelper    Block renderer
@@ -48,7 +48,7 @@ class BlockDataCollector extends DataCollector
         $this->reset();
     }
 
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    public function collect(Request $request, Response $response, ?\Exception $exception = null): void
     {
         $this->data['blocks'] = $this->blocksHelper->getTraces();
 
@@ -129,7 +129,7 @@ class BlockDataCollector extends DataCollector
         return 'block';
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->data['blocks'] = [];
         $this->data['containers'] = [];

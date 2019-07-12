@@ -13,10 +13,8 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\DependencyInjection\Compiler;
 
-use Sonata\BlockBundle\Naming\ConvertFromFqcn;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -26,9 +24,9 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class TweakCompilerPass implements CompilerPassInterface
+final class TweakCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container)
+    public function process(ContainerBuilder $container): void
     {
         $manager = $container->getDefinition('sonata.block.manager');
         $registry = $container->getDefinition('sonata.block.menu.registry');
@@ -39,13 +37,6 @@ class TweakCompilerPass implements CompilerPassInterface
         $defaultContexs = $container->getParameter('sonata_blocks.default_contexts');
 
         foreach ($container->findTaggedServiceIds('sonata.block') as $id => $tags) {
-            $definition = $container->getDefinition($id);
-            $definition->setPublic(true);
-
-            if (!$definition->isAutowired()) {
-                $this->replaceBlockName($container, $definition, $id);
-            }
-
             $blockId = $this->getBlockId($id);
             $settings = $this->createBlockSettings($id, $tags, $defaultContexs);
 
@@ -63,18 +54,18 @@ class TweakCompilerPass implements CompilerPassInterface
             $manager->addMethodCall('add', [$id, $id, $settings['contexts']]);
         }
 
-        foreach ($container->findTaggedServiceIds('knp_menu.menu') as $id => $tags) {
+        foreach ($container->findTaggedServiceIds('knp_menu.menu') as $serviceId => $tags) {
             foreach ($tags as $attributes) {
                 if (empty($attributes['alias'])) {
-                    throw new \InvalidArgumentException(sprintf('The alias is not defined in the "knp_menu.menu" tag for the service "%s"', $id));
+                    throw new \InvalidArgumentException(sprintf('The alias is not defined in the "knp_menu.menu" tag for the service "%s"', $serviceId));
                 }
                 $registry->addMethodCall('add', [$attributes['alias']]);
             }
         }
 
         $services = [];
-        foreach ($container->findTaggedServiceIds('sonata.block.loader') as $id => $tags) {
-            $services[] = new Reference($id);
+        foreach ($container->findTaggedServiceIds('sonata.block.loader') as $serviceId => $tags) {
+            $services[] = new Reference($serviceId);
         }
 
         $container->setParameter('sonata_block.blocks', $blocks);
@@ -90,7 +81,7 @@ class TweakCompilerPass implements CompilerPassInterface
     /**
      * Apply configurations to the context manager.
      */
-    public function applyContext(ContainerBuilder $container)
+    public function applyContext(ContainerBuilder $container): void
     {
         $definition = $container->findDefinition('sonata.block.context_manager');
 
@@ -133,35 +124,6 @@ class TweakCompilerPass implements CompilerPassInterface
             'cache' => 'sonata.cache.noop',
             'settings' => [],
         ];
-    }
-
-    /**
-     * Replaces the empty service name with the service id.
-     */
-    private function replaceBlockName(ContainerBuilder $container, Definition $definition, $id)
-    {
-        $arguments = $definition->getArguments();
-
-        // Replace empty block id with service id
-        if ($this->serviceDefinitionNeedsFirstArgument($definition)) {
-            // NEXT_MAJOR: Remove the if block when Symfony 2.8 support will be dropped.
-            if (method_exists($definition, 'setArgument')) {
-                $definition->setArgument(0, $id);
-
-                return;
-            }
-
-            $definition->replaceArgument(0, $id);
-        }
-    }
-
-    private function serviceDefinitionNeedsFirstArgument(Definition $definition): bool
-    {
-        $arguments = $definition->getArguments();
-
-        return empty($arguments) ||
-            null === ($arguments[0]) ||
-            \is_string($arguments[0]) && 0 === \strlen($arguments[0]);
     }
 
     /**

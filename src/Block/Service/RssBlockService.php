@@ -13,12 +13,12 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Meta\Metadata;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\Form\Type\ImmutableArrayType;
+use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,9 +29,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
  *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class RssBlockService extends AbstractAdminBlockService
+final class RssBlockService extends AbstractAdminBlockService
 {
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'url' => false,
@@ -43,7 +43,7 @@ class RssBlockService extends AbstractAdminBlockService
         ]);
     }
 
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
     {
         $formMapper->add('settings', ImmutableArrayType::class, [
             'keys' => [
@@ -72,7 +72,7 @@ class RssBlockService extends AbstractAdminBlockService
         ]);
     }
 
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
+    public function validateBlock(ErrorElement $errorElement, BlockInterface $block): void
     {
         $errorElement
             ->with('settings[url]')
@@ -86,7 +86,7 @@ class RssBlockService extends AbstractAdminBlockService
             ->end();
     }
 
-    public function execute(BlockContextInterface $blockContext, Response $response = null)
+    public function execute(BlockContextInterface $blockContext, ?Response $response = null): Response
     {
         // merge settings
         $settings = $blockContext->getSettings();

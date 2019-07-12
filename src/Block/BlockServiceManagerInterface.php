@@ -13,68 +13,29 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block;
 
+use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
+use Sonata\Form\Validator\ErrorElement;
 
 interface BlockServiceManagerInterface
 {
     /**
-     * @param string $name
-     * @param string $service
-     * @param array  $contexts
+     * @param BlockServiceInterface|string $service
      */
-    public function add($name, $service, $contexts = []);
+    public function add(string $name, $service, array $contexts = []): void;
 
     /**
      * Return the block service linked to the link.
-     *
-     *
-     * @return BlockServiceInterface
      */
-    public function get(BlockInterface $block);
+    public function get(BlockInterface $block): BlockServiceInterface;
 
-    /**
-     * NEXT_MAJOR: remove this method.
-     *
-     * @deprecated will be removed in 2.4, use the add method instead
-     */
-    public function setServices(array $blockServices);
+    public function getServices(): array;
 
-    /**
-     * @return array
-     */
-    public function getServices();
+    public function getServicesByContext(string $name, bool $includeContainers = true): array;
 
-    /**
-     * @param string $name
-     * @param bool   $includeContainers
-     *
-     * @return array
-     */
-    public function getServicesByContext($name, $includeContainers = true);
+    public function has(string $name): bool;
 
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function has($name);
+    public function getService(string $name): BlockServiceInterface;
 
-    /**
-     * @param string $name
-     *
-     * @return BlockServiceInterface
-     */
-    public function getService($name);
-
-    /**
-     * NEXT_MAJOR: remove this method.
-     *
-     * @deprecated will be removed in 2.4
-     *
-     * @return array
-     */
-    public function getLoadedServices();
-
-    public function validate(ErrorElement $errorElement, BlockInterface $block);
+    public function validate(ErrorElement $errorElement, BlockInterface $block): void;
 }

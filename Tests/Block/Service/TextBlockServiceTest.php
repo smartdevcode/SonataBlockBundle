@@ -15,20 +15,16 @@ namespace Sonata\BlockBundle\Tests\Block\Service;
 
 use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\TextBlockService;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\BlockServiceTestCase;
-use Sonata\BlockBundle\Util\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class TextBlockServiceTest extends BlockServiceTestCase
 {
-    /**
-     * NEXT_MAJOR: Remove the "legacy" group.
-     *
-     * @group legacy
-     */
-    public function testService()
+    public function testService(): void
     {
-        $service = new TextBlockService('sonata.page.block.text', $this->templating);
+        $service = new TextBlockService('sonata.page.block.text', $this->twig);
 
         $block = new Block();
         $block->setType('core.text');
@@ -37,20 +33,16 @@ final class TextBlockServiceTest extends BlockServiceTestCase
         ]);
 
         $optionResolver = new OptionsResolver();
-        $service->setDefaultSettings($optionResolver);
+        $service->configureSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve($block->getSettings()));
 
-        $formMapper = $this->getMockBuilder('Sonata\\AdminBundle\\Form\\FormMapper')
-            ->disableOriginalConstructor()
-            ->getMock();
+        $formMapper = $this->createMock(FormMapper::class);
         $formMapper->expects($this->exactly(2))->method('add');
 
         $service->buildCreateForm($formMapper, $block);
         $service->buildEditForm($formMapper, $block);
 
-        $response = $service->execute($blockContext);
-
-        $this->assertSame('my text', $this->templating->parameters['settings']['content']);
+        $service->execute($blockContext);
     }
 }

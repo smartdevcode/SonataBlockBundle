@@ -26,7 +26,7 @@ final class CustomBlockServiceTest extends BlockServiceTestCase
      *
      * @group legacy
      *
-     * @expectedDeprecation Passing string as argument 1 to Sonata\BlockBundle\Block\Service\AbstractBlockService@anonymous::__construct() is deprecated since sonata-project/block-bundle 3.16 and will throw a \TypeError as of 4.0. You must pass an instance of Twig\Environment instead.
+     * @expectedDeprecation Passing string as argument 1 to Sonata\BlockBundle\Block\Service\AbstractBlockService@anonymous::__construct() is deprecated since sonata-project/block-bundle 3.16 and will throw a \TypeError as of 4.0. You must pass an instance of Twig\Environment instead
      */
     public function testArgumentDeprecation()
     {

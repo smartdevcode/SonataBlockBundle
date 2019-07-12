@@ -13,8 +13,8 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Form\Type\ContainerTemplateType;
 use Sonata\BlockBundle\Meta\Metadata;
 use Sonata\BlockBundle\Model\BlockInterface;
@@ -28,13 +28,11 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Render children pages.
  *
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class ContainerBlockService extends AbstractAdminBlockService
+final class ContainerBlockService extends AbstractAdminBlockService
 {
-    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block): void
     {
         $formMapper->add('enabled');
 
@@ -66,7 +64,7 @@ class ContainerBlockService extends AbstractAdminBlockService
         ]);
     }
 
-    public function execute(BlockContextInterface $blockContext, Response $response = null)
+    public function execute(BlockContextInterface $blockContext, ?Response $response = null): Response
     {
         return $this->renderResponse($blockContext->getTemplate(), [
             'block' => $blockContext->getBlock(),
@@ -75,7 +73,7 @@ class ContainerBlockService extends AbstractAdminBlockService
         ], $response);
     }
 
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'code' => '',
@@ -94,12 +92,8 @@ class ContainerBlockService extends AbstractAdminBlockService
 
     /**
      * Returns a decorator object/array from the container layout setting.
-     *
-     * @param string $layout
-     *
-     * @return array
      */
-    protected function getDecorator($layout)
+    protected function getDecorator(string $layout): array
     {
         $key = '{{ CONTENT }}';
         if (false === strpos($layout, $key)) {
