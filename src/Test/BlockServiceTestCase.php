@@ -19,10 +19,10 @@ use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Block\BlockContextManager;
 use Sonata\BlockBundle\Block\BlockContextManagerInterface;
 use Sonata\BlockBundle\Block\BlockLoaderInterface;
-use Sonata\BlockBundle\Block\BlockServiceInterface;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
+use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Twig\Environment;
 
 /**
  * Abstract test class for block service tests.
@@ -31,11 +31,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 abstract class BlockServiceTestCase extends TestCase
 {
-    /**
-     * @var MockObject|ContainerInterface
-     */
-    protected $container;
-
     /**
      * @var MockObject|BlockServiceManagerInterface
      */
@@ -47,14 +42,17 @@ abstract class BlockServiceTestCase extends TestCase
     protected $blockContextManager;
 
     /**
-     * @var FakeTemplating
+     * @var Environment
      */
-    protected $templating;
+    protected $twig;
 
-    protected function setUp()
+    protected function setUp(): void
     {
-        $this->container = $this->createMock(ContainerInterface::class);
-        $this->templating = new FakeTemplating();
+        $this->twig = $this->getMockBuilder(Environment::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        $this->twig->method('render')
+            ->willReturn('');
 
         $blockLoader = $this->createMock(BlockLoaderInterface::class);
         $this->blockServiceManager = $this->createMock(BlockServiceManagerInterface::class);

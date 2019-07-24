@@ -23,11 +23,17 @@ class Block extends BaseBlock
      */
     protected $id;
 
-    public function setId($id)
+    /**
+     * {@inheritdoc}
+     */
+    public function setId($id): void
     {
         $this->id = $id;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getId()
     {
         return $this->id;

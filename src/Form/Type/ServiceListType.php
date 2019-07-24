@@ -19,10 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\Options;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-/**
- * @final since sonata-project/block-bundle 3.0
- */
-class ServiceListType extends AbstractType
+final class ServiceListType extends AbstractType
 {
     protected $manager;
 
@@ -31,22 +28,31 @@ class ServiceListType extends AbstractType
         $this->manager = $manager;
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getBlockPrefix()
     {
         return 'sonata_block_service_choice';
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return $this->getBlockPrefix();
     }
 
+    /**
+     * {@inheritdoc}
+     */
     public function getParent()
     {
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $manager = $this->manager;
 

@@ -22,9 +22,12 @@ use Sonata\BlockBundle\Model\BlockInterface;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class KeepNoneFilter implements FilterInterface
+final class KeepNoneFilter implements FilterInterface
 {
-    public function handle(\Exception $exception, BlockInterface $block)
+    /**
+     * {@inheritdoc}
+     */
+    public function handle(\Throwable $exception, BlockInterface $block): bool
     {
         return false;
     }

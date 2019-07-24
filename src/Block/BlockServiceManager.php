@@ -14,64 +14,73 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Block;
 
 use Psr\Log\LoggerInterface;
+use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
+use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-/**
- * @final since sonata-project/block-bundle 3.0
- */
-class BlockServiceManager implements BlockServiceManagerInterface
+final class BlockServiceManager implements BlockServiceManagerInterface
 {
     /**
      * @var array
      */
-    protected $services;
+    private $services;
 
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    private $container;
 
     /**
      * @var bool
      */
-    protected $inValidate;
+    private $inValidate;
 
     /**
      * @var array
      */
-    protected $contexts;
+    private $contexts;
 
     /**
      * @param mixed $debug
      */
-    public function __construct(ContainerInterface $container, $debug, LoggerInterface $logger = null)
+    public function __construct(ContainerInterface $container, $debug, ?LoggerInterface $logger = null)
     {
         $this->services = [];
         $this->contexts = [];
         $this->container = $container;
     }
 
-    public function get(BlockInterface $block)
+    public function get(BlockInterface $block): BlockServiceInterface
     {
         $this->load($block->getType());
 
         return $this->services[$block->getType()];
     }
 
-    public function getService($id)
+    public function getService($id): BlockServiceInterface
     {
         return $this->load($id);
     }
 
-    public function has($id)
+    public function has(string $id): bool
     {
-        return isset($this->services[$id]) ? true : false;
+        return isset($this->services[$id]);
     }
 
-    public function add($name, $service, $contexts = [])
+    /**
+     * @param BlockServiceInterface|string $service
+     */
+    public function add(string $name, $service, array $contexts = []): void
     {
+        if (!\is_string($service) && !$service instanceof BlockServiceInterface) {
+            throw new \TypeError(sprintf(
+                'Argument 2 passed to %s() must be of type string or an object implementing %s, %s given',
+                __METHOD__,
+                BlockServiceInterface::class,
+                \is_object($service) ? \get_class($service) : \gettype($service)
+            ));
+        }
         $this->services[$name] = $service;
 
         foreach ($contexts as $context) {
@@ -83,14 +92,7 @@ class BlockServiceManager implements BlockServiceManagerInterface
         }
     }
 
-    public function setServices(array $blockServices)
-    {
-        foreach ($blockServices as $name => $service) {
-            $this->add($name, $service);
-        }
-    }
-
-    public function getServices()
+    public function getServices(): array
     {
         foreach ($this->services as $name => $id) {
             if (\is_string($id)) {
@@ -101,7 +103,7 @@ class BlockServiceManager implements BlockServiceManagerInterface
         return $this->sortServices($this->services);
     }
 
-    public function getServicesByContext($context, $includeContainers = true)
+    public function getServicesByContext(string $context, bool $includeContainers = true): array
     {
         if (!\array_key_exists($context, $this->contexts)) {
             return [];
@@ -122,27 +124,12 @@ class BlockServiceManager implements BlockServiceManagerInterface
         return $this->sortServices($services);
     }
 
-    public function getLoadedServices()
-    {
-        $services = [];
-
-        foreach ($this->services as $service) {
-            if (!$service instanceof BlockServiceInterface) {
-                continue;
-            }
-
-            $services[] = $service;
-        }
-
-        return $services;
-    }
-
     /**
      * @todo: this function should be remove into a proper statefull object
      *
      * {@inheritdoc}
      */
-    public function validate(ErrorElement $errorElement, BlockInterface $block)
+    public function validate(ErrorElement $errorElement, BlockInterface $block): void
     {
         if (!$block->getId() && !$block->getType()) {
             return;
@@ -163,13 +150,9 @@ class BlockServiceManager implements BlockServiceManagerInterface
     }
 
     /**
-     * @param string $type
-     *
      * @throws \RuntimeException
-     *
-     * @return BlockServiceInterface
      */
-    private function load($type)
+    private function load(string $type): BlockServiceInterface
     {
         if (!$this->has($type)) {
             throw new \RuntimeException(sprintf('The block service `%s` does not exist', $type));
@@ -189,13 +172,11 @@ class BlockServiceManager implements BlockServiceManagerInterface
     /**
      * Sort alphabetically services.
      *
-     * @param array $services
-     *
-     * @return array
+     * @param BlockServiceInterface[] $services
      */
-    private function sortServices($services)
+    private function sortServices(array $services): array
     {
-        uasort($services, static function ($a, $b) {
+        uasort($services, static function (BlockServiceInterface $a, BlockServiceInterface $b): int {
             if ($a->getName() === $b->getName()) {
                 return 0;
             }

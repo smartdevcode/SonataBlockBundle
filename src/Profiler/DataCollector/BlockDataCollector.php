@@ -16,7 +16,7 @@ namespace Sonata\BlockBundle\Profiler\DataCollector;
 use Sonata\BlockBundle\Templating\Helper\BlockHelper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\HttpKernel\DataCollector\DataCollectorInterface;
 
 /**
  * Block data collector for the symfony web profiling.
@@ -25,17 +25,37 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class BlockDataCollector extends DataCollector
+final class BlockDataCollector implements DataCollectorInterface, \Serializable
 {
     /**
      * @var BlockHelper
      */
-    protected $blocksHelper;
+    private $blocksHelper;
 
     /**
      * @var array
      */
-    protected $containerTypes = [];
+    private $blocks = [];
+
+    /**
+     * @var array
+     */
+    private $containers = [];
+
+    /**
+     * @var array
+     */
+    private $realBlocks = [];
+
+    /**
+     * @var array
+     */
+    private $containerTypes = [];
+
+    /**
+     * @var array
+     */
+    private $events = [];
 
     /**
      * @param BlockHelper $blockHelper    Block renderer
@@ -45,31 +65,33 @@ class BlockDataCollector extends DataCollector
     {
         $this->blocksHelper = $blockHelper;
         $this->containerTypes = $containerTypes;
-        $this->reset();
     }
 
-    public function collect(Request $request, Response $response, \Exception $exception = null)
+    /**
+     * {@inheritdoc}
+     */
+    public function collect(Request $request, Response $response, ?\Exception $exception = null): void
     {
-        $this->data['blocks'] = $this->blocksHelper->getTraces();
+        $this->blocks = $this->blocksHelper->getTraces();
 
         // split into containers & real blocks
-        foreach ($this->data['blocks'] as $id => $block) {
+        foreach ($this->blocks as $id => $block) {
             if (!\is_array($block)) {
                 return; // something went wrong while collecting information
             }
 
             if ('_events' === $id) {
                 foreach ($block as $uniqid => $event) {
-                    $this->data['events'][$uniqid] = $event;
+                    $this->events[$uniqid] = $event;
                 }
 
                 continue;
             }
 
             if (\in_array($block['type'], $this->containerTypes, true)) {
-                $this->data['containers'][$id] = $block;
+                $this->containers[$id] = $block;
             } else {
-                $this->data['realBlocks'][$id] = $block;
+                $this->realBlocks[$id] = $block;
             }
         }
     }
@@ -81,7 +103,7 @@ class BlockDataCollector extends DataCollector
      */
     public function getTotalBlock()
     {
-        return \count($this->data['realBlocks']) + \count($this->data['containers']);
+        return \count($this->realBlocks) + \count($this->containers);
     }
 
     /**
@@ -91,7 +113,7 @@ class BlockDataCollector extends DataCollector
      */
     public function getEvents()
     {
-        return $this->data['events'];
+        return $this->events;
     }
 
     /**
@@ -101,7 +123,7 @@ class BlockDataCollector extends DataCollector
      */
     public function getBlocks()
     {
-        return $this->data['blocks'];
+        return $this->blocks;
     }
 
     /**
@@ -111,7 +133,7 @@ class BlockDataCollector extends DataCollector
      */
     public function getContainers()
     {
-        return $this->data['containers'];
+        return $this->containers;
     }
 
     /**
@@ -121,19 +143,53 @@ class BlockDataCollector extends DataCollector
      */
     public function getRealBlocks()
     {
-        return $this->data['realBlocks'];
+        return $this->realBlocks;
     }
 
+    /**
+     * {@inheritdoc}
+     */
+    public function serialize()
+    {
+        $data = [
+            'blocks' => $this->blocks,
+            'containers' => $this->containers,
+            'realBlocks' => $this->realBlocks,
+            'events' => $this->events,
+        ];
+
+        return serialize($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function unserialize($data): void
+    {
+        $merged = unserialize($data);
+
+        $this->blocks = $merged['blocks'];
+        $this->containers = $merged['containers'];
+        $this->realBlocks = $merged['realBlocks'];
+        $this->events = $merged['events'];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
     public function getName()
     {
         return 'block';
     }
 
-    public function reset()
+    /**
+     * {@inheritdoc}
+     */
+    public function reset(): void
     {
-        $this->data['blocks'] = [];
-        $this->data['containers'] = [];
-        $this->data['realBlocks'] = [];
-        $this->data['events'] = [];
+        $this->blocks = [];
+        $this->containers = [];
+        $this->realBlocks = [];
+        $this->events = [];
     }
 }

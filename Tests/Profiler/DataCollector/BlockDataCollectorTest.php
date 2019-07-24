@@ -24,12 +24,11 @@ use Symfony\Component\HttpFoundation\Response;
  */
 final class BlockDataCollectorTest extends TestCase
 {
-    public function testBlockDataCollector()
+    public function testBlockDataCollector(): void
     {
         $blockHelper = $this->prophesize(BlockHelper::class);
         $request = $this->prophesize(Request::class);
         $response = $this->prophesize(Response::class);
-        $objectForBlock = new \DateTime();
 
         $blockDataCollector = new BlockDataCollector($blockHelper->reveal(), ['container']);
 
@@ -37,15 +36,15 @@ final class BlockDataCollectorTest extends TestCase
         $expectedBlocks = [
             '_events' => ['1' => '2', '3' => '4'],
             'test1' => ['type' => 'container'],
-            'test2' => ['type' => 'another_type', 'datetime' => $objectForBlock],
+            'test2' => ['type' => 'another_type'],
         ];
         $expectedContainers = ['test1' => ['type' => 'container']];
-        $expectedRealBlocks = ['test2' => ['type' => 'another_type', 'datetime' => $objectForBlock]];
+        $expectedRealBlocks = ['test2' => ['type' => 'another_type']];
 
         $blockHelper->getTraces()->willReturn([
             '_events' => ['1' => '2', '3' => '4'],
             'test1' => ['type' => 'container'],
-            'test2' => ['type' => 'another_type', 'datetime' => $objectForBlock],
+            'test2' => ['type' => 'another_type'],
         ]);
 
         $blockDataCollector->collect($request->reveal(), $response->reveal());

@@ -24,39 +24,17 @@ final class MenuRegistry implements MenuRegistryInterface
     private $names = [];
 
     /**
-     * MenuRegistry constructor.
-     *
-     * @param string[] $menus
-     *
-     * NEXT_MAJOR: remove constructor parameter
+     * {@inheritdoc}
      */
-    public function __construct($menus = null)
+    public function add(string $menu): void
     {
-        if (null !== $menus) {
-            $this->names = $menus;
-
-            @trigger_error(
-                'The menus parameter in '.__CLASS__.' is deprecated since 3.3 and will be removed in 4.0.',
-                E_USER_DEPRECATED
-            );
-        }
-    }
-
-    public function add($menu)
-    {
-        if ($menu instanceof MenuBuilderInterface) {
-            @trigger_error(
-                'Adding a '.MenuBuilderInterface::class.' is deprecated since 3.9 and will be removed in 4.0.',
-                E_USER_DEPRECATED
-            );
-
-            return;
-        }
-
         $this->names[$menu] = $menu;
     }
 
-    public function getAliasNames()
+    /**
+     * {@inheritdoc}
+     */
+    public function getAliasNames(): array
     {
         return $this->names;
     }

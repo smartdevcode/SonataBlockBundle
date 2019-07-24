@@ -23,7 +23,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 final class ServiceListTypeTest extends TestCase
 {
-    public function testFormType()
+    public function testFormType(): void
     {
         $type = new ServiceListType(
             $this->createMock(BlockServiceManagerInterface::class)
@@ -33,7 +33,7 @@ final class ServiceListTypeTest extends TestCase
         $this->assertSame(ChoiceType::class, $type->getParent());
     }
 
-    public function testOptionsWithInvalidContext()
+    public function testOptionsWithInvalidContext(): void
     {
         $this->expectException(MissingOptionsException::class);
 
@@ -50,7 +50,7 @@ final class ServiceListTypeTest extends TestCase
     /**
      * @group legacy
      */
-    public function testOptionWithValidContext()
+    public function testOptionWithValidContext(): void
     {
         $blockService = $this->createMock(BlockServiceInterface::class);
         $blockService->expects($this->once())->method('getName')->willReturn('value');

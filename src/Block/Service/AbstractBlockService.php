@@ -15,10 +15,10 @@ namespace Sonata\BlockBundle\Block\Service;
 
 use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Twig\Environment;
 
 /**
  * @author Sullivan Senechal <soullivaneuh@gmail.com>
@@ -31,57 +31,54 @@ abstract class AbstractBlockService implements BlockServiceInterface
     protected $name;
 
     /**
-     * @var EngineInterface|null
+     * @var Environment
      */
-    protected $templating;
+    private $twig;
 
     /**
-     * @param EngineInterface|string $templatingOrDeprecatedName
+     * @param Environment|string $twigOrDeprecatedName
+     * @param Environment        $twig
      */
-    public function __construct($templatingOrDeprecatedName = null, EngineInterface $templating = null)
+    public function __construct($twigOrDeprecatedName = null, ?Environment $twig = null)
     {
-        if (!$templatingOrDeprecatedName instanceof EngineInterface && 0 !== strpos(static::class, __NAMESPACE__.'\\')) {
+        if (!$twigOrDeprecatedName instanceof Environment && 0 !== strpos(static::class, __NAMESPACE__.'\\')) {
             @trigger_error(
                 sprintf(
                     'Passing %s as argument 1 to %s::%s() is deprecated since sonata-project/block-bundle 3.x and will throw a \TypeError as of 4.0. You must pass an instance of %s instead',
-                    \gettype($templatingOrDeprecatedName),
+                    \gettype($twigOrDeprecatedName),
                     static::class, __FUNCTION__,
-                    EngineInterface::class
+                    Environment::class
                 ),
                 E_USER_DEPRECATED
             );
         }
 
-        if ($templatingOrDeprecatedName instanceof EngineInterface) {
+        if ($twigOrDeprecatedName instanceof Environment) {
             $this->name = '';
-            $this->templating = $templatingOrDeprecatedName;
+            $this->twig = $twigOrDeprecatedName;
         } else {
-            $this->name = $templatingOrDeprecatedName;
-            $this->templating = $templating;
+            $this->name = $twigOrDeprecatedName;
+            $this->twig = $twig;
         }
     }
 
     /**
      * Returns a Response object than can be cacheable.
-     *
-     * @param string $view
-     *
-     * @return Response
      */
-    public function renderResponse($view, array $parameters = [], Response $response = null)
+    public function renderResponse(string $view, array $parameters = [], ?Response $response = null): Response
     {
-        return $this->getTemplating()->renderResponse($view, $parameters, $response);
+        $response = $response ?? new Response();
+
+        $response->setContent($this->twig->render($view, $parameters));
+
+        return $response;
     }
 
     /**
      * Returns a Response object that cannot be cacheable, this must be used if the Response is related to the user.
      * A good solution to make the page cacheable is to configure the block to be cached with javascript ...
-     *
-     * @param string $view
-     *
-     * @return Response
      */
-    public function renderPrivateResponse($view, array $parameters = [], Response $response = null)
+    public function renderPrivateResponse(string $view, array $parameters = [], ?Response $response = null): Response
     {
         return $this->renderResponse($view, $parameters, $response)
             ->setTtl(0)
@@ -89,7 +86,10 @@ abstract class AbstractBlockService implements BlockServiceInterface
         ;
     }
 
-    public function setDefaultSettings(OptionsResolverInterface $resolver)
+    /**
+     * {@inheritdoc}
+     */
+    public function setDefaultSettings(OptionsResolverInterface $resolver): void
     {
         $this->configureSettings($resolver);
     }
@@ -97,11 +97,11 @@ abstract class AbstractBlockService implements BlockServiceInterface
     /**
      * Define the default options for the block.
      */
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
     }
 
-    public function getCacheKeys(BlockInterface $block)
+    public function getCacheKeys(BlockInterface $block): array
     {
         return [
             'block_id' => $block->getId(),
@@ -109,21 +109,14 @@ abstract class AbstractBlockService implements BlockServiceInterface
         ];
     }
 
-    public function load(BlockInterface $block)
+    /**
+     * {@inheritdoc}
+     */
+    public function load(BlockInterface $block): void
     {
     }
 
-    public function getJavascripts($media)
-    {
-        return [];
-    }
-
-    public function getStylesheets($media)
-    {
-        return [];
-    }
-
-    public function execute(BlockContextInterface $blockContext, Response $response = null)
+    public function execute(BlockContextInterface $blockContext, ?Response $response = null): Response
     {
         return $this->renderResponse($blockContext->getTemplate(), [
             'block_context' => $blockContext,
@@ -131,13 +124,16 @@ abstract class AbstractBlockService implements BlockServiceInterface
         ], $response);
     }
 
-    public function getName()
+    /**
+     * {@inheritdoc}
+     */
+    public function getName(): string
     {
         return $this->name;
     }
 
-    public function getTemplating()
+    public function getTwig(): Environment
     {
-        return $this->templating;
+        return $this->twig;
     }
 }

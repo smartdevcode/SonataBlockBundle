@@ -13,10 +13,10 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
-use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
+use Sonata\Form\Validator\ErrorElement;
 
 @trigger_error(
     'The '.__NAMESPACE__.'\AdminBlockServiceInterface interface is deprecated since sonata-project/block-bundle 3.x '.
