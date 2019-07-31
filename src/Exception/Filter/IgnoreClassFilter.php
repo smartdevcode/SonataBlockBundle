@@ -23,22 +23,22 @@ use Sonata\BlockBundle\Model\BlockInterface;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class IgnoreClassFilter implements FilterInterface
+class IgnoreClassFilter implements FilterInterface
 {
     /**
      * @var string
      */
-    private $class;
+    protected $class;
 
-    public function __construct(string $class)
+    /**
+     * @param string $class
+     */
+    public function __construct($class)
     {
         $this->class = $class;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(\Throwable $exception, BlockInterface $block): bool
+    public function handle(\Exception $exception, BlockInterface $block)
     {
         return !$exception instanceof $this->class;
     }

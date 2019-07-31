@@ -19,14 +19,18 @@ use Sonata\BlockBundle\Model\BlockInterface;
 interface BlockLoaderInterface
 {
     /**
-     * @param string|array $name
+     * @param mixed $name
      *
      * @throws BlockNotFoundException if no block with that name is found
+     *
+     * @return BlockInterface
      */
-    public function load($name): BlockInterface;
+    public function load($name);
 
     /**
-     * @param string|array $name
+     * @param mixed $name
+     *
+     * @return bool
      */
-    public function support($name): bool;
+    public function support($name);
 }

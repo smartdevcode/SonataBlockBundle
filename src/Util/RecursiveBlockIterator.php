@@ -22,7 +22,7 @@ use Doctrine\Common\Collections\Collection;
  *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-final class RecursiveBlockIterator extends \RecursiveArrayIterator implements \RecursiveIterator
+class RecursiveBlockIterator extends \RecursiveArrayIterator implements \RecursiveIterator
 {
     /**
      * @param Collection|array $array
@@ -36,17 +36,11 @@ final class RecursiveBlockIterator extends \RecursiveArrayIterator implements \R
         parent::__construct($array);
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getChildren()
     {
         return new self($this->current()->getChildren());
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function hasChildren()
     {
         return $this->current()->hasChildren();

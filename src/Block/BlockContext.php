@@ -15,17 +15,20 @@ namespace Sonata\BlockBundle\Block;
 
 use Sonata\BlockBundle\Model\BlockInterface;
 
-final class BlockContext implements BlockContextInterface
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockContext implements BlockContextInterface
 {
     /**
      * @var BlockInterface
      */
-    private $block;
+    protected $block;
 
     /**
      * @var array
      */
-    private $settings;
+    protected $settings;
 
     public function __construct(BlockInterface $block, array $settings = [])
     {
@@ -33,17 +36,17 @@ final class BlockContext implements BlockContextInterface
         $this->settings = $settings;
     }
 
-    public function getBlock(): BlockInterface
+    public function getBlock()
     {
         return $this->block;
     }
 
-    public function getSettings(): array
+    public function getSettings()
     {
         return $this->settings;
     }
 
-    public function getSetting(string $name)
+    public function getSetting($name)
     {
         if (!\array_key_exists($name, $this->settings)) {
             throw new \RuntimeException(sprintf('Unable to find the option `%s` (%s) - define the option in the related BlockServiceInterface', $name, $this->block->getType()));
@@ -52,7 +55,7 @@ final class BlockContext implements BlockContextInterface
         return $this->settings[$name];
     }
 
-    public function setSetting(string $name, $value): BlockContextInterface
+    public function setSetting($name, $value)
     {
         if (!\array_key_exists($name, $this->settings)) {
             throw new \RuntimeException(sprintf('It\'s not possible add non existing setting `%s`.', $name));
@@ -63,7 +66,7 @@ final class BlockContext implements BlockContextInterface
         return $this;
     }
 
-    public function getTemplate(): string
+    public function getTemplate()
     {
         return $this->getSetting('template');
     }

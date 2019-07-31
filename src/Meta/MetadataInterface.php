@@ -15,27 +15,39 @@ namespace Sonata\BlockBundle\Meta;
 
 /**
  * @author Hugo Briand <briand@ekino.com>
+ *
+ * NEXT_MAJOR: Remove CoreBundle dependency
  */
-interface MetadataInterface
+interface MetadataInterface extends \Sonata\CoreBundle\Model\MetadataInterface
 {
-    public function getTitle(): string;
+    /**
+     * @return string
+     */
+    public function getTitle();
 
-    public function getDescription(): ?string;
+    /**
+     * @return string|null
+     */
+    public function getDescription();
 
-    public function getImage(): ?string;
+    /**
+     * @return string|null
+     */
+    public function getImage();
 
-    public function getDomain(): ?string;
+    /**
+     * @return string|null
+     */
+    public function getDomain();
 
     /**
      * @return array<string, mixed>
      */
-    public function getOptions(): array;
+    public function getOptions();
 
     /**
      * @param string $name    The option key
      * @param mixed  $default The default value if option not found
-     *
-     * @return mixed
      */
-    public function getOption(string $name, $default = null);
+    public function getOption($name, $default = null);
 }

@@ -21,13 +21,15 @@ use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Sonata\BlockBundle\Cache\HttpCacheHandlerInterface;
 use Sonata\BlockBundle\Event\BlockEvent;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Sonata\BlockBundle\Util\RecursiveBlockIterator;
 use Sonata\Cache\CacheAdapterInterface;
 use Sonata\Cache\CacheManagerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Stopwatch\Stopwatch;
-use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\Templating\Helper\Helper;
 
-class BlockHelper
+class BlockHelper extends Helper
 {
     /**
      * @var BlockServiceManagerInterface
@@ -82,16 +84,10 @@ class BlockHelper
      */
     private $stopwatch;
 
-    public function __construct(
-        BlockServiceManagerInterface $blockServiceManager,
-        array $cacheBlocks,
-        BlockRendererInterface $blockRenderer,
-        BlockContextManagerInterface $blockContextManager,
-        EventDispatcherInterface $eventDispatcher,
-        ?CacheManagerInterface $cacheManager = null,
-        ?HttpCacheHandlerInterface $cacheHandler = null,
-        ?Stopwatch $stopwatch = null
-    ) {
+    public function __construct(BlockServiceManagerInterface $blockServiceManager, array $cacheBlocks, BlockRendererInterface $blockRenderer,
+                                BlockContextManagerInterface $blockContextManager, EventDispatcherInterface $eventDispatcher,
+                                CacheManagerInterface $cacheManager = null, HttpCacheHandlerInterface $cacheHandler = null, Stopwatch $stopwatch = null)
+    {
         $this->blockServiceManager = $blockServiceManager;
         $this->cacheBlocks = $cacheBlocks;
         $this->blockRenderer = $blockRenderer;
@@ -109,6 +105,11 @@ class BlockHelper
         $this->traces = [
             '_events' => [],
         ];
+    }
+
+    public function getName()
+    {
+        return 'sonata_block';
     }
 
     /**
@@ -150,7 +151,12 @@ class BlockHelper
         return $html;
     }
 
-    public function renderEvent(string $name, array $options = []): string
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function renderEvent($name, array $options = [])
     {
         $eventName = sprintf('sonata.block.event.%s', $name);
 
@@ -179,16 +185,20 @@ class BlockHelper
      * Check if a given block type exists.
      *
      * @param string $type Block type to check for
+     *
+     * @return bool
      */
-    public function exists(string $type): bool
+    public function exists($type)
     {
         return $this->blockContextManager->exists($type);
     }
 
     /**
      * @param mixed $block
+     *
+     * @return string|null
      */
-    public function render($block, array $options = []): string
+    public function render($block, array $options = [])
     {
         $blockContext = $this->blockContextManager->get($block, $options);
 
@@ -203,6 +213,8 @@ class BlockHelper
         }
 
         $service = $this->blockServiceManager->get($blockContext->getBlock());
+
+        $this->computeAssets($blockContext, $stats);
 
         $useCache = $blockContext->getSetting('use_cache');
 
@@ -264,7 +276,8 @@ class BlockHelper
         }
 
         if ($this->stopwatch) {
-            $stats['cache']['created_at'] = $response->getDate();
+            // avoid \DateTime because of serialize/unserialize issue in PHP7.3 (https://bugs.php.net/bug.php?id=77302)
+            $stats['cache']['created_at'] = null === $response->getDate() ? null : $response->getDate()->getTimestamp();
             $stats['cache']['ttl'] = $response->getTtl() ?: 0;
             $stats['cache']['age'] = $response->getAge();
         }
@@ -283,8 +296,10 @@ class BlockHelper
 
     /**
      * Returns the rendering traces.
+     *
+     * @return array
      */
-    public function getTraces(): array
+    public function getTraces()
     {
         return $this->traces;
     }
@@ -292,7 +307,7 @@ class BlockHelper
     /**
      * Traverse the parent block and its children to retrieve the correct list css and javascript only for main block.
      */
-    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null): void
+    protected function computeAssets(BlockContextInterface $blockContext, array &$stats = null)
     {
         if ($blockContext->getBlock()->hasParent()) {
             return;
@@ -340,7 +355,12 @@ class BlockHelper
         ];
     }
 
-    private function startTracing(BlockInterface $block): array
+    /**
+     * @return array
+     *
+     * @internal since sonata-project/block-bundle 3.16
+     */
+    protected function startTracing(BlockInterface $block)
     {
         if (null !== $this->stopwatch) {
             $this->traces[$block->getId()] = $this->stopwatch->start(
@@ -372,7 +392,10 @@ class BlockHelper
         ];
     }
 
-    private function stopTracing(BlockInterface $block, array $stats): void
+    /**
+     * @internal since sonata-project/block-bundle 3.16
+     */
+    protected function stopTracing(BlockInterface $block, array $stats)
     {
         $e = $this->traces[$block->getId()]->stop();
 
@@ -385,7 +408,12 @@ class BlockHelper
         $this->traces[$block->getId()]['cache']['lifetime'] = $this->traces[$block->getId()]['cache']['age'] + $this->traces[$block->getId()]['cache']['ttl'];
     }
 
-    private function getEventBlocks(BlockEvent $event): array
+    /**
+     * @return array
+     *
+     * @internal since sonata-project/block-bundle 3.16
+     */
+    protected function getEventBlocks(BlockEvent $event)
     {
         $results = [];
 
@@ -396,7 +424,14 @@ class BlockHelper
         return $results;
     }
 
-    private function getEventListeners(string $eventName): array
+    /**
+     * @param string $eventName
+     *
+     * @return array
+     *
+     * @internal since sonata-project/block-bundle 3.16
+     */
+    protected function getEventListeners($eventName)
     {
         $results = [];
 
@@ -417,8 +452,10 @@ class BlockHelper
 
     /**
      * @return CacheAdapterInterface|false
+     *
+     * @internal since sonata-project/block-bundle 3.16
      */
-    private function getCacheService(BlockInterface $block, array &$stats = null)
+    protected function getCacheService(BlockInterface $block, array &$stats = null)
     {
         if (!$this->cacheManager) {
             return false;

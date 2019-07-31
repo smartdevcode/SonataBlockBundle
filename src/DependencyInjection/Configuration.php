@@ -24,21 +24,18 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  *
  * @final since sonata-project/block-bundle 3.0
  */
-final class Configuration implements ConfigurationInterface
+class Configuration implements ConfigurationInterface
 {
     /**
      * @var array
      */
-    private $defaultContainerTemplates;
+    protected $defaultContainerTemplates;
 
     public function __construct(array $defaultContainerTemplates)
     {
         $this->defaultContainerTemplates = $defaultContainerTemplates;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getConfigTreeBuilder()
     {
         $treeBuilder = new TreeBuilder('sonata_block');
@@ -163,6 +160,24 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
+                    ->end()
+                ->end()
+
+                ->arrayNode('menus')
+                    ->info('KNP Menus available in sonata.block.menu block configuration')
+                    ->useAttributeAsKey('id')
+                    ->prototype('scalar')->end()
+                    ->validate()
+                        ->always(static function ($value) {
+                            if (\count($value) > 0) {
+                                @trigger_error(
+                                    'The menus configuration key is deprecated since 3.3 and will be removed in 4.0.',
+                                    E_USER_DEPRECATED
+                                );
+                            }
+
+                            return $value;
+                        })
                     ->end()
                 ->end()
 

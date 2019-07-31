@@ -20,12 +20,12 @@ namespace Sonata\BlockBundle\Twig;
  *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-final class GlobalVariables
+class GlobalVariables
 {
     /**
      * @var string[]
      */
-    private $templates;
+    protected $templates;
 
     /**
      * @param string[] $templates

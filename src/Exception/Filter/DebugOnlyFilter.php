@@ -22,23 +22,23 @@ use Sonata\BlockBundle\Model\BlockInterface;
  *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class DebugOnlyFilter implements FilterInterface
+class DebugOnlyFilter implements FilterInterface
 {
     /**
      * @var bool
      */
-    private $debug = false;
+    protected $debug;
 
-    public function __construct(bool $debug)
+    /**
+     * @param bool $debug
+     */
+    public function __construct($debug)
     {
         $this->debug = $debug;
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function handle(\Throwable $exception, BlockInterface $block): bool
+    public function handle(\Exception $exception, BlockInterface $block)
     {
-        return $this->debug;
+        return $this->debug ? true : false;
     }
 }

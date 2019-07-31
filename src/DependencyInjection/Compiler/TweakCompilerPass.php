@@ -13,8 +13,10 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\DependencyInjection\Compiler;
 
+use Sonata\BlockBundle\Naming\ConvertFromFqcn;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -24,12 +26,9 @@ use Symfony\Component\DependencyInjection\Reference;
  *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-final class TweakCompilerPass implements CompilerPassInterface
+class TweakCompilerPass implements CompilerPassInterface
 {
-    /**
-     * {@inheritdoc}
-     */
-    public function process(ContainerBuilder $container): void
+    public function process(ContainerBuilder $container)
     {
         $manager = $container->getDefinition('sonata.block.manager');
         $registry = $container->getDefinition('sonata.block.menu.registry');
@@ -38,30 +37,45 @@ final class TweakCompilerPass implements CompilerPassInterface
 
         $blockTypes = $container->getParameter('sonata_blocks.block_types');
 
-        foreach ($container->findTaggedServiceIds('sonata.block') as $serviceId => $tags) {
+        foreach ($container->findTaggedServiceIds('sonata.block') as $id => $tags) {
+            $definition = $container->getDefinition($id);
+            $definition->setPublic(true);
+
+            if (!$definition->isAutowired()) {
+                $this->replaceBlockName($container, $definition, $id);
+            }
+
+            $blockId = $id;
+
+            // Only convert class service names
+            if (false !== strpos($blockId, '\\')) {
+                $convert = (new ConvertFromFqcn());
+                $blockId = $convert($blockId);
+            }
+
             // Skip manual defined blocks
-            if (!isset($blockTypes[$serviceId])) {
+            if (!isset($blockTypes[$blockId])) {
                 $contexts = $this->getContextFromTags($tags);
-                $blockTypes[$serviceId] = [
+                $blockTypes[$blockId] = [
                     'context' => $contexts,
                 ];
             }
 
-            $manager->addMethodCall('add', [$serviceId, $serviceId, isset($parameters[$serviceId]) ? $parameters[$serviceId]['contexts'] : []]);
+            $manager->addMethodCall('add', [$id, $id, isset($parameters[$id]) ? $parameters[$id]['contexts'] : []]);
         }
 
-        foreach ($container->findTaggedServiceIds('knp_menu.menu') as $serviceId => $tags) {
+        foreach ($container->findTaggedServiceIds('knp_menu.menu') as $id => $tags) {
             foreach ($tags as $attributes) {
                 if (empty($attributes['alias'])) {
-                    throw new \InvalidArgumentException(sprintf('The alias is not defined in the "knp_menu.menu" tag for the service "%s"', $serviceId));
+                    throw new \InvalidArgumentException(sprintf('The alias is not defined in the "knp_menu.menu" tag for the service "%s"', $id));
                 }
                 $registry->addMethodCall('add', [$attributes['alias']]);
             }
         }
 
         $services = [];
-        foreach ($container->findTaggedServiceIds('sonata.block.loader') as $serviceId => $tags) {
-            $services[] = new Reference($serviceId);
+        foreach ($container->findTaggedServiceIds('sonata.block.loader') as $id => $tags) {
+            $services[] = new Reference($id);
         }
 
         $container->getDefinition('sonata.block.loader.service')->replaceArgument(0, $blockTypes);
@@ -73,7 +87,7 @@ final class TweakCompilerPass implements CompilerPassInterface
     /**
      * Apply configurations to the context manager.
      */
-    public function applyContext(ContainerBuilder $container): void
+    public function applyContext(ContainerBuilder $container)
     {
         $definition = $container->findDefinition('sonata.block.context_manager');
 
@@ -87,6 +101,35 @@ final class TweakCompilerPass implements CompilerPassInterface
                 $definition->addMethodCall('addSettingsByClass', [$class, $settings['settings'], true]);
             }
         }
+    }
+
+    /**
+     * Replaces the empty service name with the service id.
+     */
+    private function replaceBlockName(ContainerBuilder $container, Definition $definition, $id)
+    {
+        $arguments = $definition->getArguments();
+
+        // Replace empty block id with service id
+        if ($this->serviceDefinitionNeedsFirstArgument($definition)) {
+            // NEXT_MAJOR: Remove the if block when Symfony 2.8 support will be dropped.
+            if (method_exists($definition, 'setArgument')) {
+                $definition->setArgument(0, $id);
+
+                return;
+            }
+
+            $definition->replaceArgument(0, $id);
+        }
+    }
+
+    private function serviceDefinitionNeedsFirstArgument(Definition $definition): bool
+    {
+        $arguments = $definition->getArguments();
+
+        return empty($arguments) ||
+            null === ($arguments[0]) ||
+            \is_string($arguments[0]) && 0 === \strlen($arguments[0]);
     }
 
     /**

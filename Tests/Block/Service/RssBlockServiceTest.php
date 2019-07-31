@@ -15,19 +15,18 @@ namespace Sonata\BlockBundle\Tests\Block\Service;
 
 use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\RssBlockService;
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\BlockServiceTestCase;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sonata\BlockBundle\Util\OptionsResolver;
 
 final class RssBlockServiceTest extends BlockServiceTestCase
 {
     /*
      * only test if the API is not broken
      */
-    public function testService(): void
+    public function testService()
     {
-        $service = new RssBlockService('sonata.page.block.rss', $this->twig);
+        $service = new RssBlockService('sonata.page.block.rss', $this->templating);
 
         $block = new Block();
         $block->setType('core.text');
@@ -36,11 +35,13 @@ final class RssBlockServiceTest extends BlockServiceTestCase
         ]);
 
         $optionResolver = new OptionsResolver();
-        $service->configureSettings($optionResolver);
+        $service->setDefaultSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve());
 
-        $formMapper = $this->createMock(FormMapper::class);
+        $formMapper = $this->getMockBuilder('Sonata\\AdminBundle\\Form\\FormMapper')
+            ->disableOriginalConstructor()
+            ->getMock();
         $formMapper->expects($this->exactly(2))->method('add');
 
         $service->buildCreateForm($formMapper, $block);
