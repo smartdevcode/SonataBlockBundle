@@ -14,37 +14,43 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Event;
 
 use Sonata\BlockBundle\Model\BlockInterface;
-use Symfony\Contracts\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\Event;
 
-final class BlockEvent extends Event
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockEvent extends Event
 {
     /**
      * @var array
      */
-    private $settings;
+    protected $settings;
 
     /**
      * @var BlockInterface[]
      */
-    private $blocks = [];
+    protected $blocks = [];
 
     public function __construct(array $settings = [])
     {
         $this->settings = $settings;
     }
 
-    public function addBlock(BlockInterface $block): void
+    public function addBlock(BlockInterface $block)
     {
         $this->blocks[] = $block;
     }
 
-    public function getSettings(): array
+    /**
+     * @return array
+     */
+    public function getSettings()
     {
         return $this->settings;
     }
 
     /**
-     * @return mixed
+     * @return BlockInterface[]
      */
     public function getBlocks()
     {
@@ -52,11 +58,12 @@ final class BlockEvent extends Event
     }
 
     /**
-     * @param mixed $default
+     * @param string $name
+     * @param mixed  $default
      *
      * @return mixed
      */
-    public function getSetting(string $name, $default = null)
+    public function getSetting($name, $default = null)
     {
         return isset($this->settings[$name]) ? $this->settings[$name] : $default;
     }

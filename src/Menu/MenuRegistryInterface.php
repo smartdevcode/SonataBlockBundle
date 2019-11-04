@@ -20,13 +20,15 @@ interface MenuRegistryInterface
 {
     /**
      * Adds a new menu.
+     *
+     * @param string $name
      */
-    public function add(string $name): void;
+    public function add($name);
 
     /**
      * Returns all alias names.
      *
      * @return string[]
      */
-    public function getAliasNames(): array;
+    public function getAliasNames();
 }

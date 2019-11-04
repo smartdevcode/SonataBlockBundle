@@ -13,22 +13,22 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Meta\Metadata;
-use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\Form\Type\ImmutableArrayType;
-use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
+ * @final since sonata-project/block-bundle 3.0
+ *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-final class TemplateBlockService extends AbstractBlockService implements EditableBlockService
+class TemplateBlockService extends AbstractAdminBlockService
 {
-    public function execute(BlockContextInterface $blockContext, ?Response $response = null): Response
+    public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
         return $this->renderResponse($blockContext->getTemplate(), [
             'block' => $blockContext->getBlock(),
@@ -36,14 +36,9 @@ final class TemplateBlockService extends AbstractBlockService implements Editabl
         ], $response);
     }
 
-    public function configureCreateForm(FormMapper $form, BlockInterface $block): void
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
-        $this->configureEditForm($form, $block);
-    }
-
-    public function configureEditForm(FormMapper $form, BlockInterface $block): void
-    {
-        $form->add('settings', ImmutableArrayType::class, [
+        $formMapper->add('settings', ImmutableArrayType::class, [
             'keys' => [
                 ['template', null, [
                     'label' => 'form.label_template',
@@ -53,20 +48,16 @@ final class TemplateBlockService extends AbstractBlockService implements Editabl
         ]);
     }
 
-    public function validate(ErrorElement $errorElement, BlockInterface $block): void
-    {
-    }
-
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'template' => '@SonataBlock/Block/block_template.html.twig',
         ]);
     }
 
-    public function getMetadata(): MetadataInterface
+    public function getBlockMetadata($code = null)
     {
-        return new Metadata('sonata.block.service.template', null, null, 'SonataBlockBundle', [
+        return new Metadata($this->getName(), (null !== $code ? $code : $this->getName()), false, 'SonataBlockBundle', [
             'class' => 'fa fa-code',
         ]);
     }

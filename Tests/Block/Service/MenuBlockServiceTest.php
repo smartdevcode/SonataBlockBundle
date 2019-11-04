@@ -15,9 +15,7 @@ namespace Sonata\BlockBundle\Tests\Block\Service;
 
 use Knp\Menu\Provider\MenuProviderInterface;
 use Sonata\BlockBundle\Block\Service\MenuBlockService;
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Menu\MenuRegistryInterface;
-use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\BlockBundle\Test\BlockServiceTestCase;
 use Sonata\Form\Type\ImmutableArrayType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -37,34 +35,37 @@ final class MenuBlockServiceTest extends BlockServiceTestCase
      */
     private $menuRegistry;
 
-    protected function setUp(): void
+    /**
+     * NEXT_MAJOR: Remove the "legacy" group.
+     *
+     * @group legacy
+     */
+    protected function setUp()
     {
         parent::setUp();
 
-        $this->menuProvider = $this->createMock(MenuProviderInterface::class);
-        $this->menuRegistry = $this->createMock(MenuRegistryInterface::class);
+        $this->menuProvider = $this->createMock('Knp\Menu\Provider\MenuProviderInterface');
+        $this->menuRegistry = $this->createMock('Sonata\BlockBundle\Menu\MenuRegistryInterface');
     }
 
     /**
      * @group legacy
      */
-    public function testBuildEditForm(): void
+    public function testBuildEditForm()
     {
         $this->menuRegistry->expects($this->once())->method('getAliasNames')
             ->willReturn([
                 'acme:demobundle:menu' => 'Test Menu',
             ]);
 
-        $formMapper = $this->createMock(FormMapper::class);
-        $block = $this->createMock(BlockInterface::class);
+        $formMapper = $this->getMockBuilder('Sonata\AdminBundle\Form\FormMapper')->disableOriginalConstructor()->getMock();
+        $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
         $choiceOptions = [
             'required' => false,
             'label' => 'form.label_url',
             'choice_translation_domain' => 'SonataBlockBundle',
         ];
-
-        $choices = ['Test Menu' => 'acme:demobundle:menu'];
 
         // choice_as_value options is not needed in SF 3.0+
         if (method_exists(FormTypeInterface::class, 'setDefaultOptions')) {
@@ -119,17 +120,17 @@ final class MenuBlockServiceTest extends BlockServiceTestCase
                 'translation_domain' => 'SonataBlockBundle',
             ]);
 
-        $blockService = new MenuBlockService($this->twig, $this->menuProvider, $this->menuRegistry);
-        $blockService->configureEditForm($formMapper, $block);
+        $blockService = new MenuBlockService('sonata.page.block.menu', $this->templating, $this->menuProvider, $this->menuRegistry);
+        $blockService->buildEditForm($formMapper, $block);
     }
 
-    public function testDefaultSettings(): void
+    public function testDefaultSettings()
     {
-        $blockService = new MenuBlockService($this->twig, $this->menuProvider, $this->menuRegistry);
+        $blockService = new MenuBlockService('sonata.page.block.menu', $this->templating, $this->menuProvider, $this->menuRegistry);
         $blockContext = $this->getBlockContext($blockService);
 
         $this->assertSettings([
-            'title' => '',
+            'title' => 'sonata.page.block.menu',
             'cache_policy' => 'public',
             'template' => '@SonataBlock/Block/block_core_menu.html.twig',
             'menu_name' => '',

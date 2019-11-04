@@ -21,19 +21,21 @@ use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 /**
  * Block data collector for the symfony web profiling.
  *
+ * @final since sonata-project/block-bundle 3.0
+ *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class BlockDataCollector extends DataCollector
+class BlockDataCollector extends DataCollector
 {
     /**
      * @var BlockHelper
      */
-    private $blocksHelper;
+    protected $blocksHelper;
 
     /**
      * @var array
      */
-    private $containerTypes = [];
+    protected $containerTypes = [];
 
     /**
      * @param BlockHelper $blockHelper    Block renderer
@@ -46,7 +48,7 @@ final class BlockDataCollector extends DataCollector
         $this->reset();
     }
 
-    public function collect(Request $request, Response $response, ?\Exception $exception = null): void
+    public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         $this->data['blocks'] = $this->blocksHelper->getTraces();
 
@@ -127,7 +129,7 @@ final class BlockDataCollector extends DataCollector
         return 'block';
     }
 
-    public function reset(): void
+    public function reset()
     {
         $this->data['blocks'] = [];
         $this->data['containers'] = [];

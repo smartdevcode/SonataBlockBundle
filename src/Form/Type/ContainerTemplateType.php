@@ -18,14 +18,16 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
+ * @final since sonata-project/block-bundle 3.0
+ *
  * @author Hugo Briand <briand@ekino.com>
  */
-final class ContainerTemplateType extends AbstractType
+class ContainerTemplateType extends AbstractType
 {
     /**
      * @var array
      */
-    private $templateChoices;
+    protected $templateChoices;
 
     public function __construct(array $templateChoices)
     {
@@ -47,7 +49,7 @@ final class ContainerTemplateType extends AbstractType
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'choices' => $this->templateChoices,

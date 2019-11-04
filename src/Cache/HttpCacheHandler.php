@@ -17,14 +17,17 @@ use Sonata\BlockBundle\Block\BlockContextInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
-final class HttpCacheHandler implements HttpCacheHandlerInterface
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class HttpCacheHandler implements HttpCacheHandlerInterface
 {
     /**
      * @var int|null
      */
-    private $currentTtl = null;
+    protected $currentTtl = null;
 
-    public function alterResponse(Response $response): void
+    public function alterResponse(Response $response)
     {
         if (!$response->isCacheable()) {
             // the controller flags the response as private so we keep it private!
@@ -43,7 +46,7 @@ final class HttpCacheHandler implements HttpCacheHandlerInterface
         }
     }
 
-    public function updateMetadata(Response $response, ?BlockContextInterface $blockContext = null): void
+    public function updateMetadata(Response $response, BlockContextInterface $blockContext = null)
     {
         if (null === $this->currentTtl) {
             $this->currentTtl = $response->getTtl();
@@ -54,7 +57,7 @@ final class HttpCacheHandler implements HttpCacheHandlerInterface
         }
     }
 
-    public function onKernelResponse(FilterResponseEvent $event): void
+    public function onKernelResponse(FilterResponseEvent $event)
     {
         $this->alterResponse($event->getResponse());
     }

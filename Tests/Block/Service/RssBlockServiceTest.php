@@ -13,21 +13,22 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Tests\Block\Service;
 
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContext;
 use Sonata\BlockBundle\Block\Service\RssBlockService;
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Model\Block;
 use Sonata\BlockBundle\Test\BlockServiceTestCase;
-use Symfony\Component\OptionsResolver\OptionsResolver;
+use Sonata\BlockBundle\Util\OptionsResolver;
 
 final class RssBlockServiceTest extends BlockServiceTestCase
 {
     /**
      * only test if the API is not broken.
      */
-    public function testService(): void
+    public function testService()
     {
-        $service = new RssBlockService($this->twig);
+        // NEXT_MAJOR: Remove the second argument
+        $service = new RssBlockService($this->twig, $this->templating);
 
         $block = new Block();
         $block->setType('core.text');
@@ -36,15 +37,46 @@ final class RssBlockServiceTest extends BlockServiceTestCase
         ]);
 
         $optionResolver = new OptionsResolver();
-        $service->configureSettings($optionResolver);
+        $service->setDefaultSettings($optionResolver);
 
         $blockContext = new BlockContext($block, $optionResolver->resolve());
 
         $formMapper = $this->createMock(FormMapper::class);
         $formMapper->expects($this->exactly(2))->method('add');
 
-        $service->configureCreateForm($formMapper, $block);
-        $service->configureEditForm($formMapper, $block);
+        $service->buildCreateForm($formMapper, $block);
+        $service->buildEditForm($formMapper, $block);
+
+        $service->execute($blockContext);
+    }
+
+    /**
+     * NEXT_MAJOR: Remove this test.
+     *
+     * @group legacy
+     *
+     * @expectedDeprecation Method Sonata\BlockBundle\Block\Service\RssBlockService::getTemplating() is deprecated since sonata-project/block-bundle 3.%s and will be removed as of version 4.0.
+     */
+    public function testGetTemplatingDeprecation()
+    {
+        $service = new RssBlockService('sonata.page.block.rss', $this->templating);
+
+        $block = new Block();
+        $block->setType('core.text');
+        $block->setSettings([
+            'content' => 'my text',
+        ]);
+
+        $optionResolver = new OptionsResolver();
+        $service->setDefaultSettings($optionResolver);
+
+        $blockContext = new BlockContext($block, $optionResolver->resolve());
+
+        $formMapper = $this->createMock(FormMapper::class);
+        $formMapper->expects($this->exactly(2))->method('add');
+
+        $service->buildCreateForm($formMapper, $block);
+        $service->buildEditForm($formMapper, $block);
 
         $service->execute($blockContext);
     }

@@ -4,7 +4,7 @@
         <service id="Sonata\BlockBundle\Command\DebugBlocksCommand" class="Sonata\BlockBundle\Command\DebugBlocksCommand">
             <argument>null</argument>
             <argument type="service" id="sonata.block.manager"/>
-            <tag name="console.command" command="debug:sonata:block"/>
+            <tag name="console.command"/>
         </service>
     </services>
 </container>

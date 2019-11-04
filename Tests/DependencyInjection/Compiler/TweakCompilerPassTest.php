@@ -28,7 +28,7 @@ final class TweakCompilerPassTest extends TestCase
     /**
      * Setup test object.
      */
-    public function setUp(): void
+    public function setUp()
     {
         $this->container = new ContainerBuilder();
 
@@ -44,7 +44,7 @@ final class TweakCompilerPassTest extends TestCase
         $this->container->setParameter('sonata_block.blocks_by_class', []);
     }
 
-    public function testProcessAutowired(): void
+    public function testProcessAutowired()
     {
         if (!method_exists(Definition::class, 'setAutoconfigured')) {
             $this->markTestSkipped(
@@ -66,7 +66,7 @@ final class TweakCompilerPassTest extends TestCase
         $pass->process($this->container);
     }
 
-    public function testProcessSameBlockId(): void
+    public function testProcessSameBlockId()
     {
         /** @var Definition $blockDefinition */
         $blockDefinition = new Definition(null, ['acme.block.service']);
@@ -85,7 +85,7 @@ final class TweakCompilerPassTest extends TestCase
     /**
      * @group legacy
      */
-    public function testProcessDifferentBlockId(): void
+    public function testProcessDifferentBlockId()
     {
         /** @var Definition $blockDefinition */
         $blockDefinition = new Definition(null, ['acme.block.service.name']);
@@ -99,5 +99,32 @@ final class TweakCompilerPassTest extends TestCase
 
         $pass = new TweakCompilerPass();
         $pass->process($this->container);
+    }
+
+    public function blockIds(): \Generator
+    {
+        yield 'null' => [null];
+        yield 'empty string' => [''];
+    }
+
+    /**
+     * @dataProvider blockIds
+     */
+    public function testProcessEmptyBlockId($blockId)
+    {
+        /** @var Definition $blockDefinition */
+        $blockDefinition = new Definition(null, [$blockId]);
+        $blockDefinition->addTag('sonata.block');
+
+        $managerDefinition = $this->createMock(Definition::class);
+        $managerDefinition->expects($this->once())->method('addMethodCall')->with('add', ['acme.block.service', 'acme.block.service', []]);
+
+        $this->container->setDefinition('acme.block.service', $blockDefinition);
+        $this->container->setDefinition('sonata.block.manager', $managerDefinition);
+
+        $pass = new TweakCompilerPass();
+        $pass->process($this->container);
+
+        $this->assertSame('acme.block.service', $blockDefinition->getArgument(0));
     }
 }

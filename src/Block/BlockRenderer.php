@@ -14,7 +14,6 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Block;
 
 use Psr\Log\LoggerInterface;
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Exception\Strategy\StrategyManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -24,28 +23,30 @@ use Symfony\Component\HttpFoundation\Response;
  * This function render a block and make sure the cacheable information are correctly retrieved
  * and set to the upper response (container can have child blocks, so the smallest ttl from a child
  * must be used in the container).
+ *
+ * @final since sonata-project/block-bundle 3.0
  */
-final class BlockRenderer implements BlockRendererInterface
+class BlockRenderer implements BlockRendererInterface
 {
     /**
      * @var BlockServiceManagerInterface
      */
-    private $blockServiceManager;
+    protected $blockServiceManager;
 
     /**
      * @var StrategyManagerInterface
      */
-    private $exceptionStrategyManager;
+    protected $exceptionStrategyManager;
 
     /**
      * @var LoggerInterface|null
      */
-    private $logger;
+    protected $logger;
 
     /**
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
      * This property hold the last response available from the child or sibling block
@@ -61,19 +62,15 @@ final class BlockRenderer implements BlockRendererInterface
      * @param LoggerInterface              $logger                   Logger class
      * @param bool                         $debug                    Whether in debug mode or not
      */
-    public function __construct(
-        BlockServiceManagerInterface $blockServiceManager,
-        StrategyManagerInterface $exceptionStrategyManager,
-        ?LoggerInterface $logger = null,
-        bool $debug = false
-    ) {
+    public function __construct(BlockServiceManagerInterface $blockServiceManager, StrategyManagerInterface $exceptionStrategyManager, LoggerInterface $logger = null, $debug = false)
+    {
         $this->blockServiceManager = $blockServiceManager;
         $this->exceptionStrategyManager = $exceptionStrategyManager;
         $this->logger = $logger;
         $this->debug = $debug;
     }
 
-    public function render(BlockContextInterface $blockContext, ?Response $response = null): Response
+    public function render(BlockContextInterface $blockContext, Response $response = null)
     {
         $block = $blockContext->getBlock();
 
@@ -87,8 +84,14 @@ final class BlockRenderer implements BlockRendererInterface
 
             $response = $service->execute($blockContext, $this->createResponse($blockContext, $response));
 
+            if (!$response instanceof Response) {
+                $response = null;
+
+                throw new \RuntimeException('A block service must return a Response object');
+            }
+
             $response = $this->addMetaInformation($response, $blockContext, $service);
-        } catch (\Throwable $exception) {
+        } catch (\Exception $exception) {
             if ($this->logger) {
                 $this->logger->error(sprintf(
                     '[cms::renderBlock] block.id=%d - error while rendering block - %s',
@@ -106,7 +109,10 @@ final class BlockRenderer implements BlockRendererInterface
         return $response;
     }
 
-    private function createResponse(BlockContextInterface $blockContext, ?Response $response = null): Response
+    /**
+     * @return Response
+     */
+    protected function createResponse(BlockContextInterface $blockContext, Response $response = null)
     {
         if (null === $response) {
             $response = new Response();
@@ -122,12 +128,12 @@ final class BlockRenderer implements BlockRendererInterface
 
     /**
      * This method is responsible to cascade ttl to the parent block.
+     *
+     *
+     * @return Response
      */
-    private function addMetaInformation(
-        Response $response,
-        BlockContextInterface $blockContext,
-        BlockServiceInterface $service
-    ): Response {
+    protected function addMetaInformation(Response $response, BlockContextInterface $blockContext, BlockServiceInterface $service)
+    {
         // a response exists, use it
         if ($this->lastResponse && $this->lastResponse->isCacheable()) {
             $response->setTtl($this->lastResponse->getTtl());

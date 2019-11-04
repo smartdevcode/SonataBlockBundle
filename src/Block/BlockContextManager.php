@@ -18,38 +18,50 @@ use Psr\Log\LoggerInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\OptionsResolver\Exception\ExceptionInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
-final class BlockContextManager implements BlockContextManagerInterface
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockContextManager implements BlockContextManagerInterface
 {
     /**
      * @var BlockLoaderInterface
      */
-    private $blockLoader;
+    protected $blockLoader;
 
     /**
      * @var BlockServiceManagerInterface
      */
-    private $blockService;
+    protected $blockService;
 
     /**
      * @var array
      */
-    private $settingsByType;
+    protected $settingsByType;
 
     /**
      * @var array
      */
-    private $settingsByClass;
+    protected $settingsByClass;
 
     /**
      * @var array
      */
-    private $cacheBlocks;
+    protected $cacheBlocks;
 
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    protected $logger;
+
+    /**
+     * Used for deprecation check on {@link resolve} method.
+     * To be removed in 4.0 with BC system.
+     *
+     * @var array
+     */
+    private $reflectionCache;
 
     public function __construct(BlockLoaderInterface $blockLoader, BlockServiceManagerInterface $blockService,
         array $cacheBlocks = [], LoggerInterface $logger = null
@@ -58,9 +70,10 @@ final class BlockContextManager implements BlockContextManagerInterface
         $this->blockService = $blockService;
         $this->cacheBlocks = $cacheBlocks;
         $this->logger = $logger;
+        $this->reflectionCache = [];
     }
 
-    public function addSettingsByType(string $type, array $settings, bool $replace = false): void
+    public function addSettingsByType($type, array $settings, $replace = false)
     {
         $typeSettings = isset($this->settingsByType[$type]) ? $this->settingsByType[$type] : [];
         if ($replace) {
@@ -70,7 +83,7 @@ final class BlockContextManager implements BlockContextManagerInterface
         }
     }
 
-    public function addSettingsByClass(string $class, array $settings, bool $replace = false): void
+    public function addSettingsByClass($class, array $settings, $replace = false)
     {
         $classSettings = isset($this->settingsByClass[$class]) ? $this->settingsByClass[$class] : [];
         if ($replace) {
@@ -84,8 +97,10 @@ final class BlockContextManager implements BlockContextManagerInterface
      * Check if a given block type exists.
      *
      * @param string $type Block type to check for
+     *
+     * @return bool
      */
-    public function exists(string $type): bool
+    public function exists($type)
     {
         return $this->blockLoader->exists($type);
     }
@@ -130,7 +145,26 @@ final class BlockContextManager implements BlockContextManagerInterface
         return $blockContext;
     }
 
-    private function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block): void
+    /**
+     * NEXT_MAJOR: remove this method.
+     *
+     *
+     * @deprecated since version 2.3, to be renamed in 4.0.
+     *             Use the method configureSettings instead
+     */
+    protected function setDefaultSettings(OptionsResolverInterface $optionsResolver, BlockInterface $block)
+    {
+        if (__CLASS__ !== \get_called_class()) {
+            @trigger_error(
+                'The '.__METHOD__.' is deprecated since version 2.3, to be renamed in 4.0.'
+                .' Use '.__CLASS__.'::configureSettings instead.',
+                E_USER_DEPRECATED
+            );
+        }
+        $this->configureSettings($optionsResolver, $block);
+    }
+
+    protected function configureSettings(OptionsResolver $optionsResolver, BlockInterface $block)
     {
         // defaults for all blocks
         $optionsResolver->setDefaults([
@@ -142,12 +176,12 @@ final class BlockContextManager implements BlockContextManagerInterface
         ]);
 
         $optionsResolver
-                ->addAllowedTypes('use_cache', 'bool')
-                ->addAllowedTypes('extra_cache_keys', 'array')
-                ->addAllowedTypes('attr', 'array')
-                ->addAllowedTypes('ttl', 'int')
-                ->addAllowedTypes('template', ['string', 'bool'])
-            ;
+            ->addAllowedTypes('use_cache', 'bool')
+            ->addAllowedTypes('extra_cache_keys', 'array')
+            ->addAllowedTypes('attr', 'array')
+            ->addAllowedTypes('ttl', 'int')
+            ->addAllowedTypes('template', ['string', 'bool'])
+        ;
 
         // add type and class settings for block
         $class = ClassUtils::getClass($block);
@@ -160,7 +194,7 @@ final class BlockContextManager implements BlockContextManagerInterface
      * Adds context settings, to be able to rebuild a block context, to the
      * extra_cache_keys.
      */
-    private function setDefaultExtraCacheKeys(BlockContextInterface $blockContext, array $settings): void
+    protected function setDefaultExtraCacheKeys(BlockContextInterface $blockContext, array $settings)
     {
         if (!$blockContext->getSetting('use_cache') || $blockContext->getSetting('ttl') <= 0) {
             return;
@@ -194,14 +228,52 @@ final class BlockContextManager implements BlockContextManagerInterface
         }
     }
 
-    private function resolve(BlockInterface $block, array $settings): array
+    /**
+     * @param array $settings
+     *
+     * @return array
+     */
+    private function resolve(BlockInterface $block, $settings)
     {
-        $optionsResolver = new OptionsResolver();
+        $optionsResolver = new \Sonata\BlockBundle\Util\OptionsResolver();
 
         $this->configureSettings($optionsResolver, $block);
 
         $service = $this->blockService->get($block);
-        $service->configureSettings($optionsResolver);
+
+        // Caching method reflection
+        // NEXT_MAJOR: Remove everything here
+        $serviceClass = \get_class($service);
+        if (!isset($this->reflectionCache[$serviceClass])) {
+            $reflector = new \ReflectionMethod($service, 'setDefaultSettings');
+            $isOldOverwritten = \get_class($service) === $reflector->getDeclaringClass()->getName();
+
+            // Prevention for service classes implementing directly the interface and not extends the new base class
+            if (!method_exists($service, 'configureSettings')) {
+                $isNewOverwritten = false;
+            } else {
+                $reflector = new \ReflectionMethod($service, 'configureSettings');
+                $isNewOverwritten = \get_class($service) === $reflector->getDeclaringClass()->getName();
+            }
+
+            $this->reflectionCache[$serviceClass] = [
+                'isOldOverwritten' => $isOldOverwritten,
+                'isNewOverwritten' => $isNewOverwritten,
+            ];
+        }
+
+        // NEXT_MAJOR: Keep Only else case
+        if ($this->reflectionCache[$serviceClass]['isOldOverwritten'] && !$this->reflectionCache[$serviceClass]['isNewOverwritten']) {
+            @trigger_error(
+                'The Sonata\BlockBundle\Block\BlockServiceInterface::setDefaultSettings() method is deprecated'
+                .' since version 2.3 and will be removed in 4.0. Use configureSettings() instead.'
+                .' This method will be added to the BlockServiceInterface with SonataBlockBundle 4.0.',
+                E_USER_DEPRECATED
+            );
+            $service->setDefaultSettings($optionsResolver);
+        } else {
+            $service->configureSettings($optionsResolver);
+        }
 
         return $optionsResolver->resolve($settings);
     }

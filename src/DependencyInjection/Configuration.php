@@ -21,13 +21,15 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
  * This is the class that validates and merges configuration from your app/config files.
  *
  * To learn more see {@link http://symfony.com/doc/current/cookbook/bundles/extension.html#cookbook-bundles-extension-config-class}
+ *
+ * @final since sonata-project/block-bundle 3.0
  */
-final class Configuration implements ConfigurationInterface
+class Configuration implements ConfigurationInterface
 {
     /**
      * @var array
      */
-    private $defaultContainerTemplates;
+    protected $defaultContainerTemplates;
 
     public function __construct(array $defaultContainerTemplates)
     {
@@ -58,15 +60,28 @@ final class Configuration implements ConfigurationInterface
                         }
                     }
 
+                    if (isset($value['profiler']['container_types']) && !empty($value['profiler']['container_types'])
+                        && isset($value['container']['types']) && !empty($value['container']['types'])
+                        && 0 !== \count(array_diff($value['profiler']['container_types'], $value['container']['types']))) {
+                        throw new \RuntimeException('You cannot have different config options for sonata_block.profiler.container_types and sonata_block.container.types; the first one is deprecated, in case of doubt use the latter');
+                    }
+
                     return $value;
                 })
             ->end()
             ->children()
                 ->arrayNode('profiler')
                     ->addDefaultsIfNotSet()
+                    ->fixXmlConfig('container_type', 'container_types')
                     ->children()
                         ->scalarNode('enabled')->defaultValue('%kernel.debug%')->end()
                         ->scalarNode('template')->defaultValue('@SonataBlock/Profiler/block.html.twig')->end()
+                        ->arrayNode('container_types')
+                            ->isRequired()
+                            // add default value to well know users of BlockBundle
+                            ->defaultValue(['sonata.block.service.container', 'sonata.page.block.container', 'sonata.dashboard.block.container', 'cmf.block.container', 'cmf.block.slideshow'])
+                            ->prototype('scalar')->end()
+                        ->end()
                     ->end()
                 ->end()
 
@@ -145,6 +160,24 @@ final class Configuration implements ConfigurationInterface
                                 ->end()
                             ->end()
                         ->end()
+                    ->end()
+                ->end()
+
+                ->arrayNode('menus')
+                    ->info('KNP Menus available in sonata.block.menu block configuration')
+                    ->useAttributeAsKey('id')
+                    ->prototype('scalar')->end()
+                    ->validate()
+                        ->always(static function ($value) {
+                            if (\count($value) > 0) {
+                                @trigger_error(
+                                    'The menus configuration key is deprecated since 3.3 and will be removed in 4.0.',
+                                    E_USER_DEPRECATED
+                                );
+                            }
+
+                            return $value;
+                        })
                     ->end()
                 ->end()
 

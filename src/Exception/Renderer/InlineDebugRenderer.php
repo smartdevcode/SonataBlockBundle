@@ -16,44 +16,52 @@ namespace Sonata\BlockBundle\Exception\Renderer;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Symfony\Component\Debug\Exception\FlattenException;
 use Symfony\Component\HttpFoundation\Response;
-use Twig\Environment;
+use Symfony\Component\Templating\EngineInterface;
 
 /**
  * This renderer uses a template to display an error message at the block position with extensive debug information.
  *
+ * @final since sonata-project/block-bundle 3.0
+ *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-final class InlineDebugRenderer implements RendererInterface
+class InlineDebugRenderer implements RendererInterface
 {
+    /**
+     * @var EngineInterface
+     */
+    protected $templating;
+
     /**
      * @var string
      */
-    private $template;
+    protected $template;
 
     /**
      * @var bool
      */
-    private $forceStyle;
+    protected $forceStyle;
 
     /**
      * @var bool
      */
-    private $debug;
+    protected $debug;
 
     /**
-     * @var Environment
+     * @param EngineInterface $templating Templating engine
+     * @param string          $template   Template to render
+     * @param bool            $debug      Whether the debug is enabled or not
+     * @param bool            $forceStyle Whether to force style within the template or not
      */
-    private $twig;
-
-    public function __construct(Environment $twig, string $template, bool $debug, bool $forceStyle = true)
+    public function __construct(EngineInterface $templating, $template, $debug, $forceStyle = true)
     {
-        $this->twig = $twig;
+        $this->templating = $templating;
         $this->template = $template;
         $this->debug = $debug;
         $this->forceStyle = $forceStyle;
     }
 
-    public function render(\Exception $exception, BlockInterface $block, ?Response $response = null): Response
+    public function render(\Exception $exception, BlockInterface $block, Response $response = null)
     {
         $response = $response ?: new Response();
 
@@ -75,7 +83,7 @@ final class InlineDebugRenderer implements RendererInterface
             'forceStyle' => $this->forceStyle,
         ];
 
-        $content = $this->twig->render($this->template, $parameters);
+        $content = $this->templating->render($this->template, $parameters);
         $response->setContent($content);
 
         return $response;

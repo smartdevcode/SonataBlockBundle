@@ -14,14 +14,16 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Block;
 
 use Sonata\BlockBundle\Exception\BlockNotFoundException;
-use Sonata\BlockBundle\Model\BlockInterface;
 
-final class BlockLoaderChain implements BlockLoaderInterface
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class BlockLoaderChain implements BlockLoaderInterface
 {
     /**
      * @var BlockLoaderInterface[]
      */
-    private $loaders;
+    protected $loaders;
 
     /**
      * @param BlockLoaderInterface[] $loaders
@@ -35,8 +37,10 @@ final class BlockLoaderChain implements BlockLoaderInterface
      * Check if a given block type exists.
      *
      * @param string $type Block type to check for
+     *
+     * @return bool
      */
-    public function exists(string $type): bool
+    public function exists($type)
     {
         foreach ($this->loaders as $loader) {
             if ($loader->exists($type)) {
@@ -47,16 +51,8 @@ final class BlockLoaderChain implements BlockLoaderInterface
         return false;
     }
 
-    public function load($block): BlockInterface
+    public function load($block)
     {
-        if (!\is_string($block) && !\is_array($block)) {
-            throw new \TypeError(sprintf(
-                'Argument 1 passed to %s must be of type string or array, %s given',
-                __METHOD__,
-                \is_object($block) ? 'object of type '.\get_class($block) : \gettype($block)
-            ));
-        }
-
         foreach ($this->loaders as $loader) {
             if ($loader->support($block)) {
                 return $loader->load($block);
@@ -66,16 +62,8 @@ final class BlockLoaderChain implements BlockLoaderInterface
         throw new BlockNotFoundException();
     }
 
-    public function support($name): bool
+    public function support($name)
     {
-        if (!\is_string($name) && !\is_array($name)) {
-            throw new \TypeError(sprintf(
-                'Argument 1 passed to %s must be of type string or array, %s given',
-                __METHOD__,
-                \is_object($name) ? 'object of type '.\get_class($name) : \gettype($name)
-            ));
-        }
-
         return true;
     }
 }
