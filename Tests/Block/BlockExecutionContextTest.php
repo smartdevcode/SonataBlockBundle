@@ -18,7 +18,7 @@ use Sonata\BlockBundle\Block\BlockContext;
 
 final class BlockExecutionContextTest extends TestCase
 {
-    public function testBasicFeature()
+    public function testBasicFeature(): void
     {
         $block = $this->createMock('Sonata\BlockBundle\Model\BlockInterface');
 
@@ -32,7 +32,7 @@ final class BlockExecutionContextTest extends TestCase
         $this->assertSame($block, $blockContext->getBlock());
     }
 
-    public function testInvalidParameter()
+    public function testInvalidParameter(): void
     {
         $this->expectException(\RuntimeException::class);
 

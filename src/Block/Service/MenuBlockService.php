@@ -15,80 +15,49 @@ namespace Sonata\BlockBundle\Block\Service;
 
 use Knp\Menu\ItemInterface;
 use Knp\Menu\Provider\MenuProviderInterface;
-use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\BlockBundle\Menu\MenuRegistry;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Menu\MenuRegistryInterface;
 use Sonata\BlockBundle\Meta\Metadata;
+use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
-use Sonata\CoreBundle\Validator\ErrorElement;
 use Sonata\Form\Type\ImmutableArrayType;
+use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormTypeInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Templating\EngineInterface;
+use Twig\Environment;
 
 /**
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Hugo Briand <briand@ekino.com>
  */
-class MenuBlockService extends AbstractAdminBlockService
+final class MenuBlockService extends AbstractBlockService implements EditableBlockService
 {
     /**
      * @var MenuProviderInterface
      */
-    protected $menuProvider;
-
-    /**
-     * NEXT_MAJOR: remove property.
-     *
-     * @var array
-     *
-     * @deprecated since 3.3, to be removed in 4.0
-     */
-    protected $menus;
+    private $menuProvider;
 
     /**
      * @var MenuRegistryInterface
      */
-    protected $menuRegistry;
+    private $menuRegistry;
 
-    /**
-     * @param string                     $name
-     * @param MenuRegistryInterface|null $menuRegistry
-     */
-    public function __construct($name, EngineInterface $templating, MenuProviderInterface $menuProvider, $menuRegistry = null)
-    {
-        parent::__construct($name, $templating);
+    public function __construct(
+        Environment $twig,
+        MenuProviderInterface $menuProvider,
+        MenuRegistryInterface $menuRegistry
+    ) {
+        parent::__construct($twig);
 
         $this->menuProvider = $menuProvider;
-
-        if ($menuRegistry instanceof MenuRegistryInterface) {
-            $this->menuRegistry = $menuRegistry;
-        } elseif (null === $menuRegistry) {
-            $this->menuRegistry = new MenuRegistry();
-        } elseif (\is_array($menuRegistry)) { //NEXT_MAJOR: Remove this case
-            @trigger_error(
-                'Initializing '.__CLASS__.' with an array parameter is deprecated since 3.3 and will be removed in 4.0.',
-                E_USER_DEPRECATED
-            );
-            $this->menuRegistry = new MenuRegistry();
-            foreach ($menuRegistry as $menu) {
-                $this->menuRegistry->add($menu);
-            }
-        } else {
-            throw new \InvalidArgumentException(sprintf(
-                'MenuRegistry must be either null or instance of %s',
-                MenuRegistryInterface::class
-            ));
-        }
+        $this->menuRegistry = $menuRegistry;
     }
 
-    public function execute(BlockContextInterface $blockContext, Response $response = null)
+    public function execute(BlockContextInterface $blockContext, ?Response $response = null): Response
     {
         $responseSettings = [
             'menu' => $this->getMenu($blockContext),
@@ -104,7 +73,12 @@ class MenuBlockService extends AbstractAdminBlockService
         return $this->renderResponse($blockContext->getTemplate(), $responseSettings, $response);
     }
 
-    public function buildEditForm(FormMapper $form, BlockInterface $block)
+    public function configureCreateForm(FormMapper $form, BlockInterface $block): void
+    {
+        $this->configureEditForm($form, $block);
+    }
+
+    public function configureEditForm(FormMapper $form, BlockInterface $block): void
     {
         $form->add('settings', ImmutableArrayType::class, [
             'keys' => $this->getFormSettingsKeys(),
@@ -112,7 +86,7 @@ class MenuBlockService extends AbstractAdminBlockService
         ]);
     }
 
-    public function validateBlock(ErrorElement $errorElement, BlockInterface $block)
+    public function validate(ErrorElement $errorElement, BlockInterface $block): void
     {
         if (($name = $block->getSetting('menu_name')) && '' !== $name && !$this->menuProvider->has($name)) {
             // If we specified a menu_name, check that it exists
@@ -122,10 +96,10 @@ class MenuBlockService extends AbstractAdminBlockService
         }
     }
 
-    public function configureSettings(OptionsResolver $resolver)
+    public function configureSettings(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'title' => $this->getName(),
+            'title' => '',
             'cache_policy' => 'public',
             'template' => '@SonataBlock/Block/block_core_menu.html.twig',
             'menu_name' => '',
@@ -140,17 +114,14 @@ class MenuBlockService extends AbstractAdminBlockService
         ]);
     }
 
-    public function getBlockMetadata($code = null)
+    public function getMetadata(): MetadataInterface
     {
-        return new Metadata($this->getName(), (null !== $code ? $code : $this->getName()), false, 'SonataBlockBundle', [
+        return new Metadata('sonata.block.service.menu', null, null, 'SonataBlockBundle', [
             'class' => 'fa fa-bars',
         ]);
     }
 
-    /**
-     * @return array
-     */
-    protected function getFormSettingsKeys()
+    private function getFormSettingsKeys(): array
     {
         $choiceOptions = [
             'required' => false,
@@ -211,7 +182,7 @@ class MenuBlockService extends AbstractAdminBlockService
      *
      * @return ItemInterface|string
      */
-    protected function getMenu(BlockContextInterface $blockContext)
+    private function getMenu(BlockContextInterface $blockContext)
     {
         $settings = $blockContext->getSettings();
 
@@ -220,10 +191,8 @@ class MenuBlockService extends AbstractAdminBlockService
 
     /**
      * Replaces setting keys with knp menu item options keys.
-     *
-     * @return array
      */
-    protected function getMenuOptions(array $settings)
+    private function getMenuOptions(array $settings): array
     {
         $mapping = [
             'current_class' => 'currentClass',

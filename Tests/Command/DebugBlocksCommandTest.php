@@ -16,11 +16,17 @@ namespace Sonata\BlockBundle\Tests\Command;
 use PHPUnit\Framework\TestCase;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
 use Sonata\BlockBundle\Block\Service\AbstractBlockService;
+use Sonata\BlockBundle\Block\Service\EditableBlockService;
 use Sonata\BlockBundle\Command\DebugBlocksCommand;
-use Symfony\Bundle\FrameworkBundle\Templating\EngineInterface;
+use Sonata\BlockBundle\Form\Mapper\FormMapper;
+use Sonata\BlockBundle\Meta\Metadata;
+use Sonata\BlockBundle\Meta\MetadataInterface;
+use Sonata\BlockBundle\Model\BlockInterface;
+use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Twig\Environment;
 
 /**
  * @author Javier Spagnoletti <phansys@gmail.com>
@@ -50,20 +56,6 @@ final class DebugBlocksCommandTest extends TestCase
         $this->application = null;
     }
 
-    /**
-     * @group legacy
-     *
-     * @expectedDeprecation Command "sonata:block:debug" is deprecated since sonata-project/block-bundle 3.16 and will be removed with the 4.0 release. Use the "debug:sonata:block" command instead.
-     */
-    public function testExecute(): void
-    {
-        $command = $this->application->find('sonata:block:debug');
-        $commandTester = new CommandTester($command);
-        $commandTester->execute(['command' => 'sonata:block:debug']);
-
-        $this->assertSame("done!\n", $commandTester->getDisplay());
-    }
-
     public function testExecuteWithAlias(): void
     {
         $command = $this->application->find('debug:sonata:block');
@@ -75,55 +67,49 @@ final class DebugBlocksCommandTest extends TestCase
 
     /**
      * @group legacy
-     *
-     * @expectedDeprecation Method Sonata\BlockBundle\Command\DebugBlocksCommand::getBlockServiceManager() is deprecated since sonata-project/block-bundle 3.16 and will be removed with the 4.0 release.Use the Sonata\BlockBundle\Command\DebugBlocksCommand::$blockManager property instead.
-     */
-    public function testGetBlockServiceManager(): void
-    {
-        $blockManager = $this->createMock(BlockServiceManagerInterface::class);
-        $blockManager
-            ->expects($this->any())
-            ->method('getServices')
-            ->willReturn([]);
-
-        (new DebugBlocksCommand(null, $blockManager))->getBlockServiceManager();
-    }
-
-    public function testConstructorArguments(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Argument 2 passed to Sonata\BlockBundle\Command\DebugBlocksCommand::__construct() must be an instance of Sonata\BlockBundle\Block\BlockServiceManagerInterface, NULL given.');
-
-        new DebugBlocksCommand();
-    }
-
-    /**
-     * @group legacy
      */
     public function testDebugBlocks(): void
     {
         $this->application = new Application();
-        $templating = $this->createMock(EngineInterface::class);
+        $twig = $this->createMock(Environment::class);
 
         $blockManager = $this->createMock(BlockServiceManagerInterface::class);
         $blockManager
             ->expects($this->any())
             ->method('getServices')
             ->willReturn([
-                'test.without_options' => new class('Test service block without options', $templating) extends AbstractBlockService {
+                'test.without_options' => new class($twig) extends AbstractBlockService {
                 },
-                'test.with_simple_option' => new class('Test service block with simple option', $templating) extends AbstractBlockService {
-                    public function configureSettings(OptionsResolver $resolver)
+                'test.with_simple_option' => new class($twig) extends AbstractBlockService {
+                    public function configureSettings(OptionsResolver $resolver): void
                     {
                         $resolver->setDefault('limit', 150);
                         $resolver->setAllowedTypes('limit', 'int');
                     }
                 },
-                'test.with_required_option' => new class('Test service block with required option', $templating) extends AbstractBlockService {
-                    public function configureSettings(OptionsResolver $resolver)
+                'test.with_required_option' => new class($twig) extends AbstractBlockService {
+                    public function configureSettings(OptionsResolver $resolver): void
                     {
                         $resolver->setRequired('limit');
                         $resolver->setAllowedTypes('limit', 'int');
+                    }
+                },
+                'test.with_metadata' => new class($twig) extends AbstractBlockService implements EditableBlockService {
+                    public function configureEditForm(FormMapper $form, BlockInterface $block): void
+                    {
+                    }
+
+                    public function configureCreateForm(FormMapper $form, BlockInterface $block): void
+                    {
+                    }
+
+                    public function validate(ErrorElement $errorElement, BlockInterface $block): void
+                    {
+                    }
+
+                    public function getMetadata(): MetadataInterface
+                    {
+                        return new Metadata('My block title');
                     }
                 },
             ]);
@@ -136,13 +122,15 @@ final class DebugBlocksCommandTest extends TestCase
 
         $expected = <<<EOF
 
->> Test service block without options (test.without_options)
+>> test.without_options
 
->> Test service block with simple option (test.with_simple_option)
+>> test.with_simple_option
     limit                         150
 
->> Test service block with required option (test.with_required_option)
+>> test.with_required_option
     limit
+
+>> test.with_metadata (My block title)
 done!
 
 EOF;

@@ -18,11 +18,9 @@ use Doctrine\Common\Collections\Collection;
 /**
  * RecursiveBlockIterator.
  *
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-class RecursiveBlockIterator extends \RecursiveArrayIterator implements \RecursiveIterator
+final class RecursiveBlockIterator extends \RecursiveArrayIterator implements \RecursiveIterator
 {
     /**
      * @param Collection|array $array

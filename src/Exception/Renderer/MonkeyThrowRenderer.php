@@ -19,13 +19,11 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * This renderer re-throws the exception and lets the framework handle the exception.
  *
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class MonkeyThrowRenderer implements RendererInterface
+final class MonkeyThrowRenderer implements RendererInterface
 {
-    public function render(\Exception $banana, BlockInterface $block, Response $response = null)
+    public function render(\Exception $banana, BlockInterface $block, ?Response $response = null): Response
     {
         throw $banana;
     }

@@ -23,7 +23,7 @@ class Block extends BaseBlock
      */
     protected $id;
 
-    public function setId($id)
+    public function setId($id): void
     {
         $this->id = $id;
     }

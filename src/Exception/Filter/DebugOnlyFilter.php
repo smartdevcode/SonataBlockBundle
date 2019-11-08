@@ -18,27 +18,22 @@ use Sonata\BlockBundle\Model\BlockInterface;
 /**
  * This filter handles exceptions only when debug mode is enabled.
  *
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class DebugOnlyFilter implements FilterInterface
+final class DebugOnlyFilter implements FilterInterface
 {
     /**
      * @var bool
      */
-    protected $debug;
+    private $debug = false;
 
-    /**
-     * @param bool $debug
-     */
-    public function __construct($debug)
+    public function __construct(bool $debug)
     {
         $this->debug = $debug;
     }
 
-    public function handle(\Exception $exception, BlockInterface $block)
+    public function handle(\Throwable $exception, BlockInterface $block): bool
     {
-        return $this->debug ? true : false;
+        return $this->debug;
     }
 }
