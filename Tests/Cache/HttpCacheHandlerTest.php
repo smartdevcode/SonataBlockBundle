@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 final class HttpCacheHandlerTest extends TestCase
 {
-    public function testComputeTtlWithPrivateResponse()
+    public function testComputeTtlWithPrivateResponse(): void
     {
         $handler = new HttpCacheHandler();
         $handler->updateMetadata(Response::create()->setTtl(60));
@@ -32,7 +32,7 @@ final class HttpCacheHandlerTest extends TestCase
         $this->assertNull($response->getTtl());
     }
 
-    public function testComputeTtlWithPublicResponse()
+    public function testComputeTtlWithPublicResponse(): void
     {
         $handler = new HttpCacheHandler();
         $handler->updateMetadata(Response::create()->setTtl(60));
@@ -45,7 +45,7 @@ final class HttpCacheHandlerTest extends TestCase
         $this->assertSame(42, $response->getTtl());
     }
 
-    public function testResponseTtlNotAlteredIfNoRenderedBlock()
+    public function testResponseTtlNotAlteredIfNoRenderedBlock(): void
     {
         $handler = new HttpCacheHandler();
 

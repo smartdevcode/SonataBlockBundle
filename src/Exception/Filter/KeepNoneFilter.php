@@ -18,13 +18,11 @@ use Sonata\BlockBundle\Model\BlockInterface;
 /**
  * This filters will ignore all exceptions.
  *
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class KeepNoneFilter implements FilterInterface
+final class KeepNoneFilter implements FilterInterface
 {
-    public function handle(\Exception $exception, BlockInterface $block)
+    public function handle(\Throwable $exception, BlockInterface $block): bool
     {
         return false;
     }

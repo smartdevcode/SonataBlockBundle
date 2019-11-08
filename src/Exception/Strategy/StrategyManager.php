@@ -23,46 +23,44 @@ use Symfony\Component\HttpFoundation\Response;
  * The strategy manager handles exceptions thrown by a block. It uses an exception filter to identify which exceptions
  * it should handle or ignore. It then uses an exception renderer to "somehow" display the exception.
  *
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Olivier Paradis <paradis.olivier@gmail.com>
  */
-class StrategyManager implements StrategyManagerInterface
+final class StrategyManager implements StrategyManagerInterface
 {
     /**
      * @var ContainerInterface
      */
-    protected $container;
+    private $container;
 
     /**
      * @var array
      */
-    protected $filters;
+    private $filters;
 
     /**
      * @var array
      */
-    protected $renderers;
+    private $renderers;
 
     /**
      * @var array
      */
-    protected $blockFilters;
+    private $blockFilters;
 
     /**
      * @var array
      */
-    protected $blockRenderers;
+    private $blockRenderers;
 
     /**
      * @var string
      */
-    protected $defaultFilter;
+    private $defaultFilter;
 
     /**
      * @var string
      */
-    protected $defaultRenderer;
+    private $defaultRenderer;
 
     /**
      * @param ContainerInterface $container      Dependency injection container
@@ -83,11 +81,9 @@ class StrategyManager implements StrategyManagerInterface
     /**
      * Sets the default filter name.
      *
-     * @param string $name
-     *
      * @throws \InvalidArgumentException
      */
-    public function setDefaultFilter($name)
+    public function setDefaultFilter(string $name): void
     {
         if (!\array_key_exists($name, $this->filters)) {
             throw new \InvalidArgumentException(sprintf('Cannot set default exception filter "%s". It does not exist.', $name));
@@ -99,11 +95,9 @@ class StrategyManager implements StrategyManagerInterface
     /**
      * Sets the default renderer name.
      *
-     * @param string $name
-     *
      * @throws \InvalidArgumentException
      */
-    public function setDefaultRenderer($name)
+    public function setDefaultRenderer(string $name): void
     {
         if (!\array_key_exists($name, $this->renderers)) {
             throw new \InvalidArgumentException(sprintf('Cannot set default exception renderer "%s". It does not exist.', $name));
@@ -112,7 +106,7 @@ class StrategyManager implements StrategyManagerInterface
         $this->defaultRenderer = $name;
     }
 
-    public function handleException(\Exception $exception, BlockInterface $block, Response $response = null)
+    public function handleException(\Throwable $exception, BlockInterface $block, ?Response $response = null): Response
     {
         $response = $response ?: new Response();
         $response->setPrivate();
@@ -131,10 +125,8 @@ class StrategyManager implements StrategyManagerInterface
      * Returns the exception renderer for given block.
      *
      * @throws \RuntimeException
-     *
-     * @return RendererInterface
      */
-    public function getBlockRenderer(BlockInterface $block)
+    public function getBlockRenderer(BlockInterface $block): RendererInterface
     {
         $type = $block->getType();
 
@@ -152,10 +144,8 @@ class StrategyManager implements StrategyManagerInterface
      * Returns the exception filter for given block.
      *
      * @throws \RuntimeException
-     *
-     * @return FilterInterface
      */
-    public function getBlockFilter(BlockInterface $block)
+    public function getBlockFilter(BlockInterface $block): FilterInterface
     {
         $type = $block->getType();
 
@@ -172,13 +162,9 @@ class StrategyManager implements StrategyManagerInterface
     /**
      * Returns the filter service for given filter name.
      *
-     * @param string $name
-     *
      * @throws \RuntimeException
-     *
-     * @return object
      */
-    protected function getFilterService($name)
+    private function getFilterService(string $name): object
     {
         if (!isset($this->filters[$name])) {
             throw new \RuntimeException('The filter "%s" does not exist.');
@@ -190,13 +176,9 @@ class StrategyManager implements StrategyManagerInterface
     /**
      * Returns the renderer service for given renderer name.
      *
-     * @param string $name
-     *
      * @throws \RuntimeException
-     *
-     * @return object
      */
-    protected function getRendererService($name)
+    private function getRendererService(string $name): object
     {
         if (!isset($this->renderers[$name])) {
             throw new \RuntimeException('The renderer "%s" does not exist.');

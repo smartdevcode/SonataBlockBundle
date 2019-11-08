@@ -26,7 +26,7 @@ final class DebugOnlyFilterTest extends TestCase
     /**
      * test the filter with debug enabled.
      */
-    public function testWithDebugEnabled()
+    public function testWithDebugEnabled(): void
     {
         // GIVEN
         $exception = $this->createMock('\Exception');
@@ -43,7 +43,7 @@ final class DebugOnlyFilterTest extends TestCase
     /**
      * test the filter with debug disabled.
      */
-    public function testWithDebugDisabled()
+    public function testWithDebugDisabled(): void
     {
         // GIVEN
         $exception = $this->createMock('\Exception');

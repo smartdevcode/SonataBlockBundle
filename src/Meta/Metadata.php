@@ -14,46 +14,45 @@ declare(strict_types=1);
 namespace Sonata\BlockBundle\Meta;
 
 /**
- * @final since sonata-project/block-bundle 3.0
- *
  * @author Hugo Briand <briand@ekino.com>
  */
-class Metadata implements MetadataInterface
+final class Metadata implements MetadataInterface
 {
     /**
      * @var string
      */
-    protected $title;
+    private $title;
 
     /**
      * @var string|null
      */
-    protected $description;
+    private $description;
 
     /**
      * @var string|null
      */
-    protected $image;
+    private $image;
 
     /**
      * @var string|null
      */
-    protected $domain;
+    private $domain;
 
     /**
      * @var array<string, mixed>
      */
-    protected $options;
+    private $options;
 
     /**
-     * @param string               $title
-     * @param string               $description
-     * @param string|null          $image
-     * @param string|null          $domain
      * @param array<string, mixed> $options
      */
-    public function __construct($title, $description = null, $image = null, $domain = null, array $options = [])
-    {
+    public function __construct(
+        string $title,
+        ?string $description = null,
+        ?string $image = null,
+        ?string $domain = null,
+        array $options = []
+    ) {
         $this->title = $title;
         $this->description = $description;
         $this->image = $image;
@@ -61,32 +60,32 @@ class Metadata implements MetadataInterface
         $this->options = $options;
     }
 
-    public function getTitle()
+    public function getTitle(): string
     {
         return $this->title;
     }
 
-    public function getDescription()
+    public function getDescription(): ?string
     {
         return $this->description;
     }
 
-    public function getImage()
+    public function getImage(): ?string
     {
         return $this->image;
     }
 
-    public function getDomain()
+    public function getDomain(): ?string
     {
         return $this->domain;
     }
 
-    public function getOptions()
+    public function getOptions(): array
     {
         return $this->options;
     }
 
-    public function getOption($name, $default = null)
+    public function getOption(string $name, $default = null)
     {
         return \array_key_exists($name, $this->options) ? $this->options[$name] : $default;
     }
