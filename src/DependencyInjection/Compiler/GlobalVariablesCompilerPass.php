@@ -20,11 +20,13 @@ use Symfony\Component\DependencyInjection\Reference;
 /**
  * GlobalVariablesCompilerPass.
  *
+ * @final since sonata-project/block-bundle 3.0
+ *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-final class GlobalVariablesCompilerPass implements CompilerPassInterface
+class GlobalVariablesCompilerPass implements CompilerPassInterface
 {
-    public function process(ContainerBuilder $container): void
+    public function process(ContainerBuilder $container)
     {
         $container->getDefinition('twig')
             ->addMethodCall('addGlobal', ['sonata_block', new Reference('sonata.block.twig.global')]);

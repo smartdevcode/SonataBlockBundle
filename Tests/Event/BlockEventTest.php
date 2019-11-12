@@ -21,7 +21,7 @@ final class BlockEventTest extends TestCase
     /**
      * @group legacy
      */
-    public function testBlockEvent(): void
+    public function testBlockEvent()
     {
         $blockEvent = new BlockEvent();
 

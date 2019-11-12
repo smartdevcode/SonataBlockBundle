@@ -15,14 +15,16 @@ namespace Sonata\BlockBundle\Block\Loader;
 
 use Sonata\BlockBundle\Block\BlockLoaderInterface;
 use Sonata\BlockBundle\Model\Block;
-use Sonata\BlockBundle\Model\BlockInterface;
 
-final class ServiceLoader implements BlockLoaderInterface
+/**
+ * @final since sonata-project/block-bundle 3.0
+ */
+class ServiceLoader implements BlockLoaderInterface
 {
     /**
      * @var string[]
      */
-    private $types;
+    protected $types;
 
     /**
      * @param string[] $types
@@ -36,22 +38,16 @@ final class ServiceLoader implements BlockLoaderInterface
      * Check if a given block type exists.
      *
      * @param string $type Block type to check for
+     *
+     * @return bool
      */
-    public function exists(string $type): bool
+    public function exists($type)
     {
         return \in_array($type, $this->types, true);
     }
 
-    public function load($configuration): BlockInterface
+    public function load($configuration)
     {
-        if (!\is_string($configuration) && !\is_array($configuration)) {
-            throw new \TypeError(sprintf(
-                'Argument 1 passed to %s must be of type string or array, %s given',
-                __METHOD__,
-                \is_object($configuration) ? 'object of type '.\get_class($configuration) : \gettype($configuration)
-            ));
-        }
-
         if (!\in_array($configuration['type'], $this->types, true)) {
             throw new \RuntimeException(sprintf(
                 'The block type "%s" does not exist',
@@ -70,16 +66,8 @@ final class ServiceLoader implements BlockLoaderInterface
         return $block;
     }
 
-    public function support($configuration): bool
+    public function support($configuration)
     {
-        if (!\is_string($configuration) && !\is_array($configuration)) {
-            throw new \TypeError(sprintf(
-                'Argument 1 passed to %s must be of type string or array, %s given',
-                __METHOD__,
-                \is_object($configuration) ? 'object of type '.\get_class($configuration) : \gettype($configuration)
-            ));
-        }
-
         if (!\is_array($configuration)) {
             return false;
         }

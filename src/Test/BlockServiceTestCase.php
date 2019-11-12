@@ -19,9 +19,10 @@ use Sonata\BlockBundle\Block\BlockContextInterface;
 use Sonata\BlockBundle\Block\BlockContextManager;
 use Sonata\BlockBundle\Block\BlockContextManagerInterface;
 use Sonata\BlockBundle\Block\BlockLoaderInterface;
+use Sonata\BlockBundle\Block\BlockServiceInterface;
 use Sonata\BlockBundle\Block\BlockServiceManagerInterface;
-use Sonata\BlockBundle\Block\Service\BlockServiceInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Twig\Environment;
 
 /**
@@ -31,8 +32,13 @@ use Twig\Environment;
  *
  * @internal
  */
-abstract class BlockServiceTestCase extends TestCase
+abstract class InternalBlockServiceTestCase extends TestCase
 {
+    /**
+     * @var MockObject|ContainerInterface
+     */
+    protected $container;
+
     /**
      * @var MockObject|BlockServiceManagerInterface
      */
@@ -44,6 +50,13 @@ abstract class BlockServiceTestCase extends TestCase
     protected $blockContextManager;
 
     /**
+     * NEXT_MAJOR: Remove this property.
+     *
+     * @var FakeTemplating
+     */
+    protected $templating;
+
+    /**
      * @var Environment
      */
     protected $twig;
@@ -51,8 +64,12 @@ abstract class BlockServiceTestCase extends TestCase
     /**
      * @internal
      */
-    protected function setUp(): void
+    protected function internalSetUp(): void
     {
+        $this->container = $this->createMock(ContainerInterface::class);
+        // NEXT_MAJOR: Remove the following assignment.
+        $this->templating = new FakeTemplating();
+
         $blockLoader = $this->createMock(BlockLoaderInterface::class);
         $this->blockServiceManager = $this->createMock(BlockServiceManagerInterface::class);
         $this->blockContextManager = new BlockContextManager($blockLoader, $this->blockServiceManager);
@@ -95,5 +112,24 @@ abstract class BlockServiceTestCase extends TestCase
         ksort($blockSettings);
 
         $this->assertSame($completeExpectedOptions, $blockSettings);
+    }
+}
+
+// NEXT_MAJOR: Remove this hack when dropping support for PHPUnit 7
+if (version_compare(\PHPUnit\Runner\Version::id(), '8.0', '<')) {
+    abstract class BlockServiceTestCase extends InternalBlockServiceTestCase
+    {
+        protected function setUp()
+        {
+            $this->internalSetUp();
+        }
+    }
+} else {
+    abstract class BlockServiceTestCase extends InternalBlockServiceTestCase
+    {
+        protected function setUp(): void
+        {
+            $this->internalSetUp();
+        }
     }
 }

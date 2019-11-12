@@ -13,15 +13,13 @@ declare(strict_types=1);
 
 namespace Sonata\BlockBundle\Block\Service;
 
+use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\BlockBundle\Block\BlockContextInterface;
-use Sonata\BlockBundle\Form\Mapper\FormMapper;
 use Sonata\BlockBundle\Form\Type\ContainerTemplateType;
 use Sonata\BlockBundle\Meta\Metadata;
-use Sonata\BlockBundle\Meta\MetadataInterface;
 use Sonata\BlockBundle\Model\BlockInterface;
 use Sonata\Form\Type\CollectionType;
 use Sonata\Form\Type\ImmutableArrayType;
-use Sonata\Form\Validator\ErrorElement;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,20 +28,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 /**
  * Render children pages.
  *
+ * @final since sonata-project/block-bundle 3.0
+ *
  * @author Thomas Rabaix <thomas.rabaix@sonata-project.org>
  */
-final class ContainerBlockService extends AbstractBlockService implements EditableBlockService
+class ContainerBlockService extends AbstractAdminBlockService
 {
-    public function configureCreateForm(FormMapper $form, BlockInterface $block): void
+    public function buildEditForm(FormMapper $formMapper, BlockInterface $block)
     {
-        $this->configureEditForm($form, $block);
-    }
+        $formMapper->add('enabled');
 
-    public function configureEditForm(FormMapper $form, BlockInterface $block): void
-    {
-        $form->add('enabled');
-
-        $form->add('settings', ImmutableArrayType::class, [
+        $formMapper->add('settings', ImmutableArrayType::class, [
             'keys' => [
                 ['code', TextType::class, [
                     'required' => false,
@@ -63,7 +58,7 @@ final class ContainerBlockService extends AbstractBlockService implements Editab
             'translation_domain' => 'SonataBlockBundle',
         ]);
 
-        $form->add('children', CollectionType::class, [], [
+        $formMapper->add('children', CollectionType::class, [], [
             'admin_code' => 'sonata.page.admin.block',
             'edit' => 'inline',
             'inline' => 'table',
@@ -71,7 +66,7 @@ final class ContainerBlockService extends AbstractBlockService implements Editab
         ]);
     }
 
-    public function execute(BlockContextInterface $blockContext, ?Response $response = null): Response
+    public function execute(BlockContextInterface $blockContext, Response $response = null)
     {
         return $this->renderResponse($blockContext->getTemplate(), [
             'block' => $blockContext->getBlock(),
@@ -80,11 +75,7 @@ final class ContainerBlockService extends AbstractBlockService implements Editab
         ], $response);
     }
 
-    public function validate(ErrorElement $errorElement, BlockInterface $block): void
-    {
-    }
-
-    public function configureSettings(OptionsResolver $resolver): void
+    public function configureSettings(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'code' => '',
@@ -94,17 +85,21 @@ final class ContainerBlockService extends AbstractBlockService implements Editab
         ]);
     }
 
-    public function getMetadata(): MetadataInterface
+    public function getBlockMetadata($code = null)
     {
-        return new Metadata('sonata.block.service.container', null, null, 'SonataBlockBundle', [
+        return new Metadata($this->getName(), (null !== $code ? $code : $this->getName()), false, 'SonataBlockBundle', [
             'class' => 'fa fa-square-o',
         ]);
     }
 
     /**
      * Returns a decorator object/array from the container layout setting.
+     *
+     * @param string $layout
+     *
+     * @return array
      */
-    private function getDecorator(string $layout): array
+    protected function getDecorator($layout)
     {
         $key = '{{ CONTENT }}';
         if (false === strpos($layout, $key)) {
